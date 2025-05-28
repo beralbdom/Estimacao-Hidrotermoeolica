@@ -160,6 +160,121 @@ def DadosCMIP(regioes, anos, dataset, request):
     df_regional_final.to_csv(f"Exportado/ECMWF/{dataset}_{request['variable']}_{request['product_type']}.csv")          # Exportando o DataFrame final para um arquivo CSV
 
 
+def download_global_CMIP(variables, anos, dataset, request):
+    """
+    Baixa para cada variável e ano um arquivo global (.nc).
+    """
+    base_dir = f"Exportado/ECMWF/Global/{dataset}/{request['product_type']}"
+    os.makedirs(base_dir, exist_ok=True)
+    client = cdsapi.Client()
+
+    for var in variables:
+        for ano in anos:
+            rq = request.copy()
+            rq['variable'] = var
+            rq['year'] = f"{ano}"
+            # removemos 'area' para baixar GLOBAL
+            if 'area' in rq: del rq['area']
+
+            arq = f"Global_{var}_{request['product_type']}_{ano}.nc"
+            target = os.path.join(base_dir, arq)
+
+            if not os.path.exists(target):
+                client.retrieve(dataset, rq).download(target)
+                print(f"[✓] Baixado {arq}")
+            else:
+                print(f"[i] Já existe {arq}")
+
+
+def extract_regions_from_global(regioes, variables, anos, dataset, product_type):
+    """
+    Usa netCDF4 para ler cada .nc global, extrair sub-regiões e salvar um CSV
+    com a média diária da variável em cada região.
+    """
+    global_dir = f"Exportado/ECMWF/Global/{dataset}/{product_type}"
+    out_dir    = f"Exportado/ECMWF/Regions/{dataset}/{product_type}"
+    os.makedirs(out_dir, exist_ok=True)
+
+    for var in variables:
+        # mapeia nome CDS → variável no NetCDF
+        var_nc = {
+            'sea_surface_temperature': 'sst',
+            '2m_temperature':        't2m',
+            'total_precipitation':   'tp'
+        }[var]
+
+        for ano in anos:
+            file_global = os.path.join(
+                global_dir,
+                f"Global_{var}_{product_type}_{ano}.nc"
+            )
+            if not os.path.isfile(file_global):
+                print(f"[!] Arquivo faltando, pulando: {file_global}")
+                continue
+
+            nc = netCDF4.Dataset(file_global)
+            # extrai o tempo e monta índice pandas
+            time_var   = nc.variables.get('time') or nc.variables.get('valid_time')
+            units      = time_var.units
+            cal        = getattr(time_var, 'calendar', 'standard')
+            dates      = netCDF4.num2date(time_var[:], units, calendar=cal)
+            date_strs  = [dt.strftime('%Y-%m-%d') for dt in dates]
+            idx        = pd.to_datetime(date_strs).to_period('D')
+
+            # extrai os dados brutos e coords
+            data3d = nc.variables[var_nc][:].squeeze()    # (nt, nlat, nlon)
+            lats   = nc.variables['latitude'][:].squeeze()
+            raw_lons = nc.variables['longitude'][:].squeeze()
+            lons = (raw_lons + 180) % 360 - 180
+
+            for regiao, area in regioes.items():
+                north, west, south, east = area
+                lat_idx = np.where((lats >= south) & (lats <= north))[0]
+                lon_idx = np.where((lons >= west)  & (lons <= east))[0]
+
+                # sub-array apenas da região: (nt, nlat_reg, nlon_reg)
+                sub      = data3d[:, lat_idx[:,None], lon_idx]
+
+                # calcula média diária sobre lat x lon
+                region_mean = np.nanmean(sub, axis=(1,2))
+
+                # monta DataFrame com uma coluna: {regiao}_{var_nc}
+                col_name = f"{regiao}_{var_nc}"
+                df       = pd.DataFrame(region_mean, index=idx, columns=[col_name])
+
+                csvf = os.path.join(
+                    out_dir,
+                    f"{regiao}_{var}_{product_type}_{ano}.csv"
+                )
+                df.to_csv(csvf)
+                print(f"[✓] Salvo média diária: {regiao} | {var} | {ano}")
+
+            nc.close()
+
+
+variaveis = [
+    'sea_surface_temperature',
+    # '2m_temperature',
+    'total_precipitation',
+]
+anos = np.arange(2000, 2025, 1)
+request_base = {
+    'product_type': 'reanalysis',
+    'daily_statistic': 'daily_mean',
+    'time_zone': 'utc+00:00',
+    'frequency': '1_hourly',
+    # variável e ano serão setados em download_global_CMIP
+    'month' : [f'{m}' for m in np.arange(1,13)],
+    'day'   : [f'{d}' for d in np.arange(1,32)],
+}
+dataset = 'derived-era5-single-levels-daily-statistics'
+
+# 1) baixa GLOBAL
+download_global_CMIP(variaveis, anos, dataset, request_base)
+
+# 2) extrai todas as regiões definidas no dicionário regioes
+extract_regions_from_global(regioes, variaveis, anos, dataset, request_base['product_type'])
+
 # DadosCMIP(regioes, anos = np.arange(2000, 2025, 1), dataset = 'derived-era5-single-levels-daily-statistics',
 #           request = {
 #             'product_type': 'reanalysis',
