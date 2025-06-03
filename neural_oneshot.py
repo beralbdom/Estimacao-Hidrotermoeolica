@@ -56,7 +56,7 @@ geracao = (
     .resample('W').mean()
 )
 
-freq = 'W'
+freq = 'D'
 tempo = 'Data'
 fontes = ['Hidráulica', 'Eólica', 'Fotovoltaica', 'Térmica', 'Outras']
 targets = np.zeros((len(fontes)), dtype = object)
@@ -98,7 +98,7 @@ for target in targets:
     )
 
     zeroshot_model = TinyTimeMixerForPrediction.from_pretrained(
-        'ibm-granite/granite-timeseries-ttm-r2',
+        'Exportado\TTM\output\checkpoint-992',
         revision = TTM_MODEL_REVISION,
         num_input_channels = len(target),
     )
@@ -167,5 +167,5 @@ for target in targets:
     axs[0].legend(loc = 'upper center', bbox_to_anchor = (0.5, 1.15), ncol = 4, frameon = False)
     axs[-1].set_xlabel('Série temporal')
     plt.tight_layout()
-    plt.savefig(f'Graficos/Neural/{target[0]}_zeroshot_{freq}{CONTEXT}.png')
-    # plt.show()
+    # plt.savefig(f'Graficos/Neural/{target[0]}_zeroshot_{freq}{CONTEXT}.png')
+    plt.show()

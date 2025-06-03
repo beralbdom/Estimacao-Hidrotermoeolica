@@ -1,14 +1,17 @@
 \chapter{Metodologia}
 \section{Abordagem computacional}
 
-O projeto tem como objetivo analisar o impacto de variáveis climatológicas, como anomalias e outros índices, na geração
-de energia elétrica no Brasil. Para isso, foram adotadas técnicas computacionais para processamento de séries temporais,
-correlação de variáveis, \textit{feature selection}, análise de componentes principais e implementação de modelos de 
-regressão e aprendizado de máquina. 
+Considerando o escopo do projeto e a grande volume de dados a serem processados, não há outra abordagem viável senão
+a utilização de técnicas computacionais. Sendo assim, optou-se por desenvolver o projeto em Python, devido à 
+familiaridade do autor com a linguagem e a vasta gama de bibliotecas disponíveis para manipulação de séries históricas, 
+análise estatística e aprendizado de máquina. 
 
-As etapas de processamento intensivo foram otimizadas para execução em paralelo,
-de modo a melhor utilizar os recursos computacionais. Todo o processamento foi realizado em um computador com 
-processador AMD Ryzen 5900X e 32 GB de memória RAM, utilizando todas as 24 \textit{threads} disponíveis.
+Como o computador utilizado possui uma placa de vídeo da AMD e o projeto foi desenvolvido em Windows, não foi possível 
+realizar o \textit{offload} do processamento para a GPU, como seria possível com placas NVIDIA nativamente com a 
+biblioteca \textit{torch}. Para isso, seria necessário utilizar Linux, em que há suporte da biblioteca para 
+a plataforma \textit{Radeon Open Compute} (ROCm). Sendo assim, as etapas do projeto empregando modelos neurais foram 
+realizadas utilizando apenas o processador. O sistema utilizado possui um processador AMD Ryzen 5900X e 32 GB de memória
+RAM. Todo o processamento intensivo foi realizado em paralelo, utilizando todas as 24 \textit{threads} disponíveis.
 
 \begin{table}[htb]
   \centering
@@ -28,8 +31,10 @@ processador AMD Ryzen 5900X e 32 GB de memória RAM, utilizando todas as 24 \tex
         cdsapi & API para download de dados do ECMWF & 0.7.5 \\
         geopandas & Manipulação de dados geoespaciais & 1.0.1 \\
         matplotlib & Visualização de dados & 3.9.2 \\
-        scikit-learn & Ferramentas de aprendizado de máquina & 1.5.2 \\
+        scikit-learn & Aplicação de modelos iniciais & 1.5.2 \\
         scipy & Ferramentas e algoritmos matemáticos & 1.14.1 \\
+        transformers & Modelos Neurais Pré-treinadis & 4.52.3 \\
+        torch & Processamento de Redes Neurais & 2.7.0 \\
         \hline
     \end{tabular}
     }{
@@ -39,7 +44,7 @@ processador AMD Ryzen 5900X e 32 GB de memória RAM, utilizando todas as 24 \tex
 Além disso, toda a base de código foi desenvolvida em Python versão 3.12 e está disponível em um repositório público no
 GitHub. O projeto foi organizado em módulos, cada um responsável por uma etapa do processo, desde a obtenção dos dados 
 até a implementação dos modelos de aprendizado de máquina. A tabela \ref{tab:bibliotecas} mostra as bibliotecas 
-utilizadas no projeto.
+utilizadas no projeto, suas finalidades e versões.
 
 \section{Obtenção e pré-processamento dos dados}
 \subsection{Séries históricas do ONS}
@@ -47,8 +52,7 @@ utilizadas no projeto.
 A primeira etapa do projeto consiste na consolidação das séries históricas de geração, carga e variáveis hidrológicas,
 que são disponibilizadas publicamente no portal Dados Abertos do ONS, a partir do ano 2000. As séries referentes 
 às variáveis hidrológicas são disponibilizadas em base diária, e os dados de geração e carga são disponibilizados em 
-base horária. Sendo assim, a fim de obter uma amostragem representativa e suficiente para aplicação dos modelos 
-computacionais, optou-se por utilizar a base temporal diária. 
+base horária.
 
 Os dados de geração são disponibilizados em Mega Watt médio (MWmed) por fonte de energia, subsistema, estado, 
 modalidade de operação, entre outras variáveis. Os dados de carga também são disponibilizados em MWmed e contêm 
@@ -56,7 +60,7 @@ informações sobre a carga em cada subsistema do SIN.
 
 Para as séries de geração, os dados de 2000 a 2021 são agrupados pelos respectivos anos, e a partir de 2022,
 as informações estão agrupadas em arquivos por mês e ano. Para as séries de carga, os dados são disponibilizados por
-ano. Como o ONS não disponibiliza Aplication Programming Interface (API) para a obtenção dos dados diretamente, foi 
+ano. Como o ONS não disponibiliza \textit{Aplication Programming Interface} (API) para a obtenção dos dados diretamente, foi 
 necessário uma outra abordagem, a fim de evitar o download manual dos dados. 
 
 Após identificar o padrão de nomenclatura utilizado pelo ONS para os arquivos, foram desenvolvidas as funções 
@@ -66,67 +70,55 @@ a biblioteca \textit{urllib3} para gerenciar as conexões. Além disso, as funç
 paralelo, utilizando todas as threads disponíveis do sistema. Ao todo, cerca de 10 GB de dados em arquivos Comma 
 Separated Values (CSV) foram consolidados.
 
+A fim de obter uma amostragem representativa e suficiente para aplicação dos modelos computacionais, optou-se por 
+fazer uma reamostragem dos dados em base horária para a base diária. Sendo assim, considerando o período de 2000 
+a 2024, foram consolidados ao todo 9132 amostras diárias para cada variável. Caso fosse considerada a amostragem mensal,
+o número de amostras seria de apenas 300, o que poderia não ser suficiente para a aplicação dos modelos. Ainda assim, 
+análises em base mensal poderão ser realizadas posteriormente, através de outro processo de reamostragem.
 
-\begin{algorithm}
-\caption{Pseudocódigo para download dos dados de geração}
-\label{alg:get_geracao_pseudo}
-\begin{algorithmic}[1]
-  \Function{GetGeracao}{anos, baseUrl}
-    \State Inicializar barra de progresso para \textit{anos}
-    \State Criar um executor de threads
-    \State Submeter tarefas \Call{DownloadAno}{ano} para cada \textit{ano} em \textit{anos} ao executor
-    \For{cada futuro \textit{f} retornado pelo executor}
-      \State Aguardar resultado de \textit{f}
-      \State Atualizar barra de progresso
-    \EndFor
-  \EndFunction
-  \State
-  \Function{DownloadAno}{ano}
-    \If{ano < 2022}
-      \State Construir URL: baseUrl + "GERACAO\_USINA-2\_{ano}.csv"
-      \State Fazer requisição HTTP GET para a URL
-      \If{Requisição bem-sucedida (status 200)}
-        \State Abrir arquivo local "GERACAO\_USINA-2\_{ano}.csv" para escrita
-        \For{cada bloco de dados recebido na resposta}
-          \State Escrever bloco no arquivo local
-        \EndFor
-        \State Fechar arquivo local
-        \State \Return Verdadeiro
-      \Else
-        \State \Return Falso
-      \EndIf
-    \Else
-      \State Definir \textit{concluido} como Falso
-      \For{cada \textit{mes} de 1 a 12}
-        \State Formatar \textit{mes} com zero à esquerda se necessário
-        \State Construir URL: baseUrl + "GERACAO\_USINA-2\_{ano}\_{mes}.csv"
-        \State Fazer requisição HTTP GET para a URL
-        \If{Requisição bem-sucedida (status 200)}
-          \State Abrir arquivo local "GERACAO\_USINA-2\_{ano}\_{mes}.csv" para escrita
-          \For{cada bloco de dados recebido na resposta}
-            \State Escrever bloco no arquivo local
-          \EndFor
-          \State Fechar arquivo local
-          \State Definir \textit{concluido} como Verdadeiro
-        \Else
-          \State Definir \textit{concluido} como Falso
-        \EndIf
-      \EndFor
-      \State \Return \textit{concluido}
-    \EndIf
-  \EndFunction
+O código \ref{listing:get_geracao} mostra a função \textit{GetGeracao}, que recebe como argumentos a lista de
+anos de interesse e a URL base em que os dados estão hospedados. A mesma abordagem foi utilizada para as funções
+\textit{GetCarga} e \textit{GetVazao}.
 
-\end{algorithmic}
-\end{algorithm}
-
-
-Considerando o período de 2000 a 2024, foram consolidados ao todo 9132 amostras diárias para cada variável. Caso fosse
-considerada a amostragem mensal, o número de amostras seria de apenas 300, o que poderia não ser suficiente para
-a aplicação dos modelos. Ainda assim, análises em base mensal poderão ser realizadas posteriormente, considerando a
-possibilidade de transofrmação dos dados para essa escala temporal.
-
-Toda a manipulação dos dados foi realizada utilizando a biblioteca \textit{pandas}, de modo a facilitar a seleção das
-variáveis de interesse
+\begin{codigo}[htbp]
+\caption{Nome do seu código}
+\begin{minted}{python}
+def GetGeracao(anos, url, dir):
+  def DownloadAno(ano):
+      if ano < 2022:
+          arq = f'GERACAO_USINA-2_{ano}.csv'
+          if not os.path.exists(f'{dir}{arq}.csv'):
+              response = requests.get(f'{url}{arq}.csv'', stream = True, verify = True)
+              if response.status_code == 200:
+                  with open(f'{dir}{arq}{ano}.csv', 'wb') as file:
+                      for chunk in response.iter_content(chunk_size = 10240000):
+                          if chunk:
+                              file.write(chunk)
+                              file.flush()
+                  return True
+              else: return False
+      else:
+          for mes in np.arange(1, 13, 1):
+              if mes < 10: mes = f'0{mes}'
+              dir = 'Exportado/ONS/'
+              arq = 'GERACAO_USINA-2_'
+              url = f'{base_url}{arq}{ano}_{mes}.csv'
+              if not os.path.exists(f'{dir}{arq}{ano}_{mes}.csv'):
+                  response = requests.get(url, stream = True, verify = True)
+                  if response.status_code == 200:
+                      with open(f'{dir}{arq}{ano}_{mes}.csv', 'wb') as file:
+                          for chunk in response.iter_content(chunk_size = 10240000):
+                              if chunk:
+                                  file.write(chunk)
+                                  file.flush()
+                      concluido = True
+                  else:
+                      concluido = False
+          return concluido
+  with ThreadPoolExecutor(max_workers = None) as executor:
+    executor.map(DownloadAno, anos)
+\end{minted}
+\end{codigo}
 
 \begin{table}[htb]
   \centering
@@ -174,27 +166,72 @@ escalas geográficas e temporais poderão ser avaliados. Por outro lado, a tabel
 carga não possuem a mesma granulidade que os dados de geração, limitando a análise a nível de subsistema, conforme a
 figura \ref{fig:subsistemas_brasil}.
 
-\begin{figure}[!ht]
-	\IBGEtab{\caption{Subsistemas do SIN}
-			 \label{fig:subsistemas_brasil}}
-	{\includesvg[scale=1]{figuras/subsistemas_brasil}}
-	{\fonte{o autor.}}
-\end{figure}
 
 \subsection{Séries históricas de variáveis climatológicas}
 A fim de maximizar o potencial de análise do projeto, é essencial considerar um grande número de dados climatológicos, 
-como anomalis de temperatura, precipitação, pressão, radiação solar, entre outros. Para isso, foram utilizados dados 
-disponibilizados pelo ECMWF, NOAA e também do departamento de ciências atmosféricas da UNIFEI.
+como anomalis de temperatura, precipitação, pressão, radiação solar, entre outros. No entanto, a obtenção de todos esses
+dados em base diária só é possível através do portal Climate Data Store (CDS) do ECMWF (European Centre for Medium-Range
+ Weather Forecasts), através do ERA5, que é um reanálise climática de alta resolução espacial e temporal. \cite{C3S2024}
+
+Embora os dados do ERA5 possam ser obtidos através da API do CDS, sendo possível especificar a escala temporal e a área
+geográfica de interesse, há um limite de requisições por usuário e uma file de espera para o processamento das 
+requisições. Sendo assim, apenas os dados de temperatura da superfície do mar (TSM) e precipitação das regiões do ENSO 
+foram obtidos em base diária. O código \ref{lst:get_era5} mostra como as solicitações à API do CDS foram realizadas,
+utilizando a biblioteca \textit{cdsapi}.
+
+\begin{minted}{python}
+import cdsapi
+
+dataset = "derived-era5-single-levels-daily-statistics"
+request = {
+    "product_type": "reanalysis",
+    "variable": ["sea_surface_temperature"],
+    "year": "2024",
+    "month": [
+        "01", "02", "03",
+        "04", "05", "06",
+        "07", "08", "09",
+        "10", "11", "12"
+    ],
+    "day": [
+        "01", "02", "03",
+        "04", "05", "06",
+        "07", "08", "09",
+        "10", "11", "12",
+        "13", "14", "15",
+        "16", "17", "18",
+        "19", "20", "21",
+        "22", "23", "24",
+        "25", "26", "27",
+        "28", "29", "30",
+        "31"
+    ],
+    "daily_statistic": "daily_mean",
+    "time_zone": "utc+00:00",
+    "frequency": "1_hourly"
+}
+
+client = cdsapi.Client()
+client.retrieve(dataset, request).download()
+
+\end{minted}
 
 Os dados do ECMWF foram obtidos através da API do CDS (Climate Data Store), que permite o download de dados 
 meteorológicos de alta resolução, sendo possível especificar a escala temporal e a área de interesse, especificando as 
-coordenadas geográficas. Os dados do NOAA e UNIFEI foram obtidos através de requisições HTTP.
+coordenadas geográficas. Os dados do NOAA foram obtidos através de requisições HTTP.
 
 É importante ressaltar que, embora a maioria dos dados climatológicos seja disponibilizada em base mensal, alguns
 possuem escala temporal diária, como alguns dados do ECMWF. Considerando que os dados de energia são disponibilizados em
 base horária, diferentes análises poderão ser realizadas, considerando as escalas temporais diária e mensal. Para isso,
 durante a etapa de pré-processamento dos dados, será realizada a consolidação dos dados de geração e carga de modo que
 estejam na mesma escala temporal dos dados climatológicos.
+
+\begin{figure}[!ht]
+	\IBGEtab{\caption{Subsistemas do SIN}
+			 \label{fig:subsistemas_brasil}}
+	{\includesvg[scale=1]{figuras/subsistemas_brasil}}
+	{\fonte{o autor.}}
+\end{figure}
 
 Além disso, nas próximas etapas do projeto, será realizado a seleção das variáveis climatológicas mais relevantes para
 a análise, considerando a correlação com a geração de energia. Para isso, serão utilizadas técnicas de \textit{feature

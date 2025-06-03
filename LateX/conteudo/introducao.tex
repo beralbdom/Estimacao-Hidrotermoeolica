@@ -45,12 +45,12 @@ e como pode ser observado na Figura \ref{fig:carga_anual}.
 \end{figure}
 
 \section{Motivação}
-Fundamentalmente, em sistemas interligados cuja fonte hidráulica constitui a base da matriz elétrica, é essencial, 
-para um planejamento energético eficiente, otimizar o sistema de modo a considerar a operação de todas as usinas, 
-considerando a incerteza associada às afluências futuras. Dessa forma, estima-se o valor da geração hidrelétrica que 
-poderia substituir a geração térmica a curto ou longo prazo, de modo a minimizar os custos de operação do sistema e o 
-risco de utilizar reservatórios de maneira desnecessária, garantindo assim o atendimento à demanda futura, 
-principalmente em casos de escassez hídrica.
+Em um contexto no qual a implementação de sistemas de armazenamento de energia elétrica ainda é incipiente,
+a matriz segue bastante dependente da fonte hidráulica e, de maneira complementar, das térmicas. A dependência da fonte
+hidráulica, por sua vez, torna o sistema elétrico vulnerável a eventos climáticos extremos ocasionados pelas mudanças
+climáticas. Por exemplo, em 2021, verificou-se um acionamento recorde de usinas térmicas e uma geração hidráulica 
+percentual mínima. Isso se deve em razão da forte crise hídrica enfrentada pelo Brasil em 2021, a pior dos últimos 91 
+anos. \cite{Soares2023}
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Curva de carga do SIN em base mensal}
@@ -58,13 +58,6 @@ principalmente em casos de escassez hídrica.
 	{\includesvg[scale=1]{figuras/carga_anual}}
 	{\fonte{o autor.}}
 \end{figure}
-
-Em um contexto no qual a implementação de sistemas de armazenamento de energia elétrica ainda é incipiente,
-a matriz segue bastante dependente da fonte hidráulica e, de maneira complementar, das térmicas. A dependência da fonte
-hidráulica, por sua vez, torna o sistema elétrico vulnerável a eventos climáticos extremos ocasionados pelas mudanças
-climáticas. Por exemplo, em 2021, verificou-se um acionamento recorde de usinas térmicas e uma geração hidráulica 
-percentual mínima. Isso se deve em razão da forte crise hídrica enfrentada pelo Brasil em 2021, a pior dos últimos 91 
-anos. \cite{Soares2023}
 
 Portanto, o estudo da operação do sistema elétrico brasileiro, no contexto de cenários de eventos
 climatológicos extremos é altamente relevante para a segurança energética do país, considerando uma estimativa de 
@@ -88,11 +81,10 @@ que afetam a vazão dos rios. No entanto, a ocorrência de eventos climatológic
 \textit{La-Niña} (LN) pode favorecer condições que impactam diretamente no potencial de geração hidráulica. \cite{de2012influencia}
 
 Fenômenos como o EN e LN são caracterizados por anomalias na temperatura da superfície do mar no Oceano Pacífico
-Equatorial. Essas anomalias são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que é calculado
-pela NOAA e classifica os eventos em três categorias: EN, LN e neutro. A Figura \ref{fig:oni} mostra a classificação
-dos eventos de EN e LN ocorridos entre 2000 e 2024, sendo que a escala de cores indica a intensidade do evento. Ao
-analisar a geração hidráulica bruta no mesmo período, observa-se que a ocorrência de eventos de EN e LN está associada
-a variações na geração.
+Equatorial. Essas anomalias são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que classifica os 
+eventos em três categorias: EN, LN e neutro. A Figura \ref{fig:oni} mostra a classificação dos eventos de EN e LN 
+ocorridos entre 2000 e 2024, sendo que a escala de cores indica a intensidade do evento. Ao analisar a geração 
+hidráulica bruta no mesmo período, observa-se que a ocorrência de eventos de EN e LN está associada a variações na geração.
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Índice ONI (Oceanic Niño Index)}
@@ -102,29 +94,32 @@ a variações na geração.
 \end{figure}
 
 \section{Objetivo}
-O projeto tem como objetivo analisar o impacto de variáveis climatológicas, como anomalias e outros índices na geração 
-de energia elétrica no Brasil, com foco nas fontes hidráulica e térmica, adotando técnicas computacionais para realizar 
-a análise de correlações entre variáveis climáticas e a geração de energia. Para tanto, serão utilizados séries 
-históricas de geração, carga e vazões disponibilizados pelo ONS, bem como séries históricas de variáveis climatológicas,
- como temperatura da superfície do mar, pressão e precipitação, consolidadas por instituições de pesquisa como o
- \textit{National Oceanic and Atmospheric Administration} (NOAA) e 
- \textit{European Centre for Medium-Range WeatherForecasts} (ECMWF).
+Fundamentalmente, em sistemas interligados cuja fonte hidráulica constitui a base da matriz elétrica, é essencial, 
+para um planejamento energético eficiente, otimizar o sistema de modo a considerar a operação de todas as usinas, 
+considerando a incerteza associada às afluências futuras. Dessa forma, estima-se o valor da geração hidrelétrica que 
+poderia substituir a geração térmica a curto ou longo prazo, de modo a minimizar os custos de operação do sistema e o 
+risco de utilizar reservatórios de maneira desnecessária, garantindo assim o atendimento à demanda futura, 
+principalmente em casos de escassez hídrica.
 
-A partir dessas análises, espera-se identificar padrões de comportamento da geração em cenários de eventos 
-climatológicos extremos, bem como propor medidas de mitigação de riscos e adaptação do sistema elétrico brasileiro a 
-esses eventos. Além disso, o projeto visa estabelecer uma base de conhecimento para pesquisas futuras na área de
+Os estudos de planejamento energético são realizados por meio de modelos computacionais como o NEWAVE, desenvolvido pelo
+CEPEL e utilizado pelo ONS e EPE, por exemplo. O modelo NEWAVE é um modelo de otimização estocástica que busca minimizar
+os custos de operação do sistema, considerando a incerteza das afluências futuras e a operação de um sistema hidrotérmico. 
+No entanto, modelos como o NEWAVE consideram apenas variáveis locais, como a vazão nas bacias, carga do sistema e dados 
+de usinas, não levando em consideração variáveis climáticas externas que podem impactar a geração de energia elétrica, como os 
+próprios fenômenos de EN e LN.
+
+Sendo assim, o projeto tem como objetivo investigar um possível impacto de variáveis climatológicas, como anomalias e 
+outros índices, na geração de energia elétrica no Brasil, com foco nas fontes hidráulica e térmica. Para tanto, foram 
+empregadas técnicas computacionais para relacionar as séries históricas de geração com as séries de variáveis climáticas, 
+através de modelos lineares, não lineares e neurais pré-treinados. As séries históricas de geração, carga e vazões são 
+disponibilizados pelo ONS, enquanto que as séries históricas de variáveis climatológicas,
+como temperatura da superfície do mar, pressão e precipitação, são consolidadas por instituições de pesquisa como o
+\textit{National Oceanic and Atmospheric Administration} (NOAA) e \textit{European Centre for Medium-Range WeatherForecasts} (ECMWF).
+
+A partir dessa investigação, espera-se poder avaliar o impacto de variáveis climáticas na geração de energia elétrica,
+o que pode contribuir para o planejamento energético do país, especialmente em cenários de eventos climáticos extremos e
+tendências climáticas. Além disso, o projeto visa estabelecer uma base de conhecimento para pesquisas futuras na área de
 planejamento energético e clima, contribuindo para a segurança energética do país.
-
-\section{Estrutura do Trabalho}
-
-O presente trabalho está estruturado em cinco capítulos, sendo:
-\begin{enumerate}
-	\item Introdução, contendo o contexto, motivação, objetivo e estrutura do trabalho;
-	\item Trabalhos Relacionados, que contém uma revisão bibliográfica sobre o tema;
-	\item Metodologia, descrevendo a abordagem computacional adotada para a análise de dados;
-	\item Resultados, que apresenta os resultados obtidos a partir da análise de dados;
-	\item Conclusão e Trabalhos Futuros.
-\end{enumerate}
 
 \chapter{Trabalhos Relacionados}
 Avaliação do Impacto de Secas Severas no Nordeste Brasileiro na Geração de Energia Elétrica Através do Modelo Newave: 

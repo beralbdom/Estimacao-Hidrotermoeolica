@@ -11,21 +11,21 @@
 % LaTeX: abnTeX2
 % ----------------------------------------------------------------------------------------------------------------------
 \usepackage{cmap}                																						% Mapear caracteres especiais no PDF
-\usepackage{lmodern}             																						% Usa a fonte Latin Modern
+\usepackage[scaled = .85]{zi4}
+\usepackage[scaled = .82]{DejaVuSerif}
 \usepackage[T1]{fontenc}         																						% Selecao de codigos de fonte
 \usepackage[utf8]{inputenc}      																						% Codificacao do documento (conversão automática dos acentos)
 \usepackage{lastpage}            																						% Usado pela Ficha catalográfica
 \usepackage{indentfirst}         																						% Indenta o primeiro parágrafo de cada seção
 \usepackage{color}               																						% Controle das cores
 \usepackage{graphicx}            																						% Inclusão de gráficos
+\usepackage{tocloft}
+\usepackage[newfloat]{minted}
 \usepackage{amsfonts}            																						% Símbolos
 \usepackage[none]{hyphenat}      																						% Sem separação de sílabas
 \usepackage{pdfpages}            																						% Acrescentar pdf ficha bibliográfica
+\usepackage{caption}
 \usepackage{titlesec}            																						% Modificar títulos
-\usepackage{algorithm}           																						% Pacote para algoritmos
-\usepackage{algpseudocode}       																						% Pacote para algoritmos
-\usepackage{algorithmicx}
-\usepackage{float}
 \usepackage{svg}                 																						% Pacote para incluir imagens svg
 \usepackage{lipsum}              																						% para geração de dummy text
 \usepackage[brazilian, hyperpageref]{backref}  																			% Paginas com as citações na bibliografia
@@ -33,16 +33,16 @@
 	\setitemize[0]{itemindent=0.4cm, itemsep=0pt}
 	\setenumerate[0]{itemindent=0.5cm, itemsep=0pt}
 \usepackage[alf,
-abnt-emphasize=bf,		 		 																						% destaca o título da obra em negrito
-abnt-url-package=none,			 																						% Utiliza o pacote url
-abnt-repeated-title-omit=yes,	 																						% Retira a string "Repetição de título" nas referências
+abnt-emphasize=bf,		 		 																						      % destaca o título da obra em negrito
+abnt-url-package=none,			 																						    % Utiliza o pacote url
+abnt-repeated-title-omit=yes,	 																						  % Retira a string "Repetição de título" nas referências
 abnt-full-initials=yes,          																						% yes nome por extenso, no apenas iniciais
 abnt-etal-list=3                 																						% abreviar com mais de 3 autores
 ]{abntex2/abntex2cite}           																						% Citações padrão ABNT
 
-\addto\captionsbrazilian{%
-  \renewcommand{\algorithmname}{Algoritmo}%
-}
+% \addto\captionsbrazilian{%
+%   \renewcommand{\algorithmname}{Algoritmo}%
+% }
 
 % \usepackage{draftwatermark}
 % \SetWatermarkText{PRÉVIA}
@@ -51,6 +51,20 @@ abnt-etal-list=3                 																						% abreviar com mais de 3 
 
 % Configurações de aparência do PDF final
 % ----------------------------------------------------------------------------------------------------------------------
+\DeclareFloatingEnvironment[
+    listname={\protect\parbox[t]{\linewidth}{\raggedright Lista de Códigos}},
+    name=Código,
+    placement=tbhp,
+    within=chapter,
+]{codigo}
+
+\captionsetup[codigo]{
+  name=Código,
+  position=above,              % coloca a legenda acima
+  justification=raggedright, % alinha à esquerda
+  singlelinecheck=false
+}
+
 \definecolor{blue}{RGB}{41,5,195}    																					% alterando o aspecto da cor azul
 \titleformat{\chapter}[display]																							% Formatação do título do capítulo
     {\normalfont\huge\bfseries}
@@ -59,20 +73,36 @@ abnt-etal-list=3                 																						% abreviar com mais de 3 
     {}
 \titlespacing*{\chapter}{0pt}{-20pt}{40pt}																				% Espaçamento entre o título do capítulo e o texto
 
-\setlength{\parindent}{1.25cm}																							% Espaçamento entre o título do capítulo e o texto
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont\huge\bfseries\raggedright} % Use \raggedright for left alignment
+  {}                                      % No label for unnumbered chapters
+  {0pt}                                   % Separation (not applicable here)
+  {}                                      % Code before title
+\titlespacing*{name=\chapter,numberless}{0pt}{-20pt}{40pt} % Adjust spacing as for numbered chapters
+
+\setlength{\parindent}{1.25cm}
 \linespread{1.5}																										% Espaçamento entre linhas
 
+\usemintedstyle{custommanni}
+\setminted{
+  frame=lines,
+  framesep=1mm,
+  baselinestretch=1,
+  linenos,
+  breaklines,
+  style=colorful,
+  tabsize=4,
+  numbersep=5pt
+}
+
 \setlength{\afterchapskip}{\baselineskip}																				% Espaçamento entre o título do capítulo e o texto
-% \setlength{\afterchapskip}{\lineskip}
 \setlength{\parskip}{0cm}																								% Espaçamento entre parágrafos
 
 \hangcaption																											% Alinhamento de legendas
 \captionstyle[\raggedright]{}																							% Alinhamento de legendas																						% Alinhamento de legendas
 
-\floatname{algorithm}{Algoritmo}
 \renewcommand{\backref}{}																								% Não gera texto de referência nas citações
 \renewcommand*{\backrefalt}[4]{}																						% Define os textos da citação
-\renewcommand{\listalgorithmname}{Lista de Algoritmos}																	% Nome da lista de algoritmos
 \renewcommand{\listtablename}{Lista de Tabelas}																			% Nome da lista de tabelas
 
 \captionnamefont{\ABNTEXfontereduzida}																					% Fonte das legendas

@@ -53,13 +53,13 @@ torch.set_num_threads(24)
 torch.set_num_interop_threads(24)
 
 # Entrada de dados -----------------------------------------------------------------------------------------------------
-carga = (
-    pd.read_csv(
-        'Exportado/carga_subsist_diario_MWmed.csv', 
-        parse_dates = ['Data'],
-    )
-    .set_index('Data')
-)
+# carga = (
+#     pd.read_csv(
+#         'Exportado/carga_subsist_diario_MWmed.csv', 
+#         parse_dates = ['Data'],
+#     )
+#     .set_index('Data')
+# )
 
 sst = (
     pd.read_csv(
@@ -79,13 +79,13 @@ geracao = (
 )
 
 sst_cols = sst.columns.tolist()
-carga_cols = carga.columns.tolist()
+# carga_cols = carga.columns.tolist()
 tempo = 'Data'
-control_cols = sst_cols + carga_cols
+control_cols = sst_cols
 fontes = ['Hidráulica', 'Eólica', 'Fotovoltaica', 'Térmica', 'Outras']
 subsistemas = ['N', 'NE', 'S', 'SE']
 
-dataset = pd.concat([carga, sst, geracao], axis = 1)
+dataset = pd.concat([sst, geracao], axis = 1)
 dataset = dataset[dataset.index.year <= 2024]
 
 targets = np.zeros((len(fontes)), dtype = object)
@@ -98,7 +98,7 @@ for i, fonte in enumerate(fontes):
 print(f'\nTargets:\n {targets}')
 
 for target in targets:
-    df = dataset[target + sst_cols + carga_cols]
+    df = dataset[target + sst_cols]
     df = df.reset_index()
     print(f'\nX:\n {df}')
 
@@ -157,8 +157,8 @@ for target in targets:
 
     # Important parameters
     learning_rate = 0.000298  # 0.000298364724028334
-    num_epochs = 50  # Ideally, we need more epochs (try offline preferably in a gpu for faster computation)
-    batch_size = 64
+    num_epochs = 200  # Ideally, we need more epochs (try offline preferably in a gpu for faster computation)
+    batch_size = 256
 
     print(f"Using learning rate = {learning_rate}")
     finetune_forecast_args = TrainingArguments(
@@ -170,7 +170,7 @@ for target in targets:
         eval_strategy = "epoch",
         per_device_train_batch_size = batch_size,
         per_device_eval_batch_size = batch_size,
-        gradient_accumulation_steps = 2,
+        # gradient_accumulation_steps = 2,
         dataloader_num_workers = 0,
         report_to = None,
         save_strategy = "epoch",

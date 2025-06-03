@@ -545,7 +545,7 @@
 % lista de tabelas  
 \renewcommand{\cfttablename}{\tablename\space}
 \renewcommand*{\cfttableaftersnum}{\hfill--\hfill}	
- 
+
 % fonte das partes e do capitulo do TOC
 \renewcommand{\tocheadstart}{\ABNTEXchapterfont}
 

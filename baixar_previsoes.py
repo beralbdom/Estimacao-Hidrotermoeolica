@@ -6,6 +6,7 @@ import shutil
 import numpy as np
 import pandas as pd
 import cdsapi
+import xarray as xr
 from sklearn.preprocessing import StandardScaler
 from concurrent.futures import ThreadPoolExecutor
 from alive_progress import alive_bar
@@ -185,7 +186,6 @@ def download_global_CMIP(variables, anos, dataset, request):
             else:
                 print(f"[i] Já existe {arq}")
 
-
 def extract_regions_from_global(regioes, variables, anos, dataset, product_type):
     """
     Usa netCDF4 para ler cada .nc global, extrair sub-regiões e salvar um CSV
@@ -225,6 +225,7 @@ def extract_regions_from_global(regioes, variables, anos, dataset, product_type)
             data3d = nc.variables[var_nc][:].squeeze()    # (nt, nlat, nlon)
             lats   = nc.variables['latitude'][:].squeeze()
             raw_lons = nc.variables['longitude'][:].squeeze()
+            # converte 0–360 → –180–180
             lons = (raw_lons + 180) % 360 - 180
 
             for regiao, area in regioes.items():
@@ -253,11 +254,12 @@ def extract_regions_from_global(regioes, variables, anos, dataset, product_type)
 
 
 variaveis = [
-    'sea_surface_temperature',
-    # '2m_temperature',
-    'total_precipitation',
+        # 'sea_surface_temperature',
+        # '2m_temperature',
+        'total_precipitation',
+        # ...
 ]
-anos = np.arange(2000, 2025, 1)
+anos = np.arange(2000, 2026, 1)
 request_base = {
     'product_type': 'reanalysis',
     'daily_statistic': 'daily_mean',
