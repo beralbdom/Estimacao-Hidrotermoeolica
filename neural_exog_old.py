@@ -36,9 +36,9 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 # torch.Tensor.clamp_min = lambda self, v: self.clamp(min=v.item() if isinstance(v, torch.Tensor) else v)
 # _dml = torch_directml.device()
 
-TTM_MODEL_REVISION = '180-60-ft-l1-r2.1'
-CONTEXT            = 180
-PREDICTION         = 60
+TTM_MODEL_REVISION = '512-96-ft-r2.1'
+CONTEXT            = 512
+PREDICTION         = 96
 OUT_DIR            = 'Exportado/TTM'
 DEVICE             = 'cpu'
 # DEVICE             = _dml
@@ -67,7 +67,6 @@ sst = (
         parse_dates = ['Data'],
     )
     .set_index('Data')
-    .resample('W').mean()
 )
 
 geracao = (
@@ -77,12 +76,10 @@ geracao = (
     )
     .set_index('Data')
     .fillna(0)
-    .resample('W').mean()
 )
 
 sst_cols = sst.columns.tolist()
 # carga_cols = carga.columns.tolist()
-freq = 'W'
 tempo = 'Data'
 control_cols = sst_cols
 fontes = ['Hidráulica', 'Eólica', 'Fotovoltaica', 'Térmica', 'Outras']
@@ -105,12 +102,8 @@ for target in targets:
     df = df.reset_index()
     print(f'\nX:\n {df}')
 
-    split_config = {
-        'train': [0, 0.6],      # 0% to 60%
-        'valid': [0.6, 0.8],    # 60% to 80%  
-        'test': [0.8, 1.0]      # 80% to 100%
-    }
-    
+    split_config = {'train': .5, 'test': .5}
+
     df_train, df_valid, df_test = prepare_data_splits(
         df,
         context_length = CONTEXT, 
@@ -126,30 +119,20 @@ for target in targets:
         prediction_length = PREDICTION,
         scaling = True,
         scaler_type = 'standard',
-        freq = freq,
     )
-
-    print(f"Target columns: {target}")
-    print(f"Control columns: {control_cols}")
-    print(f"Dataset shape: {df.shape}")
-    print(f"Number of NaN values: {df.isnull().sum().sum()}")
-    print(f"TSP num_input_channels: {tsp.num_input_channels}")
-    print(f"TSP prediction_channel_indices: {tsp.prediction_channel_indices}")
-    print(f"TSP exogenous_channel_indices: {tsp.exogenous_channel_indices}")
 
     finetune_model = TinyTimeMixerForPrediction.from_pretrained(
         'ibm-granite/granite-timeseries-ttm-r2',
-        # 'Exportado/TTM/output/finetuned',
         revision = TTM_MODEL_REVISION,
         num_input_channels = tsp.num_input_channels,
         decoder_mode = 'mix_channel',
         prediction_channel_indices = tsp.prediction_channel_indices,
         exogenous_channel_indices = tsp.exogenous_channel_indices,
-        # fcm_context_length = 180,
-        # fcm_use_mixer = True,
-        # fcm_mix_layers = 1,
-        # enable_forecast_channel_mixing = False,
-        # fcm_prepend_past = True,
+        fcm_context_length = 60,
+        fcm_use_mixer = True,
+        fcm_mix_layers = 2,
+        enable_forecast_channel_mixing = True,
+        fcm_prepend_past = True,
     )
 
     print(
@@ -158,60 +141,42 @@ for target in targets:
     )
 
     # Freeze the backbone of the model
-    # for param in finetune_model.backbone.parameters():
-    #     param.requires_grad = False
-
-    # for name, param in finetune_model.backbone.named_parameters():
-    #     if 'layer.11' in name or 'layer.10' in name:  # Unfreeze last 2 layers
-    #         param.requires_grad = True
-    #     else:
-    #         param.requires_grad = False
+    for param in finetune_model.backbone.parameters():
+        param.requires_grad = False
 
     # Count params
-    print("Number of params after freezing the backbone", count_parameters(finetune_model))
+    print(
+        "Number of params after freezing the backbone",
+        count_parameters(finetune_model),
+    )
 
     train_dataset, valid_dataset, test_dataset = get_datasets(
         tsp, df, split_config, use_frequency_token = finetune_model.config.resolution_prefix_tuning
     )
+    print(f"Data lengths: train = {len(train_dataset)}, val = {len(valid_dataset)}, test = {len(test_dataset)}")
 
     # Important parameters
-    learning_rate = 2e-5
-    num_epochs = 100
-    batch_size = 32
-
-    print(f"Data lengths: train = {len(train_dataset)}, val = {len(valid_dataset)}, test = {len(test_dataset)}")
-    # Add these crucial debugging lines
-    print(f"Total dataset length: {len(df)}")
-    print(f"Steps per epoch: {math.ceil(len(train_dataset) / batch_size)}")
-    print(f"Target columns: {target}")
-    print(f"Number of SST control columns: {len(control_cols)}")
-    # Check if we have sufficient data
-    if len(train_dataset) < 50:
-        print("WARNING: Very few training samples - consider reducing context length!")
-
+    learning_rate = 0.000298  # 0.000298364724028334
+    num_epochs = 200  # Ideally, we need more epochs (try offline preferably in a gpu for faster computation)
+    batch_size = 256
 
     print(f"Using learning rate = {learning_rate}")
     finetune_forecast_args = TrainingArguments(
-        output_dir = f'{OUT_DIR}/output',
+        output_dir = os.path.join(OUT_DIR, "output"),
         overwrite_output_dir = True,
         learning_rate = learning_rate,
-        lr_scheduler_type = 'cosine',
-        warmup_steps = 10,
         num_train_epochs = num_epochs,
         do_eval = True,
-        eval_strategy = 'steps',
-        eval_steps = 25,
+        eval_strategy = "epoch",
         per_device_train_batch_size = batch_size,
         per_device_eval_batch_size = batch_size,
         # gradient_accumulation_steps = 2,
         dataloader_num_workers = 0,
         report_to = None,
-        save_strategy = 'steps',
-        save_steps = 25,  # Save more frequently
-        logging_steps = 1,  # Log more frequently
-        save_total_limit = 5,  # Keep more checkpoints
-        logging_strategy = 'epoch',
-        logging_dir = f'{OUT_DIR}/logs',  # Make sure to specify a logging directory
+        save_strategy = "epoch",
+        logging_strategy = "epoch",
+        save_total_limit = 1,
+        logging_dir = os.path.join(OUT_DIR, "logs"),  # Make sure to specify a logging directory
         load_best_model_at_end = True,                # Load the best model when training ends
         metric_for_best_model = "eval_loss",          # Metric to monitor for early stopping
         greater_is_better = False,
@@ -220,20 +185,19 @@ for target in targets:
 
     # Create the early stopping callback
     early_stopping_callback = EarlyStoppingCallback(
-        early_stopping_patience = 30,
-        early_stopping_threshold = .0005,
+        early_stopping_patience = 10,  # Number of epochs with no improvement after which to stop
+        early_stopping_threshold = 0.0,  # Minimum improvement required to consider as improvement
     )
     tracking_callback = TrackingCallback()
 
     # Optimizer and scheduler
     optimizer = AdamW(finetune_model.parameters(), lr=learning_rate)
-
-    # scheduler = OneCycleLR(
-    #     optimizer,
-    #     learning_rate,
-    #     epochs = num_epochs,
-    #     steps_per_epoch = math.ceil(len(train_dataset) / (batch_size)),
-    # )
+    scheduler = OneCycleLR(
+        optimizer,
+        learning_rate,
+        epochs = num_epochs,
+        steps_per_epoch = math.ceil(len(train_dataset) / (batch_size)),
+    )
 
     finetune_forecast_trainer = Trainer(
         model = finetune_model,
@@ -241,7 +205,7 @@ for target in targets:
         train_dataset = train_dataset,
         eval_dataset = valid_dataset,
         callbacks = [early_stopping_callback, tracking_callback],
-        optimizers = (optimizer, None),
+        optimizers = (optimizer, scheduler),
     )
 
     # Fine tune
@@ -251,9 +215,8 @@ for target in targets:
         finetune_model,
         device = DEVICE,
         feature_extractor = tsp,
-        batch_size = 64,
+        batch_size = 512,
         explode_forecasts = True,
-        freq = freq,
     )
 
     # Make a forecast on the target column given the input data.
@@ -269,10 +232,6 @@ for target in targets:
     df_train.set_index('Data', inplace = True)
     df_train = df_train.resample('ME').mean()
     df_train.index = df_train.index.to_period('M').to_timestamp()
-
-    df_valid.set_index('Data', inplace = True)
-    df_valid = df_valid.resample('ME').mean()
-    df_valid.index = df_valid.index.to_period('M').to_timestamp()
 
     df_test.set_index('Data', inplace = True)
     df_test = df_test.resample('ME').mean()
@@ -293,7 +252,6 @@ for target in targets:
         erro_r2 = r2_score(y_true[col], y_pred[col])
 
         axs[i].plot(df_train.index, df_train[col], label = 'Treino', c = '#000000')
-        axs[i].plot(df_valid.index, df_valid[col], label = 'Validação', c = '#000000', alpha = .5)
         axs[i].plot(df_test.index, df_test[col], label = 'Teste', c = '#000000', alpha = .33)
         axs[i].plot(geracao_men.index, geracao_men[col], label = 'Observado', c = "#000000", alpha = .33, ls = '--')
         axs[i].plot(pred_men.index, pred_men[col], label = 'Previsão', c = "#4A7AFF", lw = .8)
@@ -312,5 +270,5 @@ for target in targets:
     axs[0].legend(loc = 'upper center', bbox_to_anchor = (0.5, 1.15), ncol = 4, frameon = False)
     axs[-1].set_xlabel('Série temporal')
     plt.tight_layout()
-    plt.savefig(f'Graficos/Neural/{target[0]}_finetune_{freq}{CONTEXT}.png')
-    # plt.show()
+    plt.savefig(f'Graficos/Neural/{target[0]}_finetune_{CONTEXT}.png')
+    plt.show()

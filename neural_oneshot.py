@@ -32,9 +32,9 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 # _dml = torch_directml.device()
 # print(Using DirectML device:, _dml)
 
-TTM_MODEL_REVISION = '512-96-ft-r2.1'
-CONTEXT            = 512
-PREDICTION         = 96
+TTM_MODEL_REVISION = '180-60-ft-l1-r2.1'
+CONTEXT            = 180
+PREDICTION         = 60
 OUT_DIR            = 'Exportado/TTM'
 DEVICE             = 'cpu'
 # DEVICE             = _dml
@@ -53,7 +53,7 @@ geracao = (
     )
     .set_index('Data')
     .fillna(0)
-    .resample('W').mean()
+    # .resample('D').mean()
 )
 
 freq = 'D'
@@ -77,7 +77,11 @@ for target in targets:
     # print(f'\nX:\n {df}')
 
     # Zero shot
-    split_config = {'train': .5, 'test': .5}
+    split_config = {
+        'train': [0, 0.6],      # 0% to 60%
+        'valid': [0.6, 0.8],    # 60% to 80%  
+        'test': [0.8, 1.0]      # 80% to 100%
+    }
 
     df_train, df_valid, df_test = prepare_data_splits(
         df,
@@ -98,7 +102,7 @@ for target in targets:
     )
 
     zeroshot_model = TinyTimeMixerForPrediction.from_pretrained(
-        'Exportado\TTM\output\checkpoint-992',
+        'ibm-granite/granite-timeseries-ttm-r2',
         revision = TTM_MODEL_REVISION,
         num_input_channels = len(target),
     )
@@ -167,5 +171,5 @@ for target in targets:
     axs[0].legend(loc = 'upper center', bbox_to_anchor = (0.5, 1.15), ncol = 4, frameon = False)
     axs[-1].set_xlabel('Série temporal')
     plt.tight_layout()
-    # plt.savefig(f'Graficos/Neural/{target[0]}_zeroshot_{freq}{CONTEXT}.png')
+    plt.savefig(f'Graficos/Neural/{target[0]}_zeroshot_{freq}{CONTEXT}.png')
     plt.show()
