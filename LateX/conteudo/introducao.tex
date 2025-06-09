@@ -50,7 +50,7 @@ a matriz segue bastante dependente da fonte hidráulica e, de maneira complement
 hidráulica, por sua vez, torna o sistema elétrico vulnerável a eventos climáticos extremos ocasionados pelas mudanças
 climáticas. Por exemplo, em 2021, verificou-se um acionamento recorde de usinas térmicas e uma geração hidráulica 
 percentual mínima. Isso se deve em razão da forte crise hídrica enfrentada pelo Brasil em 2021, a pior dos últimos 91 
-anos. \cite{Soares2023}
+até então. \cite{Soares2023}
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Curva de carga do SIN em base mensal}
@@ -84,7 +84,7 @@ Fenômenos como o EN e LN são caracterizados por anomalias na temperatura da su
 Equatorial. Essas anomalias são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que classifica os 
 eventos em três categorias: EN, LN e neutro. A Figura \ref{fig:oni} mostra a classificação dos eventos de EN e LN 
 ocorridos entre 2000 e 2024, sendo que a escala de cores indica a intensidade do evento. Ao analisar a geração 
-hidráulica bruta no mesmo período, observa-se que a ocorrência de eventos de EN e LN está associada a variações na geração.
+hidráulica bruta no mesmo período, observa-se que a ocorrência de eventos de EN e LN pode estar associada a variações na geração.
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Índice ONI (Oceanic Niño Index)}
@@ -93,7 +93,6 @@ hidráulica bruta no mesmo período, observa-se que a ocorrência de eventos de 
 	{\fonte{o autor.}}
 \end{figure}
 
-\section{Objetivo}
 Fundamentalmente, em sistemas interligados cuja fonte hidráulica constitui a base da matriz elétrica, é essencial, 
 para um planejamento energético eficiente, otimizar o sistema de modo a considerar a operação de todas as usinas, 
 considerando a incerteza associada às afluências futuras. Dessa forma, estima-se o valor da geração hidrelétrica que 
@@ -101,30 +100,104 @@ poderia substituir a geração térmica a curto ou longo prazo, de modo a minimi
 risco de utilizar reservatórios de maneira desnecessária, garantindo assim o atendimento à demanda futura, 
 principalmente em casos de escassez hídrica.
 
-Os estudos de planejamento energético são realizados por meio de modelos computacionais como o NEWAVE, desenvolvido pelo
-CEPEL e utilizado pelo ONS e EPE, por exemplo. O modelo NEWAVE é um modelo de otimização estocástica que busca minimizar
-os custos de operação do sistema, considerando a incerteza das afluências futuras e a operação de um sistema hidrotérmico. 
-No entanto, modelos como o NEWAVE consideram apenas variáveis locais, como a vazão nas bacias, carga do sistema e dados 
-de usinas, não levando em consideração variáveis climáticas externas que podem impactar a geração de energia elétrica, como os 
-próprios fenômenos de EN e LN.
+Os estudos de planejamento energético são realizados por meio de modelos computacionais como o NEWAVE, DECOMP e DESSEM, 
+que consdieram diferentes horizontes temporais: longo, médio e curto prazos, respectivamente. Também há outras soluções 
+disponíveis, como o PSR SDDP, que engloba todos os horizontes temporais. Considerando o escopo deste trabalho, o modelo 
+NEWAVE será brevemente apresentado a seguir.
 
-Sendo assim, o projeto tem como objetivo investigar um possível impacto de variáveis climatológicas, como anomalias e 
-outros índices, na geração de energia elétrica no Brasil, com foco nas fontes hidráulica e térmica. Para tanto, foram 
-empregadas técnicas computacionais para relacionar as séries históricas de geração com as séries de variáveis climáticas, 
-através de modelos lineares, não lineares e neurais pré-treinados. As séries históricas de geração, carga e vazões são 
-disponibilizados pelo ONS, enquanto que as séries históricas de variáveis climatológicas,
-como temperatura da superfície do mar, pressão e precipitação, são consolidadas por instituições de pesquisa como o
-\textit{National Oceanic and Atmospheric Administration} (NOAA) e \textit{European Centre for Medium-Range WeatherForecasts} (ECMWF).
+\subsection{O modelo NEWAVE}
+\label{sec:newave}
+
+Desenvolvido e mantido pelo Centro de Pesquisas de Energia Elétrica (CEPEL) e amplamente utilizado pelo setor elétrico 
+brasileiro para definição de estratégias e tomada de decisão, o NEWAVE é um modelo de otimização que busca minimizar os 
+custos de operação do sistema, considerando a incerteza das afluências futuras e a operação de um sistema 
+hidro-térmico-eólico interligado. O modelo é utilizado para estudos como:
+\begin{itemize}
+	\item Elaboração do Plano Decenal de Expansão de Energia (PDE), pela EPE;
+	\item Elaboração do Programa Mensal de Operação (PMO) e Plano de Operação Energética (PEN), pelo ONS;
+	\item Formação de preços, como no cálculo do Preço de Liquidação das Diferenças (PLD) pelo CCEE;
+	\item Cálculo de Garantia Física e da Energia Assegurada para empreendimentos de geração participantes nos leilões de energia elétrica, pela EPE;
+	\item Elaboração de diretrizes para os leilões de energia, pela EPE.
+\end{itemize}
+
+Em resumo, o modelo emprega a Programação Dinâmica Dual Estocástica (PDDE), uma técnica de otimização que permite lidar 
+com as incertezas ligadas às afluências futuras sem que o modelo se torne computacionalmente impraticável, considerando 
+múltiplos reservatórios, interconexões e o horizonte temporal de médio e longo prazos.
+
+O NEWAVE modela o sistema de geração hidrelétrico em Reservatórios Equivalentes de Energia (REE), que são grupos de
+usinas associadas a um subsistema ou submercado de energia. Cada subsistema pode conter mais de um REE, possibilitando
+diferenciar bacias hidrográficas com regimes distintos, ainda que pertençam a um mesmo subsistema. Além disso, cada REE
+é definido por um conjunto de parâmetros que são calculados a partir das características indivuduais de cada usina. Nas
+versões mais recentes do modelo, também é possível considerar todas as usinas indivudalmente ou operar de maneira
+híbrtida, ou seja, considerando alguns REEs e outras usinas individualmente.
+
+As usinas termelétricas são representadas no modelo através de classes térmicas. Cada classe agrupa usinas com custos 
+semelhantes e está associada a um subsistema. Cada classe também é definida por um conjunto de parâmetros calculados
+a partir das características individuais de cada usina.
+
+Nas versões mais recentes do modelo, a fonte eólica também é modelada. De maneira similar, os parques eólicos são agrupados
+em Parques Eólicos Equivalentes (PEE). O agrupamento é feito a aprtir de dados de cadastro de cada prque eólico, estado,
+submercado, função de produção (curva relacionando a velocidade do vento com a potência gerada), dados sobre torres de
+medição e séries históricas de velocidade do vento.
+
+O modelo requer um conjunto de dados de entrada que inclui as características das usinas, dados dos subsistemas, demanda,
+séries históricas de vazões e ventos, cronogramas de expansão, restriçòes operativas, entre outros. Observa-se que todos
+os dados de entrada são locais e, portanto, o modelo não considera variáveis externas, como fenomênos climáticos como o 
+EN e LN, que podem impactar a geração de energia elétrica. No entanto, vale ressaltar que as últimas versões do modelo
+apresentam campos previstos para a entrada de dados do ENSO, mas estão marcados como "não implementados".
+
+Vale destacar que essas variáveis externas podem ser utilizadas para elaborar as séries históricas de vazões e velocidade
+de ventos utilizadas como dados de entrada. Dessa forma, entende-se que o modelo não considera diretamente o impacto 
+dessas variáveis.
+
+\section{Objetivo}
+Sendo assim, o projeto tem como objetivo investigar um possível impacto de variáveis climatológicas externas na geração 
+de energia elétrica no Brasil, com foco nas fontes hidráulica, térmica e eólica. 
+
+Para tanto, foram empregadas técnicas computacionais para relacionar as séries históricas de geração com as séries de variáveis 
+climáticas, através de modelos lineares, não lineares e neurais. Além disso, foram utilizadas séries históricas de geração, 
+carga e vazões disponibilizados pelo ONS, bem como também séries históricas de variáveis climatológicas, como temperatura 
+da superfície do mar, obtidas a partir de dados do ERA5, um projeto de reanálise atmosférica do \textit{European Centre for Medium-Range Weather Forecasts} (ECMWF).
 
 A partir dessa investigação, espera-se poder avaliar o impacto de variáveis climáticas na geração de energia elétrica,
 o que pode contribuir para o planejamento energético do país, especialmente em cenários de eventos climáticos extremos e
-tendências climáticas. Além disso, o projeto visa estabelecer uma base de conhecimento para pesquisas futuras na área de
-planejamento energético e clima, contribuindo para a segurança energética do país.
+tendências climáticas.
 
-\chapter{Trabalhos Relacionados}
-Avaliação do Impacto de Secas Severas no Nordeste Brasileiro na Geração de Energia Elétrica Através do Modelo Newave: 
-Projeção das Energias Afluentes e Armazenadas \cite{Vilar2020}
+É importante salientar que outras variáveis externas poderiam ser incorporadas ao estudo, ou até mesmo uma combinação entre
+ variáveis locais e externas. Também poderiam ser considerados indicadores econômicos e outros dados relevantes. 
+No entanto, este trabalho considera apenas as variáveis relacionadas ao fenômeno EN e LN, uma vez que estudos indicam
+uma alta correlação entre esses fenômenos e o regime de chuvas no Brasil \cite{de2012influencia, Andreoli2016}, sendo a 
+incorporação de outras variáveis reservada para trabalhos futuros.
 
-{https://files.abrhidro.org.br/Eventos/Trabalhos/60/PAP023274.pdf}
+\section{Estrutura do Trabalho}
+No capítulo 1, é feita uma breve introdução apresentando o contexto, motivação, objetivo e a estrutura do trabalho. Uma
+breve análise da matriz elétrica é apresentada, com foco no histórico recente e no crescimento da geração eólica. Também
+são apresentadas as curvas de carga do SIN e de geração hidráulica. Uma breve contextualização acerca dos fenômenos do
+ENSO e a importância do modelo NEWAVE para o planejamento energético do país são apresentadas. Por fim, é apresentado
+o objetivo do trabalho e a estrutura do documento.
 
-{https://pantheon.ufrj.br/bitstream/11422/21709/1/887353.pdf}
+No capítulo 2, a fundamentação teórica necessária para a compreensão do projeto é apresentada. São abordados os fatores
+que fazem com que os fenômenos do EN e LN impactem o regime de chuvas no Brasil e a sua relação com a geração de 
+energia elétrica. Também será feita uma breve introdução ao modelo NEWAVE, que é amplamente utilizado pelo setor elétrico
+brasileiro para planejamento energético. Por fim, serão apresentados os modelos de previsão de séries temporais 
+implementados, com foco no modelo neural, uma implementação baseada na arquitetura \textit{TSMixer} desenvolvida pela Google.
+
+O capítulo 3 apresenta a metodologia utilizada para a realização do projeto. Serão apresentados os conjuntos de dados
+considerados e suas respectivas etapas de obtenção, tratamento e análise. Além disso, será apresentada a metodologia
+utilizada para implementação dos modelos de previsão, incluindo seus parâmetros e métricas de avaliação. \textit{Snippets}
+de códigos serão apresentados para facilitar a compreensão.
+
+O capítulo 4 apresenta os resultados obtidos a partir da implementação de cada modelo de previsão. Inicia-se com os resultados
+do modelo linear, seguido pelo modelo não linear e, por fim, o modelo neural. Para cada modelo, serão apresentados os
+resultados de previsão, métricas de avaliação e uma análise crítica dos resultados obtidos.
+
+Por fim, no capítulo 5, são apresentadas as considerações finais do trabalho, incluindo uma discussão final dos resultados
+obtidos, limitações observadas e sugestões para trabalhos futuros.
+
+% \chapter{Trabalhos Relacionados}
+% Avaliação do Impacto de Secas Severas no Nordeste Brasileiro na Geração de Energia Elétrica Através do Modelo Newave: 
+% Projeção das Energias Afluentes e Armazenadas \cite{Vilar2020}
+
+% {https://files.abrhidro.org.br/Eventos/Trabalhos/60/PAP023274.pdf}
+
+% {https://pantheon.ufrj.br/bitstream/11422/21709/1/887353.pdf}

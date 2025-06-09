@@ -1,16 +1,16 @@
 \chapter{Metodologia}
 \section{Abordagem computacional}
 
-Considerando o escopo do projeto e a grande volume de dados a serem processados, não há outra abordagem viável senão
+Considerando o escopo do projeto e o grande volume de dados a serem processados, não há outra abordagem viável senão
 a utilização de técnicas computacionais. Sendo assim, optou-se por desenvolver o projeto em Python, devido à 
 familiaridade do autor com a linguagem e a vasta gama de bibliotecas disponíveis para manipulação de séries históricas, 
 análise estatística e aprendizado de máquina. 
 
 Como o computador utilizado possui uma placa de vídeo da AMD e o projeto foi desenvolvido em Windows, não foi possível 
-realizar o \textit{offload} do processamento para a GPU, como seria possível com placas NVIDIA nativamente com a 
-biblioteca \textit{torch}. Para isso, seria necessário utilizar Linux, em que há suporte da biblioteca para 
+realizar o \textit{offload} do processamento para a \textit{Graphics Processing Unit} (GPU), como seria possível com placas 
+de vídeo NVIDIA nativamente com a biblioteca \textit{torch}. Para isso, seria necessário utilizar Linux, em que há suporte da biblioteca para 
 a plataforma \textit{Radeon Open Compute} (ROCm). Sendo assim, as etapas do projeto empregando modelos neurais foram 
-realizadas utilizando apenas o processador. O sistema utilizado possui um processador AMD Ryzen 5900X e 32 GB de memória
+processadas apenas no CPU. O sistema utilizado possui um processador AMD Ryzen 5900X e 32 GB de memória
 RAM. Todo o processamento intensivo foi realizado em paralelo, utilizando todas as 24 \textit{threads} disponíveis.
 
 \begin{table}[htb]
