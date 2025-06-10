@@ -77,14 +77,15 @@ outro lado, nos meses de verão, a geração atinge seus maiores valores.
 \end{figure}
 
 Esse comportamento é natural e esperado, uma vez que a geração hidráulica é diretamente influenciada pelas condições
-que afetam a vazão dos rios. No entanto, a ocorrência de eventos climatológicos como o \textit{El-Niño} (EN) e 
-\textit{La-Niña} (LN) pode favorecer condições que impactam diretamente no potencial de geração hidráulica. \cite{de2012influencia}
+que afetam a vazão dos rios. No entanto, a ocorrência de eventos climatológicos como o El Niño-Oscilação Sul (ENSO) pode
+favorecer condições que impactam diretamente no potencial de geração hidráulica. \cite{de2012influencia}
 
-Fenômenos como o EN e LN são caracterizados por anomalias na temperatura da superfície do mar no Oceano Pacífico
+Fenômenos como o ENSO são caracterizados por anomalias na temperatura da superfície do mar no Oceano Pacífico
 Equatorial. Essas anomalias são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que classifica os 
-eventos em três categorias: EN, LN e neutro. A Figura \ref{fig:oni} mostra a classificação dos eventos de EN e LN 
-ocorridos entre 2000 e 2024, sendo que a escala de cores indica a intensidade do evento. Ao analisar a geração 
-hidráulica bruta no mesmo período, observa-se que a ocorrência de eventos de EN e LN pode estar associada a variações na geração.
+eventos em três categorias: \textit{El-Niño} (EN), \textit{La-Niña} (LN) e neutro. A Figura \ref{fig:oni} mostra a 
+classificação dos eventos de EN e LN ocorridos entre 2000 e 2024, sendo que a escala de cores indica a intensidade do 
+evento. Ao analisar a geração hidráulica bruta no mesmo período, observa-se que a ocorrência de eventos de EN e LN 
+pode estar associada a variações na geração.
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Índice ONI (Oceanic Niño Index)}
@@ -103,52 +104,12 @@ principalmente em casos de escassez hídrica.
 Os estudos de planejamento energético são realizados por meio de modelos computacionais como o NEWAVE, DECOMP e DESSEM, 
 que consdieram diferentes horizontes temporais: longo, médio e curto prazos, respectivamente. Também há outras soluções 
 disponíveis, como o PSR SDDP, que engloba todos os horizontes temporais. Considerando o escopo deste trabalho, o modelo 
-NEWAVE será brevemente apresentado a seguir.
+NEWAVE será brevemente apresentado no capítulo seguinte.
 
-\subsection{O modelo NEWAVE}
-\label{sec:newave}
-
-Desenvolvido e mantido pelo Centro de Pesquisas de Energia Elétrica (CEPEL) e amplamente utilizado pelo setor elétrico 
-brasileiro para definição de estratégias e tomada de decisão, o NEWAVE é um modelo de otimização que busca minimizar os 
-custos de operação do sistema, considerando a incerteza das afluências futuras e a operação de um sistema 
-hidro-térmico-eólico interligado. O modelo é utilizado para estudos como:
-\begin{itemize}
-	\item Elaboração do Plano Decenal de Expansão de Energia (PDE), pela EPE;
-	\item Elaboração do Programa Mensal de Operação (PMO) e Plano de Operação Energética (PEN), pelo ONS;
-	\item Formação de preços, como no cálculo do Preço de Liquidação das Diferenças (PLD) pelo CCEE;
-	\item Cálculo de Garantia Física e da Energia Assegurada para empreendimentos de geração participantes nos leilões de energia elétrica, pela EPE;
-	\item Elaboração de diretrizes para os leilões de energia, pela EPE.
-\end{itemize}
-
-Em resumo, o modelo emprega a Programação Dinâmica Dual Estocástica (PDDE), uma técnica de otimização que permite lidar 
-com as incertezas ligadas às afluências futuras sem que o modelo se torne computacionalmente impraticável, considerando 
-múltiplos reservatórios, interconexões e o horizonte temporal de médio e longo prazos.
-
-O NEWAVE modela o sistema de geração hidrelétrico em Reservatórios Equivalentes de Energia (REE), que são grupos de
-usinas associadas a um subsistema ou submercado de energia. Cada subsistema pode conter mais de um REE, possibilitando
-diferenciar bacias hidrográficas com regimes distintos, ainda que pertençam a um mesmo subsistema. Além disso, cada REE
-é definido por um conjunto de parâmetros que são calculados a partir das características indivuduais de cada usina. Nas
-versões mais recentes do modelo, também é possível considerar todas as usinas indivudalmente ou operar de maneira
-híbrtida, ou seja, considerando alguns REEs e outras usinas individualmente.
-
-As usinas termelétricas são representadas no modelo através de classes térmicas. Cada classe agrupa usinas com custos 
-semelhantes e está associada a um subsistema. Cada classe também é definida por um conjunto de parâmetros calculados
-a partir das características individuais de cada usina.
-
-Nas versões mais recentes do modelo, a fonte eólica também é modelada. De maneira similar, os parques eólicos são agrupados
-em Parques Eólicos Equivalentes (PEE). O agrupamento é feito a aprtir de dados de cadastro de cada prque eólico, estado,
-submercado, função de produção (curva relacionando a velocidade do vento com a potência gerada), dados sobre torres de
-medição e séries históricas de velocidade do vento.
-
-O modelo requer um conjunto de dados de entrada que inclui as características das usinas, dados dos subsistemas, demanda,
-séries históricas de vazões e ventos, cronogramas de expansão, restriçòes operativas, entre outros. Observa-se que todos
-os dados de entrada são locais e, portanto, o modelo não considera variáveis externas, como fenomênos climáticos como o 
-EN e LN, que podem impactar a geração de energia elétrica. No entanto, vale ressaltar que as últimas versões do modelo
-apresentam campos previstos para a entrada de dados do ENSO, mas estão marcados como "não implementados".
-
-Vale destacar que essas variáveis externas podem ser utilizadas para elaborar as séries históricas de vazões e velocidade
-de ventos utilizadas como dados de entrada. Dessa forma, entende-se que o modelo não considera diretamente o impacto 
-dessas variáveis.
+Embora esses modelos sejam amplamente utilizados pelo setor elétrico brasileiro, sendo consolidados como ferramentas
+confiáveis e essenciais para o planejamento energético, eles não consideram variáveis externas, como fenômenos climáticos
+como o EN e LN, que podem impactar a geração de energia elétrica. Esses modelos são baseados em dados históricos de
+vazões e ventos, que são obtidos a partir de medições locais, além de dados individuais de cada usina.
 
 \section{Objetivo}
 Sendo assim, o projeto tem como objetivo investigar um possível impacto de variáveis climatológicas externas na geração 
@@ -159,7 +120,7 @@ climáticas, através de modelos lineares, não lineares e neurais. Além disso,
 carga e vazões disponibilizados pelo ONS, bem como também séries históricas de variáveis climatológicas, como temperatura 
 da superfície do mar, obtidas a partir de dados do ERA5, um projeto de reanálise atmosférica do \textit{European Centre for Medium-Range Weather Forecasts} (ECMWF).
 
-A partir dessa investigação, espera-se poder avaliar o impacto de variáveis climáticas na geração de energia elétrica,
+A partir dessa investigação, espera-se poder avaliar o impacto dessas variáveis na geração de energia elétrica,
 o que pode contribuir para o planejamento energético do país, especialmente em cenários de eventos climáticos extremos e
 tendências climáticas.
 

@@ -6,6 +6,7 @@ import numpy as np
 from matplotlib import rc, pyplot as plt, dates as mdates, patches as mpatches
 from matplotlib.colors import ListedColormap
 from sklearn.preprocessing import StandardScaler
+import matplotlib.patches as patches
 
 # Configurações de plotagem
 rc('font', family = 'serif', size = 8)                                                                                  # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.rc.html
@@ -14,6 +15,86 @@ rc('axes', axisbelow = True, grid = True)
 rc('lines', linewidth = 1.33, markersize = 1.5)
 rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
+regioes = {                                                                                                             # [North, West, South, East]
+    'NIN 1.2': [0, -90, -10, -80],
+    'NIN 3':   [5, -150, -5, -90],
+    'NIN 3.4': [5, -170, -5, -120],
+    'NIN 4': [5, 160, -5, 210],  # Região unificada que cruza a linha de data internacional
+}
+
+# Criar um mapa global
+fig, ax = plt.subplots(figsize=(6, 3), subplot_kw={'projection': None})
+
+# Carregar dados geográficos do mundo
+world = gpd.read_file('Arquivos/ne_110m_admin_0_countries.shp')
+world.plot(ax=ax, color='lightgray', edgecolor='black', linewidth=0.5)
+
+# Definir cores para cada região ENSO
+cores_regioes = {
+    'NIN 1.2': "#FF5656",  # Vermelho claro
+    'NIN 3': "#FFCC24",    # Verde água
+    'NIN 4': "#2D9929",    # Verde claro
+    'NIN 3.4': "#46A4C9",  # Azul claro
+}
+
+# Plotar as regiões ENSO como retângulos
+handles = []
+labels = []
+
+for nome_regiao, coords in regioes.items():
+    north, west, south, east = coords
+    
+    # Tratar a região NIN 4 que cruza a linha de data internacional
+    if nome_regiao == 'NIN 4':
+        # Primeira parte: de 160°E a 180°E
+        rect1 = patches.Rectangle((160, south), 20, north - south,
+                                linewidth=0, edgecolor='black', 
+                                facecolor=cores_regioes[nome_regiao], alpha=0.7)
+        ax.add_patch(rect1)
+        
+        # Segunda parte: de -180°W a -150°W
+        rect2 = patches.Rectangle((-180, south), 30, north - south,
+                                linewidth=0, edgecolor='black', 
+                                facecolor=cores_regioes[nome_regiao], alpha=0.7)
+        ax.add_patch(rect2)
+        
+    elif nome_regiao == 'NIN 3.4':
+        # Região NIN 3.4
+        rect = patches.Rectangle((west, south), east - west, north - south,
+                               linewidth=1, edgecolor='black', linestyle='--',
+                               facecolor='none', alpha=0.7)
+        ax.add_patch(rect)
+        
+    else:
+        rect = patches.Rectangle((west, south), east - west, north - south,
+                               linewidth=0, edgecolor='black', 
+                               facecolor=cores_regioes[nome_regiao], alpha=0.7)
+        ax.add_patch(rect)
+        
+    # Handle para legenda
+    if nome_regiao == 'NIN 3.4':
+        handles.append(patches.Patch(facecolor='none', 
+                                    edgecolor='black', linewidth=1, linestyle='--', label=nome_regiao))
+    else:
+        handles.append(patches.Patch(facecolor=cores_regioes[nome_regiao], 
+                                    edgecolor='black', label=nome_regiao))
+
+# Configurar o mapa
+ax.set_xlim(-180, 180)
+ax.set_ylim(-60, 20)
+ax.set_xlabel('Longitude [°]')
+ax.set_ylabel('Latitude [°]')
+
+# Adicionar grade
+ax.grid(True, linestyle='--', alpha=0.5)
+
+# Adicionar legenda
+ax.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, 1.15), 
+          ncol=4, frameon=False, fancybox=False)
+
+plt.tight_layout()
+plt.savefig('Graficos/regioes_enso_global.svg', transparent=True, dpi=300, bbox_inches='tight')
+plt.show()
 
 
 
@@ -91,50 +172,50 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
 
 # Gráfico do dia de maior demanda e as gerações ---------------------------------------------------------------------- #
-geracao = pd.read_csv('Exportado/geracao_fontes_horario_MWmed.csv').set_index('Data')                                               # Dados de geração em MWMed
-carga = pd.read_csv('Exportado/carga_subsist_horario_MWmed.csv').set_index('Data')                                                  # Dados de carga em MWMed
-carga['Total'] = carga.sum(axis = 1)                                                                                      # Somando a carga total                                                                                            # Encontrando a carga total máxima
-ger_hidr = geracao[['Hidráulica']]
-ger_eol = geracao[['Eólica']]
-ger_sol = geracao[['Fotovoltaica']]
-ger_ter = geracao[['Térmica']]
+# geracao = pd.read_csv('Exportado/geracao_fontes_horario_MWmed.csv').set_index('Data')                                               # Dados de geração em MWMed
+# carga = pd.read_csv('Exportado/carga_subsist_horario_MWmed.csv').set_index('Data')                                                  # Dados de carga em MWMed
+# carga['Total'] = carga.sum(axis = 1)                                                                                      # Somando a carga total                                                                                            # Encontrando a carga total máxima
+# ger_hidr = geracao[['Hidráulica']]
+# ger_eol = geracao[['Eólica']]
+# ger_sol = geracao[['Fotovoltaica']]
+# ger_ter = geracao[['Térmica']]
 
-# indices_df = pd.read_csv('Exportado/teleconexoes_NOVO.csv').set_index('Data')
+# # indices_df = pd.read_csv('Exportado/teleconexoes_NOVO.csv').set_index('Data')
 
-ger_hidr.index = pd.to_datetime(ger_hidr.index, format = '%Y-%m-%d %H:%M:%S')
-ger_eol.index = pd.to_datetime(ger_eol.index, format = '%Y-%m-%d %H:%M:%S')
-ger_sol.index = pd.to_datetime(ger_sol.index, format = '%Y-%m-%d %H:%M:%S')
-ger_ter.index = pd.to_datetime(ger_ter.index, format = '%Y-%m-%d %H:%M:%S')
-carga.index = pd.to_datetime(carga.index, format = '%Y-%m-%d %H:%M:%S')
+# ger_hidr.index = pd.to_datetime(ger_hidr.index, format = '%Y-%m-%d %H:%M:%S')
+# ger_eol.index = pd.to_datetime(ger_eol.index, format = '%Y-%m-%d %H:%M:%S')
+# ger_sol.index = pd.to_datetime(ger_sol.index, format = '%Y-%m-%d %H:%M:%S')
+# ger_ter.index = pd.to_datetime(ger_ter.index, format = '%Y-%m-%d %H:%M:%S')
+# carga.index = pd.to_datetime(carga.index, format = '%Y-%m-%d %H:%M:%S')
 
-max_carga_date = carga['Total'].idxmax().date()                                                                         # Encontrando o dia com maior carga
-print(f'Dia com maior carga: {max_carga_date}')
+# max_carga_date = carga['Total'].idxmax().date()                                                                         # Encontrando o dia com maior carga
+# print(f'Dia com maior carga: {max_carga_date}')
 
-# Filtrando os dados para o dia com maior carga
-carga_max_day = carga.loc[carga.index.date == max_carga_date]
-ger_eol_max_day = ger_eol.loc[ger_eol.index.date == max_carga_date]
-ger_sol_max_day = ger_sol.loc[ger_sol.index.date == max_carga_date]
-ger_hidr_max_day = ger_hidr.loc[ger_hidr.index.date == max_carga_date]
-ger_ter_max_day = ger_ter.loc[ger_ter.index.date == max_carga_date]
+# # Filtrando os dados para o dia com maior carga
+# carga_max_day = carga.loc[carga.index.date == max_carga_date]
+# ger_eol_max_day = ger_eol.loc[ger_eol.index.date == max_carga_date]
+# ger_sol_max_day = ger_sol.loc[ger_sol.index.date == max_carga_date]
+# ger_hidr_max_day = ger_hidr.loc[ger_hidr.index.date == max_carga_date]
+# ger_ter_max_day = ger_ter.loc[ger_ter.index.date == max_carga_date]
 
-# Plotando gráfico de linha com a carga e a geração de energia para o dia com maior carga
-fig, ax = plt.subplots(figsize = (6, 3), sharex = False)
-ax.plot(carga_max_day.index, carga_max_day['Total'], linestyle = '--', color = '#FF4A4D', label = 'Carga')
+# # Plotando gráfico de linha com a carga e a geração de energia para o dia com maior carga
+# fig, ax = plt.subplots(figsize = (6, 3), sharex = False)
+# ax.plot(carga_max_day.index, carga_max_day['Total'], linestyle = '--', color = '#FF4A4D', label = 'Carga')
 
-ax.plot(ger_hidr_max_day.index, ger_hidr_max_day['Hidráulica'], linestyle='-', color='#3867ff', label='Hidráulica')
-ax.plot(ger_sol_max_day.index, ger_sol_max_day['Fotovoltaica'], linestyle='-', color='#E3B132', label='Fotovoltaica')
-ax.plot(ger_eol_max_day.index, ger_eol_max_day['Eólica'], linestyle='-', color='#3E944F', label='Eólica')
-ax.plot(ger_ter_max_day.index, ger_ter_max_day['Térmica'], linestyle='-', color='#ff6038', label='Térmica')
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=5, frameon=False, fancybox=False)
-ax.set_xlabel('Horário')
-ax.set_ylabel('Energia [MWmed]')
-ax.xaxis.set_major_locator(mdates.HourLocator(interval=2))
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%Hh'))
-plt.ticklabel_format(axis='y', style='sci', scilimits=(3, 3))
-ax.grid(True)
-plt.tight_layout()
-plt.savefig(f'Graficos/carga_max_dia_{max_carga_date}.svg', transparent=True)
-plt.show()
+# ax.plot(ger_hidr_max_day.index, ger_hidr_max_day['Hidráulica'], linestyle='-', color='#3867ff', label='Hidráulica')
+# ax.plot(ger_sol_max_day.index, ger_sol_max_day['Fotovoltaica'], linestyle='-', color='#E3B132', label='Fotovoltaica')
+# ax.plot(ger_eol_max_day.index, ger_eol_max_day['Eólica'], linestyle='-', color='#3E944F', label='Eólica')
+# ax.plot(ger_ter_max_day.index, ger_ter_max_day['Térmica'], linestyle='-', color='#ff6038', label='Térmica')
+# ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=5, frameon=False, fancybox=False)
+# ax.set_xlabel('Horário')
+# ax.set_ylabel('Energia [MWmed]')
+# ax.xaxis.set_major_locator(mdates.HourLocator(interval=2))
+# ax.xaxis.set_major_formatter(mdates.DateFormatter('%Hh'))
+# plt.ticklabel_format(axis='y', style='sci', scilimits=(3, 3))
+# ax.grid(True)
+# plt.tight_layout()
+# plt.savefig(f'Graficos/carga_max_dia_{max_carga_date}.svg', transparent=True)
+# plt.show()
 
 
 # Gráfico de linha com a geração de energia hidráulica bruta --------------------------------------------------------- #
@@ -201,21 +282,21 @@ plt.show()
 # plt.show()
 # plt.savefig('Graficos/geracao_anual_hidrica_termica.svg', transparent=True)
 
-carga = pd.read_csv('Exportado/carga_subsist_mensal_MWh.csv').set_index('Data')
-carga['Total'] = carga.sum(axis = 1)
-carga = carga / 1e3
-carga.index = pd.to_datetime(carga.index, format = '%Y-%m-%d')
-fig, ax = plt.subplots(figsize=(6, 3), sharey=False)
-ax.plot(carga.index, carga['Total'], color='#FF4A4D', label='Carga')
-ax.set_ylabel('Carga [GWh]')
-ax.set_xlabel('Série histórica')
-plt.ticklabel_format(axis='y', style='sci', scilimits=(3, 3))
-# years = carga_df.index
-# ax.set_xticks(years)
-# ax.set_xticklabels(years, rotation=45, ha='right')
-# ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.135), ncol=5, frameon=False, fancybox=False)
-plt.tight_layout()
-plt.savefig('Graficos/carga_anual.svg', transparent=True)
+# carga = pd.read_csv('Exportado/carga_subsist_mensal_MWh.csv').set_index('Data')
+# carga['Total'] = carga.sum(axis = 1)
+# carga = carga / 1e3
+# carga.index = pd.to_datetime(carga.index, format = '%Y-%m-%d')
+# fig, ax = plt.subplots(figsize=(6, 3), sharey=False)
+# ax.plot(carga.index, carga['Total'], color='#FF4A4D', label='Carga')
+# ax.set_ylabel('Carga [GWh]')
+# ax.set_xlabel('Série histórica')
+# plt.ticklabel_format(axis='y', style='sci', scilimits=(3, 3))
+# # years = carga_df.index
+# # ax.set_xticks(years)
+# # ax.set_xticklabels(years, rotation=45, ha='right')
+# # ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.135), ncol=5, frameon=False, fancybox=False)
+# plt.tight_layout()
+# plt.savefig('Graficos/carga_anual.svg', transparent=True)
 
 
 

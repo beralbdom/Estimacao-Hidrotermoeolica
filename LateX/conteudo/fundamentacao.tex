@@ -3,12 +3,105 @@
 % subseções muito curtas.
 
 \chapter{Fundamentação Teórica}
-Segundo \cite{Andreoli2016}, 
+\section{Impacto do ENSO na Geração de Energia Elétrica}
+O ENSO é um fenômeno que ocorre no Oceano Pacífico Equatorial, caracterizado por variações na temperatura da superfície
+do mar (TSM) em regiões específicas, como ilustrado na Figura \ref{fig:regioes_enso}. Segundo \citeonline{Andreoli2016}, o 
+fenômeno é um dos principais fatores que influenciam os padrões de vento e precipitação em diversas regiões da América 
+do Sul e seus efeitos se estendem por todas as regiões do Brasil.
 
-\section{Exemplo de Seção}
+De acordo com \citeonline{Capozzoli2017}, diferentes fases do ENSO resultam em padrões distintos de precipitação sobre
+o território brasileiro, variando de acordo com a região e a estação do ano. Sendo assim, há um impacto direto sobre a 
+disponibilidade de recursos hídricos para a geração hidrelétrica.
 
-\subsection{Exemplo subseção}
+A região Sul é uma das mais consistentemente afetadas. Eventos de El Niño tendem a causar precipitação acima da média,
+particularmente durante a primavera e o verão, enquanto eventos de La Niña estão associados à condições de seca.
 
-\subsubsection{Exemplo subsubseção}
+A região Sudeste apresenta uma resposta mais complexa, sendo consdierada uma zona de transição. A bacia do Rio Paraná,
+em especial, apresenta sensibilidade aos fenômenos do ENSO, tendo apresentado tendência de aumento de vazão durante alguns
+eventos de El Niño.
 
-% FALTA AJUSTAR \subsubsubsection{Exemplo subsubsubsection}
+Para as regiões Norte e Nordeste, eventos de El Niño estão associados a períodos de seca, enquanto eventos de
+La Niña tendem a trazer chuvas acima da média. No entanto, é importante destacar que outros fenômenos atmosféricos podem
+interferir com esses padrões, modulando os efeitos do ENSO.
+
+Sendo assim, verifica-se que as variações induzidas pelos fenômenos do ENSO traduzem-se diretamente em variações nas
+vazões dos rios que alimentam as bacias, que por sua vez impactam diretamente o potencial de geração da fonte hidráulica.
+
+\begin{figure}[!ht]
+	\IBGEtab{\caption{Regiões do fenômeno El Niño-Oscilação Sul (ENSO)}
+			 \label{fig:regioes_enso}}
+	{\includesvg[scale=1]{figuras/regioes_enso_global}}
+	{\fonte{o autor.}}
+\end{figure}
+
+\section{O Modelo NEWAVE}
+\label{sec:newave}
+
+Desenvolvido e mantido pelo Centro de Pesquisas de Energia Elétrica (CEPEL) e amplamente utilizado pelo setor elétrico 
+brasileiro para definição de estratégias e tomada de decisão, o NEWAVE é um modelo de otimização que busca minimizar os 
+custos de operação do sistema, considerando a incerteza das afluências futuras e a operação de um sistema 
+hidro-térmico-eólico interligado. O modelo é utilizado para estudos como:
+\begin{itemize}
+	\item Elaboração do Plano Decenal de Expansão de Energia (PDE), pela EPE;
+	\item Elaboração do Programa Mensal de Operação (PMO) e Plano de Operação Energética (PEN), pelo ONS;
+	\item Formação de preços, como no cálculo do Preço de Liquidação das Diferenças (PLD) pelo CCEE;
+	\item Cálculo de Garantia Física e da Energia Assegurada para empreendimentos de geração participantes nos leilões 
+    de energia elétrica, pela EPE;
+	\item Elaboração de diretrizes para os leilões de energia, pela EPE.
+\end{itemize}
+
+Em resumo, o modelo emprega a Programação Dinâmica Dual Estocástica (PDDE), uma técnica de otimização que permite lidar 
+com as incertezas ligadas às afluências futuras sem que o modelo se torne computacionalmente impraticável, considerando 
+múltiplos reservatórios, interconexões e o horizonte temporal de médio e longo prazos.
+
+\subsection{Representação das Usinas}
+O NEWAVE modela o sistema de geração hidrelétrico em Reservatórios Equivalentes de Energia (REEs), que são grupos de
+usinas associadas a um subsistema ou submercado de energia. Cada subsistema pode conter mais de um REE, possibilitando
+diferenciar bacias hidrográficas com regimes distintos, ainda que pertençam a um mesmo subsistema. 
+
+Além disso, cada REE é definido por um conjunto de parâmetros que são calculados a partir das características indivuduais 
+de cada usina. Nas versões mais recentes do modelo, também é possível considerar todas as usinas indivudalmente ou operar
+de maneira híbrtida, ou seja, considerando alguns REEs e outras usinas individualmente.
+
+As usinas termelétricas são representadas no modelo através de classes térmicas. Cada classe agrupa usinas com custos 
+semelhantes e está associada a um subsistema. Cada classe também é definida por um conjunto de parâmetros calculados
+a partir das características individuais de cada usina.
+
+Nas versões mais recentes do modelo, a fonte eólica também é modelada. De maneira similar, os parques eólicos são agrupados
+em Parques Eólicos Equivalentes (PEE). O agrupamento é feito a aprtir de dados de cadastro de cada prque eólico, estado,
+submercado, função de produção (curva relacionando a velocidade do vento com a potência gerada), dados sobre torres de
+medição e séries históricas de velocidade do vento.
+
+\subsection{Dados de Entrada}
+O modelo requer um conjunto de dados de entrada que inclui as características das usinas, dados dos subsistemas, demanda,
+séries históricas de vazões e ventos, cronogramas de expansão, restrições operativas, dentre outros. Observa-se, portanto, 
+que todos os dados de entrada são locais e, portanto, o modelo não considera variáveis externas, como fenomênos climáticos
+como o EN e LN, que podem impactar a geração de energia elétrica. 
+
+Ainda que as últimas versões do modelo apresentem campos previstos para a entrada de dados do ENSO, esses campos
+estão marcados como "não implementados". Dessa forma, entende-se que o modelo não considera diretamente o impacto 
+dessas variáveis. No entanto, vale destacar que essas variáveis externas podem ser utilizadas para elaborar as séries históricas de 
+vazões e velocidade de ventos utilizadas como dados de entrada. 
+
+\section{Modelos Linear e Não-linear}
+fazer uma introdução sobre os modelos lineares e não lineares...
+
+\subsection{Modelo Linear}
+
+\subsection{Modelos Não-lineares: Random Forest e Gradient Boosting}
+
+\section{Modelo Neural}
+Atualmente, os modelos neurais mais avançados utilizam a arquitetura \textit{Transformer}, que são modelos neurais com um
+mecanismo de atenção que permite ao modelo focar em diferentes partes da entrada de dados ao processar informações. Essa
+arquitetura foi introduzida no artigo \textit{"Attention is All You Need"} de \citeonline{Vaswani2017} e hoje é a arquitetura
+por trás dos principais \textit{Large Language Models} (LLMs) comercialmente disponíveis.
+
+Inicialmente concebido para tarefas de tradução, modelos baseados nessa arquitetura demonstraram resultados superiores
+em outras aplicações e hoje são amplamente utilizados em diversas áreas, incluindo previsão de séries temporais. No entanto,
+esses modelos são altamente complexos e exigem um alto poder computacional para treinamento e inferência.
+
+Além disso, conforme demonstrado por \citeonline{Zeng2022}, modelos baseados em \textit{Transformers} podem produzir
+resultados inferiores quando comparados a modelos mais simples. 
+
+Dessa forma, uma abordagem alternativa foi proposta por \citeonline{Chen2023}, uma arquitetura mais simples em comparação
+aos \textit{Transformers}, mas com resultados bastante superiores

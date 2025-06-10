@@ -80,8 +80,9 @@ O código \ref{listing:get_geracao} mostra a função \textit{GetGeracao}, que r
 anos de interesse e a URL base em que os dados estão hospedados. A mesma abordagem foi utilizada para as funções
 \textit{GetCarga} e \textit{GetVazao}.
 
-\begin{codigo}[htbp]
-\caption{Nome do seu código}
+\begin{codigo}[htb]
+\caption{Função para download dos dados de geração}
+\label{listing:get_geracao}
 \begin{minted}{python}
 def GetGeracao(anos, url, dir):
   def DownloadAno(ano):
@@ -165,7 +166,6 @@ detalhada da operação do SIN em diferentes níveis de granulidade. Dessa manei
 escalas geográficas e temporais poderão ser avaliados. Por outro lado, a tabela \ref{tab:carga} mostra que os dados de
 carga não possuem a mesma granulidade que os dados de geração, limitando a análise a nível de subsistema, conforme a
 figura \ref{fig:subsistemas_brasil}.
-
 
 \subsection{Séries históricas de variáveis climatológicas}
 A fim de maximizar o potencial de análise do projeto, é essencial considerar um grande número de dados climatológicos, 
@@ -253,16 +253,9 @@ mostra as variáveis climatológicas utilizadas no projeto.
 \subsection{Análise de componentes principais}
 
 
-\subsection{Avaliação dos modelos de regressão}
+\subsection{Avaliação dos Modelos de regressão}
 
 
-\section{Implementação dos modelos de aprendizado de máquina}
+\section{Implementação do Modelo Neural}
 
 
-\subsection{Feature selection}
-
-
-\subsection{Análise de componentes principais}
-
-
-\subsection{Avaliação dos modelos de aprendizado de máquina}
