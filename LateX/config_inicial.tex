@@ -19,8 +19,6 @@
 \usepackage{indentfirst}         																						% Indenta o primeiro parágrafo de cada seção
 \usepackage{color}               																						% Controle das cores
 \usepackage{graphicx}            																						% Inclusão de gráficos
-\usepackage{tocloft}
-\usepackage[newfloat]{minted}
 \usepackage{amsfonts}            																						% Símbolos
 \usepackage[none]{hyphenat}      																						% Sem separação de sílabas
 \usepackage{pdfpages}            																						% Acrescentar pdf ficha bibliográfica
@@ -51,21 +49,8 @@ abnt-etal-list=3                 																						% abreviar com mais de 3 
 
 % Configurações de aparência do PDF final
 % ----------------------------------------------------------------------------------------------------------------------
-\DeclareFloatingEnvironment[
-    listname={\protect\parbox[t]{\linewidth}{\raggedright Lista de Códigos}},
-    name=Código,
-    placement=tbhp,
-    within=chapter,
-]{codigo}
+\definecolor{blue}{RGB}{41,5,195}    																				% alterando o aspecto da cor azul
 
-\captionsetup[codigo]{
-  name=Código,
-  position=above,              % coloca a legenda acima
-  justification=raggedright, % alinha à esquerda
-  singlelinecheck=false
-}
-
-\definecolor{blue}{RGB}{41,5,195}    																					% alterando o aspecto da cor azul
 \titleformat{\chapter}[display]																							% Formatação do título do capítulo
     {\normalfont\huge\bfseries}
     {Capítulo \thechapter}{20pt}
@@ -82,18 +67,6 @@ abnt-etal-list=3                 																						% abreviar com mais de 3 
 
 \setlength{\parindent}{1.25cm}
 \linespread{1.5}																										% Espaçamento entre linhas
-
-\usemintedstyle{custommanni}
-\setminted{
-  frame=lines,
-  framesep=1mm,
-  baselinestretch=1,
-  linenos,
-  breaklines,
-  style=colorful,
-  tabsize=4,
-  numbersep=5pt
-}
 
 \setlength{\afterchapskip}{\baselineskip}																				% Espaçamento entre o título do capítulo e o texto
 \setlength{\parskip}{0cm}																								% Espaçamento entre parágrafos
