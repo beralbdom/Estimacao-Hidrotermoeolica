@@ -1,6 +1,42 @@
 % Apresentar estudos que contemple a temática abordada. Respeitar a autoria,
 % nas citações diretas e indiretas. Evitar parágrafos muito longos. Evitar seções e
 % subseções muito curtas.
+\chapter{Trabalhos Relacionados}
+Os impactos do fenômeno ENSO vêm sendo estudados extensamente em diversas áreas. Segundo \citeonline{Cirino2015}, eventos
+de El Niño e La Niña influenciam significativamente a agricultura brasileira, especialmente nas regiões Sul e Nordeste.
+
+Um estudo de \citeonline{Pirani2024} demonstrou que a ocorrência do fenômeno El Niño está associada a uma maior taxa de 
+ocorrência de casos de dengue no estado de São Paulo, devido a um aumento na temperatura e precipitação, condições
+favoráveis para a proliferação do mosquito Aedes aegypti.
+
+Segundo \citeonline{Capozzoli2017}, o fenômeno ENSO tem uma relação direta sobre a disponibilidade de recursos hídricos
+nas bacias hidrográficas brasileiras, o que sugere um impacto direto sobre a geração hidrelétrica no Brasil. Além disso,
+os resultados são coerentes com a literatura, indicando impactos distintos nas diferentes regiões do país.
+
+Naturalmente, o fenômeno ENSO também vem sendo estudado no contexto do setor elétrico brasileiro. Segundo um
+estudo da \citeonline{epe2023}, a ocorrência do fenômeno La Niña em 2021 foi um fator determinante para a crise hídrica
+que afetou o Brasil nesse período, em decorrência da redução das afluências, ou seja, a quantidade de água que chega aos
+reservatórios das usinas hidrelétricas.
+
+Segundo o relatório da Comissão Permanente para Análise de Metodologias e Programas Computacionais do Setor Elétrico (CPAMP),
+constituída por instituições do setor elétrico como EPE, ONS e CEPEL, a incorporação de dados de variáveis climatológicas,
+como o fenômeno ENSO, aos modelos computacionais é ativamente discutida devido a relação entre as séries históricas de 
+vazões e dos ciclos de índices climáticos. \cite{cpamp2019}
+
+De acordo com \citeonline{Resende2018}, o uso de modelos de aprendizado de máquina para previsão de carga do SIN tem o
+potencial de aprimorar o resultado das previsões, reduzindo os desvios de previsão de carga e, consequentemente, uma redução 
+significativa dos custos de operação do sistema elétrico. Infere-se, portanto, que essa abordagem também poderia
+ser aplicada para estimar outros parâmetros, como a geração futura.
+
+Para isso, é essencial selecionar modelos que sejam capazes de capturar as relações potencialmente complexas entre os
+dados de geração e os fenômenos climáticos. Considerando que a literatura sugere que essa relação seja altamente não-linear,
+modelos neurais seriam uma escolha natural, mas não necessariamente os modelos neurais mais avançados seriam os mais adequados.
+
+Segundo \citeonline{Zeng2022}, modelos de previsão de séries temporais baseados na arquitetura \textit{Transformers}, introduzida 
+por \citeonline{Vaswani2017}, podem produzir resultados inferiores quando comparados a modelos mais simples, como os baseados 
+na arquitetura \textit(TSMixer), proposta por \citeonline{Chen2023}. Essa arquitetura, embora mais simples, produz resultados 
+consideravelmente superiores com uma fração do custo computacional. 
+
 
 \chapter{Fundamentação Teórica}
 \section{Impacto do ENSO na Geração de Energia Elétrica}
@@ -9,30 +45,27 @@ do mar (TSM) em regiões específicas, como ilustrado na Figura \ref{fig:regioes
 fenômeno é um dos principais fatores que influenciam os padrões de vento e precipitação em diversas regiões da América 
 do Sul e seus efeitos se estendem por todas as regiões do Brasil.
 
-De acordo com \citeonline{Capozzoli2017}, diferentes fases do ENSO resultam em padrões distintos de precipitação sobre
-o território brasileiro, variando de acordo com a região e a estação do ano. Sendo assim, há um impacto direto sobre a 
-disponibilidade de recursos hídricos para a geração hidrelétrica.
-
-A região Sul é uma das mais consistentemente afetadas. Eventos de El Niño tendem a causar precipitação acima da média,
-particularmente durante a primavera e o verão, enquanto eventos de La Niña estão associados à condições de seca.
-
-A região Sudeste apresenta uma resposta mais complexa, sendo consdierada uma zona de transição. A bacia do Rio Paraná,
-em especial, apresenta sensibilidade aos fenômenos do ENSO, tendo apresentado tendência de aumento de vazão durante alguns
-eventos de El Niño.
-
-Para as regiões Norte e Nordeste, eventos de El Niño estão associados a períodos de seca, enquanto eventos de
-La Niña tendem a trazer chuvas acima da média. No entanto, é importante destacar que outros fenômenos atmosféricos podem
-interferir com esses padrões, modulando os efeitos do ENSO.
-
-Sendo assim, verifica-se que as variações induzidas pelos fenômenos do ENSO traduzem-se diretamente em variações nas
-vazões dos rios que alimentam as bacias, que por sua vez impactam diretamente o potencial de geração da fonte hidráulica.
-
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Regiões do fenômeno El Niño-Oscilação Sul (ENSO)}
 			 \label{fig:regioes_enso}}
 	{\includesvg[scale=1]{figuras/regioes_enso_global}}
 	{\fonte{o autor.}}
 \end{figure}
+
+Os impactos em cada região estão resumidos a seguir:
+\begin{itemize}
+	\item \textbf{Sul:} A região Sul é uma das mais consistentemente afetadas. Eventos de El Niño tendem a causar precipitação acima da média,
+particularmente durante a primavera e o verão, enquanto eventos de La Niña estão associados à condições de seca.
+	\item \textbf{Sudeste:} A região Sudeste apresenta uma resposta mais complexa, sendo consdierada uma zona de transição. A bacia do Rio Paraná,
+em especial, apresenta sensibilidade aos fenômenos do ENSO, tendo apresentado tendência de aumento de vazão durante alguns
+eventos de El Niño.
+	\item \textbf{Norte/Nordeste:} Para as regiões Norte e Nordeste, eventos de El Niño estão associados a períodos de seca, enquanto eventos de
+La Niña tendem a trazer chuvas acima da média. No entanto, é importante destacar que outros fenômenos atmosféricos podem
+interferir com esses padrões, modulando os efeitos do ENSO.
+\end{itemize}
+
+Sendo assim, verifica-se que as variações induzidas pelos fenômenos do ENSO traduzem-se diretamente em variações nas
+vazões dos rios que alimentam as bacias, que por sua vez impactam diretamente o potencial de geração da fonte hidráulica.
 
 \section{O Modelo NEWAVE}
 \label{sec:newave}
