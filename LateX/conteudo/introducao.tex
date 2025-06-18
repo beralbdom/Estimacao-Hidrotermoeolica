@@ -48,7 +48,7 @@ Em um contexto no qual a implementação de sistemas de armazenamento de energia
 a matriz segue bastante dependente da fonte hidráulica e, de maneira complementar, das térmicas. A dependência da fonte
 hidráulica, por sua vez, torna o sistema elétrico vulnerável a eventos climáticos extremos ocasionados pelas mudanças
 climáticas. Por exemplo, em 2021, verificou-se um acionamento recorde de usinas térmicas e uma geração hidráulica 
-percentual mínima. Isso se deve em razão da forte crise hídrica enfrentada pelo Brasil em 2021, a pior dos últimos 91 anos
+percentual mínima. Isso se deve em razão da forte crise hídrica enfrentada pelo Brasil no período, a pior dos últimos 91 anos
 até então. \cite{Soares2023}
 
 \begin{figure}[!ht]
@@ -58,7 +58,7 @@ até então. \cite{Soares2023}
 	{\fonte{o autor.}}
 \end{figure}
 
-Portanto, o estudo da operação do sistema elétrico brasileiro, no contexto de cenários de eventos
+Portanto, o estudo do sistema elétrico brasileiro, no contexto de cenários de eventos
 climatológicos extremos é altamente relevante para a segurança energética do país, considerando uma estimativa de 
 crescimento médio anual da carga do SIN de 3,2\%. \cite{pen2024}
 
@@ -76,13 +76,12 @@ outro lado, nos meses de verão, a geração atinge seus maiores valores.
 \end{figure}
 
 Esse comportamento é natural e esperado, uma vez que a geração hidráulica é diretamente influenciada pelas condições
-que afetam a vazão dos rios. No entanto, a ocorrência de eventos climatológicos como o El Niño-Oscilação Sul (ENSO) pode
+que afetam a vazão dos rios. No entanto, a ocorrência de eventos climáticos como o El Niño-Oscilação Sul (ENSO) pode
 favorecer condições que impactam diretamente no potencial de geração hidráulica. \cite{de2012influencia}
 
-Fenômenos como o ENSO são caracterizados por anomalias na temperatura da superfície do mar no Oceano Pacífico
-Equatorial. Essas anomalias são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que classifica os 
+Fenômenos como o ENSO são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que classifica os 
 eventos em três categorias: \textit{El-Niño} (EN), \textit{La-Niña} (LN) e neutro. A Figura \ref{fig:oni} mostra a 
-classificação dos eventos de EN e LN ocorridos entre 2000 e 2024, sendo que a escala de cores indica a intensidade do 
+classificação dos eventos de EN e LN ocorridos entre 2000 e 2024, na qual a escala de cores indica a intensidade do 
 evento. Ao analisar a geração hidráulica bruta no mesmo período, observa-se que a ocorrência de eventos de EN e LN 
 pode estar associada a variações na geração.
 
@@ -94,16 +93,15 @@ pode estar associada a variações na geração.
 \end{figure}
 
 Fundamentalmente, em sistemas interligados cuja fonte hidráulica constitui a base da matriz elétrica, é essencial, 
-para um planejamento energético eficiente, otimizar o sistema de modo a considerar a operação de todas as usinas, 
-considerando a incerteza associada às afluências futuras. Dessa forma, estima-se o valor da geração hidrelétrica que 
-poderia substituir a geração térmica a curto ou longo prazo, de modo a minimizar os custos de operação do sistema e o 
-risco de utilizar reservatórios de maneira desnecessária, garantindo assim o atendimento à demanda futura, 
-principalmente em casos de escassez hídrica.
+para um planejamento energético eficiente, otimizar o sistema de modo a considerar a incerteza associada às afluências futuras. 
+Dessa forma, estima-se o valor da geração hidrelétrica que poderia substituir a geração térmica a curto ou longo prazo, de 
+modo a minimizar os custos de operação do sistema e o risco de utilizar reservatórios de maneira desnecessária, garantindo 
+assim o atendimento à demanda futura, principalmente em casos de escassez hídrica.
 
 Os estudos de planejamento energético são realizados por meio de modelos computacionais como o NEWAVE, DECOMP e DESSEM, 
-do Centro de Pesquisas de Energia Elétrica (CEPEL), que consdieram diferentes horizontes temporais: longo, médio e curto prazos, respectivamente. 
-Também há outras soluções disponíveis, como o PSR SDDP, que engloba todos os horizontes temporais. Considerando o escopo deste trabalho, o modelo 
-NEWAVE será brevemente apresentado no capítulo seguinte.
+do Centro de Pesquisas de Energia Elétrica (CEPEL), que consideram diferentes horizontes temporais: longo, médio e curto prazos, respectivamente. 
+Também há outras soluções disponíveis no mercado, como o PSR SDDP, que engloba todos os horizontes temporais. 
+Considerando o escopo deste trabalho, o modelo NEWAVE será brevemente apresentado no capítulo seguinte.
 
 Embora esses modelos sejam amplamente utilizados pelo setor elétrico brasileiro, sendo consolidados como ferramentas
 confiáveis e essenciais para o planejamento energético, eles não consideram variáveis externas, como fenômenos climáticos
@@ -111,12 +109,12 @@ como o EN e LN, que podem impactar a geração de energia elétrica. Esses model
 vazões e velocidade do vento, que são obtidos a partir de medições locais, além de dados individuais de cada usina.
 
 \section{Objetivo}
-Sendo assim, o projeto tem como objetivo investigar um possível impacto de variáveis climatológicas externas na geração 
+Sendo assim, o projeto tem como objetivo investigar um possível impacto de variáveis climáticas externas na geração 
 de energia elétrica no Brasil, com foco nas fontes hidráulica, térmica e eólica. 
 
 Para tanto, foram empregadas técnicas computacionais para relacionar as séries históricas de geração com as séries de variáveis 
 climáticas, através de modelos lineares, não lineares e neurais. Além disso, foram utilizadas séries históricas de geração, 
-carga e vazões disponibilizados pelo ONS, bem como séries históricas de variáveis climatológicas, como temperatura 
+carga e vazões disponibilizados pelo ONS, bem como séries históricas de variáveis climáticas, como temperatura 
 da superfície do mar, obtidas a partir de dados do ERA5, um projeto de reanálise atmosférica do \textit{European Centre for Medium-Range Weather Forecasts} (ECMWF).
 
 A partir dessa investigação, espera-se poder avaliar o impacto dessas variáveis na geração de energia elétrica,
@@ -129,6 +127,7 @@ No entanto, este trabalho considera apenas as variáveis relacionadas ao fenôme
 uma alta correlação entre esses fenômenos e o regime de chuvas no Brasil \cite{de2012influencia, Andreoli2016}, sendo a 
 incorporação de outras variáveis reservada para trabalhos futuros.
 
+% ----------------------------------------------------------------------------------------------------------------------
 \section{Estrutura do Trabalho}
 No capítulo 1, é feita uma breve introdução apresentando o contexto, motivação, objetivo e a estrutura do trabalho. Uma
 breve análise da matriz elétrica é apresentada, com foco no histórico recente e no crescimento da geração eólica. Também
@@ -136,23 +135,25 @@ são apresentadas as curvas de carga do SIN e de geração hidráulica. Uma brev
 ENSO e a importância do modelo NEWAVE para o planejamento energético do país são apresentadas. Por fim, é apresentado
 o objetivo do trabalho e a estrutura do documento.
 
-No capítulo 2, a fundamentação teórica necessária para a compreensão do projeto é apresentada. São abordados os fatores
+O capítulo 2 apresenta um panorama acerca de trabalhos relacionados ao tema.
+
+No capítulo 3, a fundamentação teórica necessária para a compreensão do projeto é apresentada. São abordados os fatores
 que fazem com que os fenômenos do EN e LN impactem o regime de chuvas no Brasil e a sua relação com a geração de 
 energia elétrica. Também será feita uma breve introdução ao modelo NEWAVE,
 que é amplamente utilizado pelo setor elétrico brasileiro para planejamento energético. Por fim, serão apresentados os modelos 
 de previsão de séries temporais implementados, com foco no modelo neural, uma implementação baseada na arquitetura \
 textit{TSMixer} desenvolvida pela Google.
 
-O capítulo 3 apresenta a metodologia utilizada para a realização do projeto. Serão apresentados os conjuntos de dados
+O capítulo 4 apresenta a metodologia utilizada para a realização do projeto. Serão apresentados os conjuntos de dados
 considerados e suas respectivas etapas de obtenção, tratamento e análise. Além disso, será apresentada a metodologia
 utilizada para implementação dos modelos de previsão, incluindo seus parâmetros e métricas de avaliação. \textit{Snippets}
 de códigos serão apresentados para facilitar a compreensão.
 
-O capítulo 4 apresenta os resultados obtidos a partir da implementação de cada modelo de previsão. Inicia-se com os resultados
+O capítulo 5 apresenta os resultados obtidos a partir da implementação de cada modelo de previsão. Inicia-se com os resultados
 do modelo linear, seguido pelo modelo não linear e, por fim, o modelo neural. Para cada modelo, serão apresentados os
 resultados de previsão, métricas de avaliação e uma análise crítica dos resultados obtidos.
 
-Por fim, no capítulo 5, são apresentadas as considerações finais do trabalho, incluindo uma discussão final dos resultados
+Por fim, no capítulo 6, são apresentadas as considerações finais do trabalho, incluindo uma discussão final dos resultados
 obtidos, limitações observadas e sugestões para trabalhos futuros.
 
 % \chapter{Trabalhos Relacionados}

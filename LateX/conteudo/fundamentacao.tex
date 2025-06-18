@@ -1,12 +1,9 @@
-% Apresentar estudos que contemple a temática abordada. Respeitar a autoria,
-% nas citações diretas e indiretas. Evitar parágrafos muito longos. Evitar seções e
-% subseções muito curtas.
 \chapter{Trabalhos Relacionados}
 Os impactos do fenômeno ENSO vêm sendo estudados extensamente em diversas áreas. Segundo \citeonline{Cirino2015}, eventos
 de El Niño e La Niña influenciam significativamente a agricultura brasileira, especialmente nas regiões Sul e Nordeste.
 
 Um estudo de \citeonline{Pirani2024} demonstrou que a ocorrência do fenômeno El Niño está associada a uma maior taxa de 
-ocorrência de casos de dengue no estado de São Paulo, devido a um aumento na temperatura e precipitação, condições
+casos de dengue no estado de São Paulo, devido a um aumento na temperatura e precipitação, condições
 favoráveis para a proliferação do mosquito Aedes aegypti.
 
 Segundo \citeonline{Capozzoli2017}, o fenômeno ENSO tem uma relação direta sobre a disponibilidade de recursos hídricos
@@ -19,7 +16,7 @@ que afetou o Brasil nesse período, em decorrência da redução das afluências
 reservatórios das usinas hidrelétricas.
 
 Segundo o relatório da Comissão Permanente para Análise de Metodologias e Programas Computacionais do Setor Elétrico (CPAMP),
-constituída por instituições do setor elétrico como EPE, ONS e CEPEL, a incorporação de dados de variáveis climatológicas,
+constituída por instituições do setor elétrico como EPE, ONS e CEPEL, a incorporação de dados de variáveis climáticas,
 como o fenômeno ENSO, aos modelos computacionais é ativamente discutida devido a relação entre as séries históricas de 
 vazões e dos ciclos de índices climáticos. \cite{cpamp2019}
 
@@ -33,17 +30,17 @@ dados de geração e os fenômenos climáticos. Considerando que a literatura su
 modelos neurais seriam uma escolha natural, mas não necessariamente os modelos neurais mais avançados seriam os mais adequados.
 
 Segundo \citeonline{Zeng2022}, modelos de previsão de séries temporais baseados na arquitetura \textit{Transformer}, introduzida 
-por \citeonline{Vaswani2017}, podem produzir resultados inferiores quando comparados a modelos mais simples, como os baseados 
-na arquitetura \textit(TSMixer), proposta por \citeonline{Chen2023}. Essa arquitetura, embora mais simples, produz resultados 
+por \citeonline{Vaswani2017}, podem produzir resultados inferiores quando comparados a modelos mais simples. Nesse contexto,
+surge então a arquitetura \textit{TSMixer}, proposta por \citeonline{Chen2023}. Essa arquitetura, embora mais simples, produz resultados 
 consideravelmente superiores com uma fração do custo computacional. 
 
-
+% ----------------------------------------------------------------------------------------------------------------------
 \chapter{Fundamentação Teórica}
 \section{Impacto do ENSO na Geração de Energia Elétrica}
 O ENSO é um fenômeno que ocorre no Oceano Pacífico Equatorial, caracterizado por variações na temperatura da superfície
-do mar (TSM) em regiões específicas, como ilustrado na Figura \ref{fig:regioes_enso}. Segundo \citeonline{Andreoli2016}, o 
-fenômeno é um dos principais fatores que influenciam os padrões de vento e precipitação em diversas regiões da América 
-do Sul e seus efeitos se estendem por todas as regiões do Brasil.
+do mar (TSM) em regiões específicas, como ilustrado na Figura \ref{fig:regioes_enso}. O fenômeno é um dos principais fatores 
+que influenciam os padrões de vento e precipitação em diversas regiões da América do Sul e seus efeitos se estendem por 
+todas as regiões do Brasil. \cite{Andreoli2016}
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Regiões do fenômeno El Niño-Oscilação Sul (ENSO)}
@@ -52,7 +49,7 @@ do Sul e seus efeitos se estendem por todas as regiões do Brasil.
 	{\fonte{o autor.}}
 \end{figure}
 
-Os impactos em cada região estão resumidos a seguir:
+Os impactos em cada região estão resumidos a seguir, de acordo com \citeonline{Capozzoli2017}:
 \begin{itemize}
 	\item \textbf{Sul:} A região Sul é uma das mais consistentemente afetadas. Eventos de El Niño tendem a causar precipitação acima da média,
 particularmente durante a primavera e o verão, enquanto eventos de La Niña estão associados à condições de seca.
@@ -65,8 +62,9 @@ interferir com esses padrões, modulando os efeitos do ENSO.
 \end{itemize}
 
 Sendo assim, verifica-se que as variações induzidas pelos fenômenos do ENSO traduzem-se diretamente em variações nas
-vazões dos rios que alimentam as bacias, que por sua vez impactam diretamente o potencial de geração da fonte hidráulica.
+vazões dos rios que alimentam as bacias, que por sua vez impactam o potencial de geração da fonte hidráulica.
 
+% ----------------------------------------------------------------------------------------------------------------------
 \section{O Modelo NEWAVE}
 \label{sec:newave}
 
@@ -116,12 +114,151 @@ estão marcados como "não implementados". Dessa forma, entende-se que o modelo 
 dessas variáveis. No entanto, vale destacar que essas variáveis externas podem ser utilizadas para elaborar as séries históricas de 
 vazões e velocidade de ventos utilizadas como dados de entrada. 
 
+% ----------------------------------------------------------------------------------------------------------------------
 \section{Modelos Linear e Não-linear}
-fazer uma introdução sobre os modelos lineares e não lineares...
+Nesse projeto, foram utilizados modelos de regressão linear e não linear a fim de se obter uma \textit{baseline} para
+comparação com o modelo neural. Para ambos os casos, a biblioteca \textit{scikit-learn} foi utilizada.
 
 \subsection{Modelo Linear}
+O modelo linear utilizado foi o \textit{LinearRegression} da biblioteca \textit{scikit-learn}. Ele consiste na
+aplicação do método dos mínimos quadrados para determinar os coeficientes da equação linear que melhor se ajusta aos dados,
+conforme ilustrado na Figura \ref{fig:modelo_linear}.
+\begin{figure}[!ht]
+	\IBGEtab{\caption{Regressão Linear de uma Senoide}
+			 \label{fig:modelo_linear}}
+	{\includesvg[scale=1]{figuras/modelo_linear_exemplo}}
+	{\fonte{o autor.}}
+\end{figure}
+
+Naturalmente, esse tipo de modelo é utilizado quando se espera que a variável de interesse (dependente) seja uma combinação linear
+das variáveis de entrada (independentes), conforme a equação \ref{eq:regressao_linear},
+\begin{equation}
+\label{eq:regressao_linear}
+y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_n x_n
+\end{equation}
+em que $y$ é a variável de interesse, 
+$\beta_0$ é o intercepto, $\beta_1, \beta_2, ..., \beta_n$ são os coeficientes e $x_1, x_2, ..., x_n$ são as variáveis de entrada.
+
+O método de mínimos quadrados busca minimizar a soma dos quadrados dos resíduos, ou seja, a diferença entre os valores
+observados e os valores previstos pelo modelo. Matematicamente, isso é representado pela equação \ref{eq:minimos_quadrados},
+\begin{equation}
+\label{eq:minimos_quadrados}
+\min_{\beta} \sum_{i=1}^{m} \left(y_i - (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + ... + \beta_n x_{in})\right)^2
+\end{equation}
+em que $m$ é o número de observações, $y_i$ é o valor observado da variável de interesse para a $i$-ésima observação,
+$x_{ij}$ é o valor da $j$-ésima variável de entrada para a $i$-ésima observação e $\beta$ é o vetor de coeficientes
+do modelo.
+
+Ainda que se espere que as relações entre os dados seja altamente não linear, o método é capaz de capturar algumas
+das relações lineares entre as variáveis, além de servir como ponto de partida para as próximas análises.
 
 \subsection{Modelos Não-lineares: Random Forest e Gradient Boosting}
 
-\section{Modelo Neural}
 
+% ----------------------------------------------------------------------------------------------------------------------
+\section{Modelo Neural}
+Antes de apresentar o modelo neural, será feita uma breve introdução a respeito de alguns conceitos importantes,
+como o \textit{Perceptron} e os \textit{Multi Layer Perceptrons} (MLPs). Esses conceitos são fundamentais para compreender
+a arquitetura do modelo utilizado.
+
+\subsection{O Perceptron}
+O \textit{Perceptron} é um modelo de rede neural artificial proposto por \citeonline{Rosenblatt1958}, inspirado no
+funcionamento de neurônios biológicos. A figura \ref{fig:perceptron} ilustra a estrutura básica de um Perceptron.
+
+\begin{figure}[!ht]
+	\IBGEtab{\caption{Estrutura do Perceptron}
+			 \label{fig:perceptron}}
+	{\includesvg[scale=1]{figuras/perceptron}}
+	{\fonte{o autor.}}
+\end{figure}
+
+Um perceptron recebe um conjunto $ X = [x_1, x_2, ..., x_n] $ de entradas,
+com cada $ x_i $ associada a um peso aleatório $ w_i $. O Perceptron então calcula a soma ponderada das entradas e aplica uma 
+função de ativação para produzir a saída. Matematicamente, isso é dado por:
+\begin{equation}
+\label{eq:perceptron}
+\hat{y}(X) = f\left(\sum_{i=1}^{n} w_i x_i + b\right)
+\end{equation}
+em que $ \hat{y} $ é a saída do Perceptron e $ f $ a função de ativação que, para esse caso, usa-se a função degrau $ u(t) $.
+
+O Perceptron é limitado a resolver problemas de classificação linearmente separáveis. Ou seja, problemas nos quais é
+possível traçar uma linha (ou hiperplano) que separe as classes de forma clara. Para essas aplicações, o Perceptron
+atualiza os pesos de modo iterativo durante o treinamento, através da taxa de aprendizado $ r $, conforme a equação 
+\ref{eq:atualizacao_perceptron}, que demonstra o aprendizado através da atualização dos pesos no tempo:
+\begin{equation}
+\label{eq:atualizacao_perceptron}
+w_i(t+1) \leftarrow w_i(t) + r (y(t) - \hat{y}(t)) x_i
+\end{equation}
+em que $ y $ é o valor real e $ \hat{y} $ a saída do Perceptron. A taxa de aprendizado representa o quão rápido
+os pesos são atualizados durante o treinamento. A atualização é feita de forma a minimizar o erro entre a saída prevista
+e a saída real.
+
+Para problemas mais complexos, como aqueles que envolvem relações não-lineares entre as variáveis, outras abordagens
+são necessárias.
+
+
+\subsection{Multi Layer Perceptrons (MLPs)}
+MLPs surgiram como uma evolução dos \textit{Perceptrons} simples, com a finalidade de permitir a modelagem de relações
+não lineares, e são a base para o \textit{deep learning}, metodologia que utiliza redes neurais com inúmeras camadas para
+resolução de tarefas complexas. A figura \ref{fig:mlp_1} ilustra a estrutura básica de um MLP de dupla camada.
+
+\begin{figure}[!ht]
+	\IBGEtab{\caption{MLP de dupla camada}
+			 \label{fig:mlp_1}}
+	{\includesvg[scale=1]{figuras/mlp_1}}
+	{\fonte{o autor.}}
+\end{figure}
+
+MLPs são compostas por neorônios (perceptrons) interconectados e organizados em camadas. Cada neurônio de uma camada está 
+conectado a todos os neurônios das camadas adjacentes (\textit{fully connected}). A primeira e última camadas são chamadas de 
+camada de entrada e camada de saída, respectivamente, enquanto as camadas intermediárias são chamadas de camadas ocultas.
+
+MLPs são treinadas utilizando o algoritmo de \textit{backpropagation}, ou retropropagação, que é uma extensão do algoritmo de
+
+
+
+
+Ao contrário de um perceptron simples, MLPs utilizam diferentes funções de ativação, como a função sogmoide (\ref{eq:sigmoide}),
+a função tangente hiperbólica (\ref{eq:tanh}) e a função ReLU (\ref{eq:relu}), que permitem a modelagem de relações não lineares.
+\begin{equation}
+\label{eq:sigmoide}
+f(x) = \frac{1}{1 + e^{-x}}
+\end{equation}
+\begin{equation}
+\label{eq:tanh}
+f(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
+\end{equation}
+\begin{equation}
+\label{eq:relu}
+f(x) = \max(0, x)
+\end{equation}
+
+
+\subsection{Arquitetura TSMixer}
+A arquitetura proposta por \citeonline{Chen2023} é uma abordagem inovadora para previsão de séries temporais. Ela utiliza
+camadas de \textit{Multi Layer Perceptrons} (MLPs) em cascata, denominadas de \textit{Mixing Layers}, para capturar as relações
+na dimensão temporal, bem como na dimensão das características (variáveis). A figura \ref{fig:arquitetura_modelo_neural} ilustra 
+a arquitetura do modelo.
+
+A mistura no domínio do tempo permite ao modelo capturar os padrões temporais da série estudada. Essa etapa consiste
+em uma MLP de camada única que opera ao longo da dimensão do tempo. Essa abordagem se mostrou eficaz para aprender
+padrões temporais complexos, como sazonalidades e tendências, sem a necessidade de mecanismos de atenção, como os utilizados
+na arquitetura \textit{Transformer}.
+
+A mistura no domínio das características permite ao modelo capturar as relações entre as variáveis. Essa etapa consiste em
+MLPs de camada dupla que operam ao longo da dimensão das características. Ou seja, as relações entre as váriaveis em um
+determinado instante de tempo são capturadas. Essa abordagem é eficaz para aprender interações entre variáveis, como
+correlações e dependências, sem a necessidade de mecanismos de atenção.
+
+\begin{figure}[!ht]
+	\IBGEtab{\caption{Arquitetura do modelo neural usado}
+			 \label{fig:arquitetura_modelo_neural}}
+	{\includesvg[scale=.3]{figuras/tsmixer-1_edit}}
+	{\fonte{Adaptado de \citeonline{Chen2023}}}
+\end{figure}
+
+
+
+
+
+\subsection{Modelo Tiny Time Mixer}

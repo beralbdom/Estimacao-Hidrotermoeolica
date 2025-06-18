@@ -12,89 +12,109 @@ import matplotlib.patches as patches
 rc('font', family = 'serif', size = 8)                                                                                  # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.rc.html
 rc('grid', linestyle = '--', alpha = 0.5)
 rc('axes', axisbelow = True, grid = True)
-rc('lines', linewidth = 1.33, markersize = 1.5)
+rc('lines', linewidth = .5, markersize = 1.5)
 rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
-regioes = {                                                                                                             # [North, West, South, East]
-    'NIN 1.2': [0, -90, -10, -80],
-    'NIN 3':   [5, -150, -5, -90],
-    'NIN 3.4': [5, -170, -5, -120],
-    'NIN 4': [5, 160, -5, 210],  # Região unificada que cruza a linha de data internacional
-}
+# # Grafico geográfico indices
+# regioes = {                                                                                                             # [North, West, South, East]
+#     'NIN 1.2': [0, -90, -10, -80],
+#     'NIN 3':   [5, -150, -5, -90],
+#     'NIN 3.4': [5, -170, -5, -120],
+#     'NIN 4': [5, 160, -5, 210],  # Região unificada que cruza a linha de data internacional
+# }
 
-# Criar um mapa global
-fig, ax = plt.subplots(figsize=(6, 3), subplot_kw={'projection': None})
+# # Criar um mapa global
+# fig, ax = plt.subplots(figsize=(6, 3), subplot_kw={'projection': None})
 
-# Carregar dados geográficos do mundo
-world = gpd.read_file('Arquivos/ne_110m_admin_0_countries.shp')
-world.plot(ax=ax, color='lightgray', edgecolor='black', linewidth=0.5)
+# # Carregar dados geográficos do mundo
+# world = gpd.read_file('Arquivos/ne_110m_admin_0_countries.shp')
+# world.plot(ax=ax, color='lightgray', edgecolor='black', linewidth=0.5)
 
-# Definir cores para cada região ENSO
-cores_regioes = {
-    'NIN 1.2': "#FF5656",  # Vermelho claro
-    'NIN 3': "#FFCC24",    # Verde água
-    'NIN 4': "#2D9929",    # Verde claro
-    'NIN 3.4': "#46A4C9",  # Azul claro
-}
+# # Definir cores para cada região ENSO
+# cores_regioes = {
+#     'NIN 1.2': "#FF5656",  # Vermelho claro
+#     'NIN 3': "#FFCC24",    # Verde água
+#     'NIN 4': "#2D9929",    # Verde claro
+#     'NIN 3.4': "#46A4C9",  # Azul claro
+# }
 
-# Plotar as regiões ENSO como retângulos
-handles = []
-labels = []
+# # Plotar as regiões ENSO como retângulos
+# handles = []
+# labels = []
 
-for nome_regiao, coords in regioes.items():
-    north, west, south, east = coords
+# for nome_regiao, coords in regioes.items():
+#     north, west, south, east = coords
     
-    # Tratar a região NIN 4 que cruza a linha de data internacional
-    if nome_regiao == 'NIN 4':
-        # Primeira parte: de 160°E a 180°E
-        rect1 = patches.Rectangle((160, south), 20, north - south,
-                                linewidth=0, edgecolor='black', 
-                                facecolor=cores_regioes[nome_regiao], alpha=0.7)
-        ax.add_patch(rect1)
+#     # Tratar a região NIN 4 que cruza a linha de data internacional
+#     if nome_regiao == 'NIN 4':
+#         # Primeira parte: de 160°E a 180°E
+#         rect1 = patches.Rectangle((160, south), 20, north - south,
+#                                 linewidth=0, edgecolor='black', 
+#                                 facecolor=cores_regioes[nome_regiao], alpha=0.7)
+#         ax.add_patch(rect1)
         
-        # Segunda parte: de -180°W a -150°W
-        rect2 = patches.Rectangle((-180, south), 30, north - south,
-                                linewidth=0, edgecolor='black', 
-                                facecolor=cores_regioes[nome_regiao], alpha=0.7)
-        ax.add_patch(rect2)
+#         # Segunda parte: de -180°W a -150°W
+#         rect2 = patches.Rectangle((-180, south), 30, north - south,
+#                                 linewidth=0, edgecolor='black', 
+#                                 facecolor=cores_regioes[nome_regiao], alpha=0.7)
+#         ax.add_patch(rect2)
         
-    elif nome_regiao == 'NIN 3.4':
-        # Região NIN 3.4
-        rect = patches.Rectangle((west, south), east - west, north - south,
-                               linewidth=1, edgecolor='black', linestyle='--',
-                               facecolor='none', alpha=0.7)
-        ax.add_patch(rect)
+#     elif nome_regiao == 'NIN 3.4':
+#         # Região NIN 3.4
+#         rect = patches.Rectangle((west, south), east - west, north - south,
+#                                linewidth=1, edgecolor='black', linestyle='--',
+#                                facecolor='none', alpha=0.7)
+#         ax.add_patch(rect)
         
-    else:
-        rect = patches.Rectangle((west, south), east - west, north - south,
-                               linewidth=0, edgecolor='black', 
-                               facecolor=cores_regioes[nome_regiao], alpha=0.7)
-        ax.add_patch(rect)
+#     else:
+#         rect = patches.Rectangle((west, south), east - west, north - south,
+#                                linewidth=0, edgecolor='black', 
+#                                facecolor=cores_regioes[nome_regiao], alpha=0.7)
+#         ax.add_patch(rect)
         
-    # Handle para legenda
-    if nome_regiao == 'NIN 3.4':
-        handles.append(patches.Patch(facecolor='none', 
-                                    edgecolor='black', linewidth=1, linestyle='--', label=nome_regiao))
-    else:
-        handles.append(patches.Patch(facecolor=cores_regioes[nome_regiao], 
-                                    edgecolor='black', label=nome_regiao))
+#     # Handle para legenda
+#     if nome_regiao == 'NIN 3.4':
+#         handles.append(patches.Patch(facecolor='none', 
+#                                     edgecolor='black', linewidth=1, linestyle='--', label=nome_regiao))
+#     else:
+#         handles.append(patches.Patch(facecolor=cores_regioes[nome_regiao], 
+#                                     edgecolor='black', label=nome_regiao))
 
-# Configurar o mapa
-ax.set_xlim(-180, 180)
-ax.set_ylim(-60, 20)
-ax.set_xlabel('Longitude [°]')
-ax.set_ylabel('Latitude [°]')
+# # Configurar o mapa
+# ax.set_xlim(-180, 180)
+# ax.set_ylim(-60, 20)
+# ax.set_xlabel('Longitude [°]')
+# ax.set_ylabel('Latitude [°]')
 
-# Adicionar grade
-ax.grid(True, linestyle='--', alpha=0.5)
+# # Adicionar grade
+# ax.grid(True, linestyle='--', alpha=0.5)
 
-# Adicionar legenda
-ax.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, 1.15), 
-          ncol=4, frameon=False, fancybox=False)
+# # Adicionar legenda
+# ax.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, 1.15), 
+#           ncol=4, frameon=False, fancybox=False)
 
+# plt.tight_layout()
+# plt.savefig('Graficos/regioes_enso_global.svg', transparent=True, dpi=300, bbox_inches='tight')
+# plt.show()
+
+
+
+# Gráfico exemplo modelo linear
+from sklearn.linear_model import LinearRegression
+X = np.random.rand(100)
+y = np.sin(X * 2 * np.pi) + np.random.normal(0, 0.1, 100)
+model = LinearRegression()
+model.fit(X.reshape(-1, 1), y)
+plt.figure(figsize=(3, 3))
+plt.scatter(X, y, color="#4596F3", label='Dados')
+plt.plot(X, model.predict(X.reshape(-1, 1)), color="#FF7070", label='Regressão Linear')
+plt.xlabel('Variável Independente')
+plt.ylabel('Variável Dependente')
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), 
+          ncol=2, frameon=False, fancybox=False)
 plt.tight_layout()
-plt.savefig('Graficos/regioes_enso_global.svg', transparent=True, dpi=300, bbox_inches='tight')
-plt.show()
+plt.savefig('LateX\\figuras\modelo_linear_exemplo.svg', transparent = True)
+
 
 
 
