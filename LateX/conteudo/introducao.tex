@@ -75,15 +75,9 @@ outro lado, nos meses de verão, a geração atinge seus maiores valores.
 	{\fonte{o autor.}}
 \end{figure}
 
-Esse comportamento é natural e esperado, uma vez que a geração hidráulica é diretamente influenciada pelas condições
+Esse comportamento é esperado, uma vez que a geração hidráulica é diretamente influenciada pelas condições
 que afetam a vazão dos rios. No entanto, a ocorrência de eventos climáticos como o El Niño-Oscilação Sul (ENSO) pode
 favorecer condições que impactam diretamente no potencial de geração hidráulica. \cite{de2012influencia}
-
-Fenômenos como o ENSO são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que classifica os 
-eventos em três categorias: \textit{El-Niño} (EN), \textit{La-Niña} (LN) e neutro. A Figura \ref{fig:oni} mostra a 
-classificação dos eventos de EN e LN ocorridos entre 2000 e 2024, na qual a escala de cores indica a intensidade do 
-evento. Ao analisar a geração hidráulica bruta no mesmo período, observa-se que a ocorrência de eventos de EN e LN 
-pode estar associada a variações na geração.
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Índice ONI (Oceanic Niño Index)}
@@ -92,16 +86,24 @@ pode estar associada a variações na geração.
 	{\fonte{o autor.}}
 \end{figure}
 
-Fundamentalmente, em sistemas interligados cuja fonte hidráulica constitui a base da matriz elétrica, é essencial, 
-para um planejamento energético eficiente, otimizar o sistema de modo a considerar a incerteza associada às afluências futuras. 
-Dessa forma, estima-se o valor da geração hidrelétrica que poderia substituir a geração térmica a curto ou longo prazo, de 
-modo a minimizar os custos de operação do sistema e o risco de utilizar reservatórios de maneira desnecessária, garantindo 
+Fenômenos como o ENSO são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que classifica os 
+eventos em três categorias: \textit{El-Niño} (EN), \textit{La-Niña} (LN) e neutro. A Figura \ref{fig:oni} mostra a 
+classificação dos eventos de EN e LN ocorridos entre 2000 e 2024, na qual a escala de cores indica a intensidade do 
+evento, representado pela anomalia. Anomalias nada mais são que o desvio do valor observado em relação à média histórica
+de um determinado período.
+
+
+Fundamentalmente, no sistema elétrico brasileiro, cuja fonte hidráulica constitui a base da matriz, é essencial, para um
+planejamento energético eficiente, otimizar o sistema de modo a considerar a incerteza associada à disponibilidade de recursos
+hidrológicos futuros. Dessa forma, estima-se o valor da geração hidrelétrica que poderia substituir a geração térmica a curto
+ou longo prazo, de modo a reduzir os custos do sistema e o risco de utilizar reservatórios de maneira desnecessária, garantindo
 assim o atendimento à demanda futura, principalmente em casos de escassez hídrica.
 
-Os estudos de planejamento energético são realizados por meio de modelos computacionais como o NEWAVE, DECOMP e DESSEM, 
-do Centro de Pesquisas de Energia Elétrica (CEPEL), que consideram diferentes horizontes temporais: longo, médio e curto prazos, respectivamente. 
-Também há outras soluções disponíveis no mercado, como o PSR SDDP, que engloba todos os horizontes temporais. 
-Considerando o escopo deste trabalho, o modelo NEWAVE será brevemente apresentado no capítulo seguinte.
+Com a introdução de fontes como a eólica, a incerteza referente aos perfis de velocidade do vento também deve ser considerada
+para o planejamento energético. Os estudos de planejamento são realizados por meio de modelos computacionais como o NEWAVE, 
+DECOMP e DESSEM, do Centro de Pesquisas de Energia Elétrica (CEPEL), que consideram diferentes horizontes temporais: longo, 
+médio e curto prazos, respectivamente. Também há outras soluções disponíveis no mercado, como o PSR SDDP, que engloba todos
+os horizontes temporais. Considerando o escopo deste trabalho, o modelo NEWAVE será brevemente apresentado no capítulo seguinte.
 
 Embora esses modelos sejam amplamente utilizados pelo setor elétrico brasileiro, sendo consolidados como ferramentas
 confiáveis e essenciais para o planejamento energético, eles não consideram variáveis externas, como fenômenos climáticos
@@ -109,7 +111,7 @@ como o EN e LN, que podem impactar a geração de energia elétrica. Esses model
 vazões e velocidade do vento, que são obtidos a partir de medições locais, além de dados individuais de cada usina.
 
 \section{Objetivo}
-Sendo assim, o projeto tem como objetivo investigar um possível impacto de variáveis climáticas externas na geração 
+O projeto tem como objetivo investigar um possível impacto de variáveis climáticas externas na geração 
 de energia elétrica no Brasil, com foco nas fontes hidráulica, térmica e eólica. 
 
 Para tanto, foram empregadas técnicas computacionais para relacionar as séries históricas de geração com as séries de variáveis 
@@ -133,28 +135,24 @@ No capítulo 1, é feita uma breve introdução apresentando o contexto, motiva�
 breve análise da matriz elétrica é apresentada, com foco no histórico recente e no crescimento da geração eólica. Também
 são apresentadas as curvas de carga do SIN e de geração hidráulica. Uma breve contextualização acerca dos fenômenos do
 ENSO e a importância do modelo NEWAVE para o planejamento energético do país são apresentadas. Por fim, é apresentado
-o objetivo do trabalho e a estrutura do documento.
-
-O capítulo 2 apresenta um panorama acerca de trabalhos relacionados ao tema.
+o objetivo do trabalho e a estrutura do documento. O capítulo 2 apresenta um panorama acerca de trabalhos relacionados ao tema.
 
 No capítulo 3, a fundamentação teórica necessária para a compreensão do projeto é apresentada. São abordados os fatores
 que fazem com que os fenômenos do EN e LN impactem o regime de chuvas no Brasil e a sua relação com a geração de 
 energia elétrica. Também será feita uma breve introdução ao modelo NEWAVE,
 que é amplamente utilizado pelo setor elétrico brasileiro para planejamento energético. Por fim, serão apresentados os modelos 
-de previsão de séries temporais implementados, com foco no modelo neural, uma implementação baseada na arquitetura \
-textit{TSMixer} desenvolvida pela Google.
+de previsão de séries temporais implementados, com foco no modelo neural, uma implementação baseada na arquitetura 
+\textit{TSMixer} desenvolvida pela Google.
 
-O capítulo 4 apresenta a metodologia utilizada para a realização do projeto. Serão apresentados os conjuntos de dados
+O capítulo 4 mostra a metodologia utilizada para a realização do projeto. Serão apresentados os conjuntos de dados
 considerados e suas respectivas etapas de obtenção, tratamento e análise. Além disso, será apresentada a metodologia
 utilizada para implementação dos modelos de previsão, incluindo seus parâmetros e métricas de avaliação. \textit{Snippets}
 de códigos serão apresentados para facilitar a compreensão.
 
 O capítulo 5 apresenta os resultados obtidos a partir da implementação de cada modelo de previsão. Inicia-se com os resultados
 do modelo linear, seguido pelo modelo não linear e, por fim, o modelo neural. Para cada modelo, serão apresentados os
-resultados de previsão, métricas de avaliação e uma análise crítica dos resultados obtidos.
-
-Por fim, no capítulo 6, são apresentadas as considerações finais do trabalho, incluindo uma discussão final dos resultados
-obtidos, limitações observadas e sugestões para trabalhos futuros.
+resultados de previsão, métricas de avaliação e uma análise crítica dos resultados obtidos. No capítulo 6, serão apresentadas 
+as considerações finais.
 
 % \chapter{Trabalhos Relacionados}
 % Avaliação do Impacto de Secas Severas no Nordeste Brasileiro na Geração de Energia Elétrica Através do Modelo Newave: 

@@ -15,6 +15,11 @@ estudo da \citeonline{epe2023}, a ocorrência do fenômeno La Niña em 2021 foi 
 que afetou o Brasil nesse período, em decorrência da redução das afluências, ou seja, a quantidade de água que chega aos
 reservatórios das usinas hidrelétricas.
 
+De acordo com \citeonline{Sanchez2006}, o recurso associado à fonte eólica é diretamente afetado por variáveis climáticas,
+como densidade local do ar, precipitação, temperatura e cobertura de nuvens. Nesse sentido, o trabalho apresenta um sistema de 
+previsão estatística para a produção de energia eólica de curto prazo, destacando a necessidade de adaptabilidade 
+para lidar com as relações não lineares entre as variáveis climáticas e a geração eólica.
+
 Segundo o relatório da Comissão Permanente para Análise de Metodologias e Programas Computacionais do Setor Elétrico (CPAMP),
 constituída por instituições do setor elétrico como EPE, ONS e CEPEL, a incorporação de dados de variáveis climáticas,
 como o fenômeno ENSO, aos modelos computacionais é ativamente discutida devido a relação entre as séries históricas de 
@@ -34,6 +39,7 @@ por \citeonline{Vaswani2017}, podem produzir resultados inferiores quando compar
 surge então a arquitetura \textit{TSMixer}, proposta por \citeonline{Chen2023}. Essa arquitetura, embora mais simples, produz resultados 
 consideravelmente superiores com uma fração do custo computacional. 
 
+
 % ----------------------------------------------------------------------------------------------------------------------
 \chapter{Fundamentação Teórica}
 \section{Impacto do ENSO na Geração de Energia Elétrica}
@@ -51,18 +57,19 @@ todas as regiões do Brasil. \cite{Andreoli2016}
 
 Os impactos em cada região estão resumidos a seguir, de acordo com \citeonline{Capozzoli2017}:
 \begin{itemize}
-	\item \textbf{Sul:} A região Sul é uma das mais consistentemente afetadas. Eventos de El Niño tendem a causar precipitação acima da média,
+	\item \textbf{Sul:} a região Sul é uma das mais consistentemente afetadas. Eventos de El Niño tendem a causar precipitação acima da média,
 particularmente durante a primavera e o verão, enquanto eventos de La Niña estão associados à condições de seca.
-	\item \textbf{Sudeste:} A região Sudeste apresenta uma resposta mais complexa, sendo consdierada uma zona de transição. A bacia do Rio Paraná,
+	\item \textbf{Sudeste:} a região Sudeste apresenta uma resposta mais complexa, sendo consdierada uma zona de transição. A bacia do Rio Paraná,
 em especial, apresenta sensibilidade aos fenômenos do ENSO, tendo apresentado tendência de aumento de vazão durante alguns
 eventos de El Niño.
-	\item \textbf{Norte/Nordeste:} Para as regiões Norte e Nordeste, eventos de El Niño estão associados a períodos de seca, enquanto eventos de
+	\item \textbf{Norte/Nordeste:} para as regiões Norte e Nordeste, eventos de El Niño estão associados a períodos de seca, enquanto eventos de
 La Niña tendem a trazer chuvas acima da média. No entanto, é importante destacar que outros fenômenos atmosféricos podem
 interferir com esses padrões, modulando os efeitos do ENSO.
 \end{itemize}
 
 Sendo assim, verifica-se que as variações induzidas pelos fenômenos do ENSO traduzem-se diretamente em variações nas
 vazões dos rios que alimentam as bacias, que por sua vez impactam o potencial de geração da fonte hidráulica.
+
 
 % ----------------------------------------------------------------------------------------------------------------------
 \section{O Modelo NEWAVE}
@@ -105,7 +112,7 @@ medição e séries históricas de velocidade do vento.
 
 \subsection{Dados de Entrada}
 O modelo requer um conjunto de dados de entrada que inclui as características das usinas, dados dos subsistemas, demanda,
-séries históricas de vazões e ventos, cronogramas de expansão, restrições operativas, dentre outros. Observa-se, portanto, 
+séries históricas de vazões e ventos, cronogramas de expansão, restrições operativas, dentre outros. Observa-se
 que todos os dados de entrada são locais e, portanto, o modelo não considera variáveis externas, como fenomênos climáticos
 como o EN e LN, que podem impactar a geração de energia elétrica. 
 
@@ -114,10 +121,14 @@ estão marcados como "não implementados". Dessa forma, entende-se que o modelo 
 dessas variáveis. No entanto, vale destacar que essas variáveis externas podem ser utilizadas para elaborar as séries históricas de 
 vazões e velocidade de ventos utilizadas como dados de entrada. 
 
+
 % ----------------------------------------------------------------------------------------------------------------------
 \section{Modelos Linear e Não-linear}
 Nesse projeto, foram utilizados modelos de regressão linear e não linear a fim de se obter uma \textit{baseline} para
-comparação com o modelo neural. Para ambos os casos, a biblioteca \textit{scikit-learn} foi utilizada.
+comparação com o modelo neural. Para ambos os casos, a biblioteca \textit{scikit-learn} foi utilizada, uma biblioteca
+que contém diversos algoritmos para análise de dados, incluindo modelos de classificação e regressão. A biblioteca
+é construída utilizando as bibliotecas \textit{NumPy} e \textit{SciPy}, que fornecem suporte para operações
+matemáticas e científicas, amplamente utilizadas na comunidade de ciência de dados e aprendizado de máquina.
 
 \subsection{Modelo Linear}
 O modelo linear utilizado foi o \textit{LinearRegression} da biblioteca \textit{scikit-learn}. Ele consiste na
@@ -152,7 +163,16 @@ do modelo.
 Ainda que se espere que as relações entre os dados seja altamente não linear, o método é capaz de capturar algumas
 das relações lineares entre as variáveis, além de servir como ponto de partida para as próximas análises.
 
-\subsection{Modelos Não-lineares: Random Forest e Gradient Boosting}
+
+% ----------------------------------------------------------------------------------------------------------------------
+\subsection{Modelos Não-linear}
+O modelo de regressão não linear utilizado foi o \textit{RandomForestRegressor} da biblioteca \textit{scikit-learn}.
+Esse modelo é baseado em árvores de decisão e é capaz de capturar relações não lineares entre as variáveis de entrada e 
+a variável de interesse. A figura ... ilustra a estrutura básica de uma árvore de decisão.
+
+O modelo funciona a partir de árvores de decisão que são construídas a partir dos dados de entrada. Cada árvore é treinada
+em um \textit{subset} aleatório dos dados. Durante a bifurcação, o modelo estabelece o melhor caminho através da
+combinação de subconjuntos das variáveis de entrada, de forma a minimizar o erro na previsão da variável de interesse.
 
 
 % ----------------------------------------------------------------------------------------------------------------------
@@ -165,13 +185,6 @@ a arquitetura do modelo utilizado.
 O \textit{Perceptron} é um modelo de rede neural artificial proposto por \citeonline{Rosenblatt1958}, inspirado no
 funcionamento de neurônios biológicos. A figura \ref{fig:perceptron} ilustra a estrutura básica de um Perceptron.
 
-\begin{figure}[!ht]
-	\IBGEtab{\caption{Estrutura do Perceptron}
-			 \label{fig:perceptron}}
-	{\includesvg[scale=1]{figuras/perceptron}}
-	{\fonte{o autor.}}
-\end{figure}
-
 Um perceptron recebe um conjunto $ X = [x_1, x_2, ..., x_n] $ de entradas,
 com cada $ x_i $ associada a um peso aleatório $ w_i $. O Perceptron então calcula a soma ponderada das entradas e aplica uma 
 função de ativação para produzir a saída. Matematicamente, isso é dado por:
@@ -181,10 +194,17 @@ função de ativação para produzir a saída. Matematicamente, isso é dado por
 \end{equation}
 em que $ \hat{y} $ é a saída do Perceptron e $ f $ a função de ativação que, para esse caso, usa-se a função degrau $ u(t) $.
 
+\begin{figure}[!ht]
+	\IBGEtab{\caption{Estrutura do Perceptron}
+			 \label{fig:perceptron}}
+	{\includesvg[scale=1]{figuras/perceptron}}
+	{\fonte{o autor.}}
+\end{figure}
+
 O Perceptron é limitado a resolver problemas de classificação linearmente separáveis. Ou seja, problemas nos quais é
 possível traçar uma linha (ou hiperplano) que separe as classes de forma clara. Para essas aplicações, o Perceptron
 atualiza os pesos de modo iterativo durante o treinamento, através da taxa de aprendizado $ r $, conforme a equação 
-\ref{eq:atualizacao_perceptron}, que demonstra o aprendizado através da atualização dos pesos no tempo:
+\ref{eq:atualizacao_perceptron}, que demonstra a atualização dos pesos no tempo:
 \begin{equation}
 \label{eq:atualizacao_perceptron}
 w_i(t+1) \leftarrow w_i(t) + r (y(t) - \hat{y}(t)) x_i
@@ -197,6 +217,7 @@ Para problemas mais complexos, como aqueles que envolvem relações não-lineare
 são necessárias.
 
 
+% ----------------------------------------------------------------------------------------------------------------------
 \subsection{Multi Layer Perceptrons (MLPs)}
 MLPs surgiram como uma evolução dos \textit{Perceptrons} simples, com a finalidade de permitir a modelagem de relações
 não lineares, e são a base para o \textit{deep learning}, metodologia que utiliza redes neurais com inúmeras camadas para
@@ -209,21 +230,100 @@ resolução de tarefas complexas. A figura \ref{fig:mlp_1} ilustra a estrutura b
 	{\fonte{o autor.}}
 \end{figure}
 
-Essas estruturas são compostas por neorônios (perceptrons) interconectados e organizados em camadas. Cada neurônio de uma camada está 
-conectado a todos os neurônios das camadas adjacentes (\textit{fully connected}). A primeira e última camadas são chamadas de 
-camada de entrada e camada de saída, respectivamente, enquanto as camadas intermediárias são chamadas de camadas ocultas.
+Essas estruturas são compostas por neurônios (perceptrons) interconectados e organizados em camadas. Cada neurônio de uma 
+camada está conectado a todos os outros das camadas adjacentes (\textit{fully connected}). A primeira e última camadas são 
+chamadas de camada de entrada e camada de saída, respectivamente, enquanto as camadas intermediárias são chamadas de 
+camadas ocultas.
 
-MLPs são treinadas utilizando o algoritmo de \textit{backpropagation}, ou retropropagação, usado para atualizar os pesos
-e viéses dos neurônios de forma a minimizar o erro entre a saída prevista e a saída real. O algoritmo de retropropagação
-funciona da seguinte forma:
-\begin{itemize}
-	\item \textbf{Forward Pass:} Os dados de entrada são propagados através da rede, camada por camada, até a camada de saída.
-	\item \textbf{Cálculo do Erro:} O erro é calculado comparando a saída prevista com a saída real.
-	\item \textbf{Backward Pass:} O erro é propagado de volta através da rede, camada por camada, para calcular os gradientes dos pesos e viéses.
-	\item \textbf{Atualização dos Pesos:} Os pesos e viéses são atualizados utilizando os gradientes calculados e uma taxa de aprendizado.
-\end{itemize}
+MLPs são treinadas utilizando o algoritmo de \textit{backpropagation}, ou retropropagação, que ajusta iterativamente os 
+pesos e vieses da rede de forma a minimizar o erro entre a saída prevista e a saída real. O algoritmo funciona em um ciclo 
+de quatro etapas:
 
-Esse processo é repetido por várias iterações (épocas) até que o modelo converja para uma solução satisfatória.
+\begin{enumerate}
+\item \textbf{Forward Pass:}
+
+Os dados de entrada são propagados pelos neurônios até a camada de saída. A saída de cada neurônio é calculada em duas fases. 
+Primeiro, a entrada ponderada $ z_i^{(l)} $ para o neurônio $ i $ da camada
+$ l $ é a soma das saídas da camada anterior, $ v_j^{(l-1)} $, multiplicadas pelos seus respectivos pesos $ w_{ij}^{(l)} $, 
+mais um viés $ b_i^{(l)} $:
+\begin{equation}
+\label{eq:soma_ponderada_u}
+z_i^{(l)} = \sum_{j} (w_{ij}^{(l)} v_j^{(l-1)}) + b_i^{(l)}
+\end{equation}
+Em seguida, a saída ativada $ v_i^{(l)} $ é obtida aplicando-se a função de ativação $ \sigma $:
+\begin{equation}
+\label{eq:ativacao_v}
+v_i^{(l)} = \sigma(z_i^{(l)})
+\end{equation}
+Esse processo é ilustrado na parte inferior da figura \ref{fig:mlp_1}.
+
+\item \textbf{Cálculo do Erro:}
+
+Uma função de perda $ E $ é usada para quantificar o erro entre a saída $ \hat{y} $ da rede e o valor real $ y $. 
+Para tarefas de regressão, costuma-se usar o Erro Quadrático Médio (MSE):
+\begin{equation}
+\label{eq:mse_v}
+E = \frac{1}{n} \sum_{i=1}^{n} (y_{i} - \hat{y}_i)^2
+\end{equation}
+em que $ n $ é o número de neurônios na camada de saída.
+
+\item \textbf{Backward Pass:} 
+
+O erro $ E $ é propagado de volta pela rede até a primeira camada. Para isso, a regra da cadeia é utilizada para determinar 
+o gradiente da função de perda em relação a cada peso e viés da rede. Para a camada $ L $ de saída, o erro $ \delta_i^{(L)} $ 
+é calculado diretamente para cada neurônio $ i $:
+\begin{equation}
+\label{eq:erro_saida_v}
+\delta_i^{(L)} = \frac{\partial E}{\partial v_i^{(L)}} \cdot \sigma'(z_i^{(L)})
+\end{equation}
+em que $\frac{\partial E}{\partial v_i^{(L)}}$ é a derivada da perda em relação à saída do neurônio $i$ e $\sigma'$ é a 
+derivada da função de ativação. Caso seja utilizado o MSE e sabendo que $ v_i^{(L)} = \hat{y_i} $, a equação 
+\ref{eq:erro_saida_v} torna-se:
+\begin{equation}
+\label{eq:erro_saida_mse_v}
+\delta_i^{(L)} = (\hat{y}_i - y_i) \cdot \sigma'(z_i^{(L)})
+\end{equation}
+
+Para as camadas ocultas, o erro $ \delta_i^{(l)} $ para um neurônio $ i $ na camada $ l $ é calculado recursivamente, 
+com base nos erros da camada $ l+1 $ seguinte:
+\begin{equation}
+\label{eq:erro_oculta_v}
+\delta_i^{(l)} = \left( \sum_{j} \delta_j^{(l+1)} w_{ji}^{(l+1)} \right) \cdot \sigma'(z_i^{(l)})
+\end{equation}
+em que a soma percorre todos os neurônios $j$ da camada seguinte, ponderando seus erros $\delta_j^{(l+1)}$ pelos 
+pesos $w_{ji}^{(l+1)}$ que os conectam ao neurônio $i$ da camada atual.
+
+Com o termo $\delta_i^{(l)}$ para cada neurônio, os gradientes dos pesos e vieses são encontrados:
+\begin{equation}
+\label{eq:gradiente_pesos_v}
+\frac{\partial E}{\partial w_{ij}^{(l)}} = \delta_i^{(l)} v_j^{(l-1)}
+\end{equation}
+\begin{equation}
+\label{eq:gradiente_bias_v}
+\frac{\partial E}{\partial b_i^{(l)}} = \delta_i^{(l)}
+\end{equation}
+em que $v_j^{(l-1)}$ é a saída do neurônio $j$ da camada anterior $l-1$.
+
+\newpage
+\item \textbf{Atualização dos Pesos:} 
+
+Finalmente, cada peso e viés da rede é atualizado na direção oposta à do seu gradiente, 
+de modo a reduzir o erro na próxima iteração:
+\begin{equation}
+\label{eq:atualizacao_mlp_v}
+w_{ij}^{(l)}(t+1) \leftarrow w_{ij}^{(l)}(t) - r \frac{\partial E}{\partial w_{ij}^{(l)}}
+\end{equation}
+\begin{equation}
+\label{eq:atualizacao_bias_v}
+b_i^{(l)}(t+1) \leftarrow b_i^{(l)}(t) - r \frac{\partial E}{\partial b_i^{(l)}}
+\end{equation}
+em que $t$ representa a iteração atual e $r$ é a taxa de aprendizado, que controla a magnitude da atualização.
+\end{enumerate}
+
+Em resumo, o processo de aprendizado de um MLP envolve a propagação dos dados de entrada pela rede, o cálculo do erro entre 
+a saída prevista e a real, a retropropagação do erro para calcular os gradientes e a atualização dos pesos e vieses para 
+minimizar o erro. Esse processo é repetido até que a rede atinja um nível satisfatório de desempenho ou até que um critério
+de parada seja atingido, como um número máximo de iterações ou uma tolerância de erro.	
 
 
 % ----------------------------------------------------------------------------------------------------------------------

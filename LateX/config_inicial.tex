@@ -21,6 +21,7 @@
 \usepackage{graphicx}            																						% Inclusão de gráficos
 \usepackage{amsfonts}            																						% Símbolos
 \usepackage[none]{hyphenat}      																						% Sem separação de sílabas
+\usepackage{amssymb}            																						% Símbolos
 \usepackage{pdfpages}            																						% Acrescentar pdf ficha bibliográfica
 \usepackage{caption}
 \usepackage{titlesec}            																						% Modificar títulos
@@ -53,17 +54,17 @@ abnt-etal-list=3                 																						% abreviar com mais de 3 
 
 \titleformat{\chapter}[display]																							% Formatação do título do capítulo
     {\normalfont\huge\bfseries}
-    {Capítulo \thechapter}{20pt}
+    {Capítulo \thechapter}{0pt}
     {}
     {}
-\titlespacing*{\chapter}{0pt}{-20pt}{40pt}																				% Espaçamento entre o título do capítulo e o texto
+\titlespacing*{\chapter}{0pt}{-40pt}{20pt}																	% Espaçamento entre o título do capítulo e o texto
 
 \titleformat{name=\chapter,numberless}[display]
-  {\normalfont\huge\bfseries\raggedright} % Use \raggedright for left alignment
-  {}                                      % No label for unnumbered chapters
-  {0pt}                                   % Separation (not applicable here)
-  {}                                      % Code before title
-\titlespacing*{name=\chapter,numberless}{0pt}{-20pt}{40pt} % Adjust spacing as for numbered chapters
+  {\normalfont\huge\bfseries\raggedright}
+  {}
+  {0pt}
+  {}
+\titlespacing*{name=\chapter,numberless}{0pt}{-20pt}{40pt}
 
 \setlength{\parindent}{1.25cm}
 \linespread{1.5}																										% Espaçamento entre linhas
