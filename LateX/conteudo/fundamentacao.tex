@@ -123,6 +123,7 @@ vazões e velocidade de ventos utilizadas como dados de entrada.
 
 
 % ----------------------------------------------------------------------------------------------------------------------
+\newpage
 \section{Modelos Linear e Não-linear}
 Nesse projeto, foram utilizados modelos de regressão linear e não linear a fim de se obter uma \textit{baseline} para
 comparação com o modelo neural. Para ambos os casos, a biblioteca \textit{scikit-learn} foi utilizada, uma biblioteca
@@ -165,7 +166,7 @@ das relações lineares entre as variáveis, além de servir como ponto de parti
 
 
 % ----------------------------------------------------------------------------------------------------------------------
-\subsection{Modelos Não-linear}
+\subsection{Modelo Não-linear}
 O modelo de regressão não linear utilizado foi o \textit{RandomForestRegressor} da biblioteca \textit{scikit-learn}.
 Esse modelo é baseado em árvores de decisão e é capaz de capturar relações não lineares entre as variáveis de entrada e 
 a variável de interesse. A figura ... ilustra a estrutura básica de uma árvore de decisão.
@@ -174,8 +175,18 @@ O modelo funciona a partir de árvores de decisão que são construídas a parti
 em um \textit{subset} aleatório dos dados. Durante a bifurcação, o modelo estabelece o melhor caminho através da
 combinação de subconjuntos das variáveis de entrada, de forma a minimizar o erro na previsão da variável de interesse.
 
+A previsão final é obtida através da média das previsões de todas as árvores, o que ajuda a reduzir o \textit{overfitting}
+e melhora a generalização do modelo. A equação \ref{eq:regressao_random_forest} representa a previsão do modelo,
+\begin{equation}
+\label{eq:regressao_random_forest}
+\hat{y} = \frac{1}{T} \sum_{t=1}^{T} y_t(x)
+\end{equation}
+em que $T$ é o número de árvores, $y_t(x)$ é a previsão da $t$-ésima árvore e $\hat{y}$ é a previsão final do modelo.
+
+
 
 % ----------------------------------------------------------------------------------------------------------------------
+\newpage
 \section{Modelo Neural}
 Antes de apresentar o modelo neural, será feita uma breve introdução a respeito de alguns conceitos importantes,
 como o \textit{Perceptron} e os \textit{Multi Layer Perceptrons} (MLPs). Esses conceitos são fundamentais para compreender
@@ -239,11 +250,9 @@ MLPs são treinadas utilizando o algoritmo de \textit{backpropagation}, ou retro
 pesos e vieses da rede de forma a minimizar o erro entre a saída prevista e a saída real. O algoritmo funciona em um ciclo 
 de quatro etapas:
 
-\begin{enumerate}
-\item \textbf{Forward Pass:}
-
-Os dados de entrada são propagados pelos neurônios até a camada de saída. A saída de cada neurônio é calculada em duas fases. 
-Primeiro, a entrada ponderada $ z_i^{(l)} $ para o neurônio $ i $ da camada
+\begin{itemize}
+\item \textbf{Forward Pass:} os dados de entrada são propagados pelos neurônios até a camada de saída. A saída de cada 
+neurônio é calculada em duas fases. Primeiro, a entrada ponderada $ z_i^{(l)} $ para o neurônio $ i $ da camada
 $ l $ é a soma das saídas da camada anterior, $ v_j^{(l-1)} $, multiplicadas pelos seus respectivos pesos $ w_{ij}^{(l)} $, 
 mais um viés $ b_i^{(l)} $:
 \begin{equation}
@@ -257,21 +266,17 @@ v_i^{(l)} = \sigma(z_i^{(l)})
 \end{equation}
 Esse processo é ilustrado na parte inferior da figura \ref{fig:mlp_1}.
 
-\item \textbf{Cálculo do Erro:}
-
-Uma função de perda $ E $ é usada para quantificar o erro entre a saída $ \hat{y} $ da rede e o valor real $ y $. 
-Para tarefas de regressão, costuma-se usar o Erro Quadrático Médio (MSE):
+\item \textbf{Cálculo do Erro:} uma função de perda $ E $ é usada para quantificar o erro entre a saída $ \hat{y} $ da 
+rede e o valor real $ y $. Para tarefas de regressão, costuma-se usar o Erro Quadrático Médio (MSE):
 \begin{equation}
 \label{eq:mse_v}
 E = \frac{1}{n} \sum_{i=1}^{n} (y_{i} - \hat{y}_i)^2
 \end{equation}
 em que $ n $ é o número de neurônios na camada de saída.
 
-\item \textbf{Backward Pass:} 
-
-O erro $ E $ é propagado de volta pela rede até a primeira camada. Para isso, a regra da cadeia é utilizada para determinar 
-o gradiente da função de perda em relação a cada peso e viés da rede. Para a camada $ L $ de saída, o erro $ \delta_i^{(L)} $ 
-é calculado diretamente para cada neurônio $ i $:
+\item \textbf{Backward Pass:} o erro $ E $ é propagado de volta pela rede até a primeira camada. Para isso, a regra da cadeia 
+é utilizada para determinar o gradiente da função de perda em relação a cada peso e viés da rede. Para a camada $ L $ de saída, 
+o erro $ \delta_i^{(L)} $ é calculado diretamente para cada neurônio $ i $:
 \begin{equation}
 \label{eq:erro_saida_v}
 \delta_i^{(L)} = \frac{\partial E}{\partial v_i^{(L)}} \cdot \sigma'(z_i^{(L)})
@@ -304,10 +309,8 @@ Com o termo $\delta_i^{(l)}$ para cada neurônio, os gradientes dos pesos e vies
 \end{equation}
 em que $v_j^{(l-1)}$ é a saída do neurônio $j$ da camada anterior $l-1$.
 
-\newpage
-\item \textbf{Atualização dos Pesos:} 
-
-Finalmente, cada peso e viés da rede é atualizado na direção oposta à do seu gradiente, 
+% \newpage
+\item \textbf{Atualização dos Pesos:} finalmente, cada peso e viés da rede é atualizado na direção oposta à do seu gradiente, 
 de modo a reduzir o erro na próxima iteração:
 \begin{equation}
 \label{eq:atualizacao_mlp_v}
@@ -318,7 +321,7 @@ w_{ij}^{(l)}(t+1) \leftarrow w_{ij}^{(l)}(t) - r \frac{\partial E}{\partial w_{i
 b_i^{(l)}(t+1) \leftarrow b_i^{(l)}(t) - r \frac{\partial E}{\partial b_i^{(l)}}
 \end{equation}
 em que $t$ representa a iteração atual e $r$ é a taxa de aprendizado, que controla a magnitude da atualização.
-\end{enumerate}
+\end{itemize}
 
 Em resumo, o processo de aprendizado de um MLP envolve a propagação dos dados de entrada pela rede, o cálculo do erro entre 
 a saída prevista e a real, a retropropagação do erro para calcular os gradientes e a atualização dos pesos e vieses para 
@@ -329,29 +332,60 @@ de parada seja atingido, como um número máximo de iterações ou uma tolerânc
 % ----------------------------------------------------------------------------------------------------------------------
 \subsection{Arquitetura TSMixer}
 A arquitetura proposta por \citeonline{Chen2023} é uma abordagem inovadora para previsão de séries temporais. Ela utiliza
-camadas de \textit{Multi Layer Perceptrons} (MLPs) em cascata, denominadas de \textit{Mixing Layers}, para capturar as relações
-na dimensão temporal, bem como na dimensão das características (variáveis). A figura \ref{fig:arquitetura_modelo_neural} ilustra 
-a arquitetura do modelo.
+MLPs em cascata, denominadas de \textit{Mixing Layers}, para capturar as relações na dimensão temporal, bem como na dimensão das 
+características (variáveis).
 
-A mistura no domínio do tempo permite ao modelo capturar os padrões temporais da série estudada. Essa etapa consiste
-em uma MLP de camada única que opera ao longo da dimensão do tempo. Essa abordagem se mostrou eficaz para aprender
-padrões temporais complexos, como sazonalidades e tendências, sem a necessidade de mecanismos de atenção, como os utilizados
-na arquitetura \textit{Transformer}.
+A mistura no domínio do tempo permite ao modelo capturar os padrões temporais da série. Essa abordagem se mostrou 
+eficaz para aprender padrões temporais como sazonalidades e tendências, sem a necessidade de mecanismos de atenção, 
+como os utilizados na arquitetura \textit{Transformer}.
 
-A mistura no domínio das características permite ao modelo capturar as relações entre as variáveis. Essa etapa consiste em
-MLPs de camada dupla que operam ao longo da dimensão das características. Ou seja, as relações entre as váriaveis em um
-determinado instante de tempo são capturadas. Essa abordagem é eficaz para aprender interações entre variáveis, como
-correlações e dependências, sem a necessidade de mecanismos de atenção.
+A mistura no domínio das características permite ao modelo capturar as relações entre as variáveis em cada instante de tempo.
+Ou seja, o modelo é capaz de aprender como as variáveis interagem entre si ao longo da série temporal. Essa abordagem é 
+eficaz para capturar correlações e dependências, sem a necessidade de mecanismos de atenção.
 
-\begin{figure}[!ht]
+A arquitetura emprega as técnicas de \textit{dropout} e resíduo durante o treinamento. O objetivo é evitar \textit{overfitting}
+e melhorar a generalização do modelo. A cada passo de treinamento (época), o \textit{dropout} desliga aleatoriamente um
+número de neurônios em uma camada. Dessa forma, a rede é "forçada" a não depender de um conjunto pequeno de neurônios,
+fazendo com que o aprendizado seja distribuído entre entre os demais neurônios da camada. Essa abordagem diminui a chance
+do modelo apenas memorizar os dados de treinamento (\textit{overfitting}).
+
+A técnica de resíduo é usada para permitir que a entrada de uma camada seja somada à sua saída. O objetivo é manter o
+processo de aprendizado eficiente, evitando o efeito de \textit{vanishing gradient}, no qual o gradiente do erro se torna
+muito pequeno ao ser propagado às camadas iniciais pelo algoritmo de \textit{backpropagation}.
+
+\begin{figure}[!h]
 	\IBGEtab{\caption{Arquitetura do modelo neural usado}
 			 \label{fig:arquitetura_modelo_neural}}
-	{\includesvg[scale=.3]{figuras/tsmixer-1_edit}}
-	{\fonte{Adaptado de \citeonline{Chen2023}}}
+	{\includesvg[scale=.95]{figuras/tsmixer_1}}
+	{\fonte{o autor (adaptado de \citeonline{Chen2023}).}}
 \end{figure}
 
+A figura \ref{fig:arquitetura_modelo_neural} ilustra a arquitetura do modelo. As colunas das entradas representam diferentes
+variáveis e as linhas são os instantes de tempo. As operações de mistura são realizadas linha a linha. 
 
+As MLPs no domínio do tempo tem seus pesos compartilhados entre todas a todas as variáveis, enquanto as MLPs no domínio das 
+características tem seus pesos compartilhados entre todos os instantes de tempo. Para a projeção final, uma camada totalmente 
+conectada é usada para mapear o tamanho da entrada (contexto) para o tamanho da saída (previsão). As etapas estão descritas a seguir:
 
+\begin{itemize}
+	\item \textbf{Mixing Temporal}: modela padrões temporais da série. Constitui uma única camada de neurônios totalmente
+conectada (MLP de camada única), seguida de uma função de ativação e \textit{dropout}. A entrada é transposta para aplicar 
+as conexões no domínio do tempo, ou seja, as entradas $ X_i = [x_i(t_1), x_i(t_2), \dots x_i(t_n)] $ são cada variável em todos 
+os instantes de tempo, permitindo que o modelo capture os padrões temporais de cada variável utilizando os mesmos pesos.
+A saída é transposta novamente para manter a forma original da entrada.
 
+	\item \textbf{Mixing de Características}: modela relações entre as variáveis em cada instante de tempo. Constitui
+duas camadas totalmente conectadas (MLPs de camada dupla), também com uma função de ativação e \textit{dropout}. As conexões
+são aplicadas no domínio das características, ou seja, as entradas $ T_i = [t_i(x_1), t_i(x_2), \dots t_i(x_n)] $ são
+todas as variáveis em um instante de tempo, permitindo ao modelo capturar as relações entre elas, também utilizando os
+mesmos pesos.
 
-\subsection{Modelo Tiny Time Mixer}
+	\item \textbf{Projeção Temporal}: projetam a saída, mapeando o tamanho da janela de entrada (contexto) para o tamanho 
+da janela de saída (previsão). Constitui uma camada totalmente conectada aplicada no domínio do tempo.
+\end{itemize}
+
+\citeonline{Chen2023} também propõem uma variante para uso de variáveis exógenas, que são variáveis auxiliares que podem
+explicar o comportamento da variável de interesse. No contexto deste projeto, as variáveis exógenas são os dados referentes
+ao fenômeno ENSO, como os índices de TSM. Considerando que essa variante ainda não foi disponibilizada publicamente,
+para esse projeto foi utilizada uma implementação da arquitetura TSMixer com suporte a variáveis exógenas,
+disponibilizada por \citeonline{Ekambaram2024}, denominada de \textit{Tiny Time Mixer}.

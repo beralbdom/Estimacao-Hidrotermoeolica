@@ -99,21 +99,21 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
 
 
-# Gráfico exemplo modelo linear
-from sklearn.linear_model import LinearRegression
-X = np.random.rand(100)
-y = np.sin(X * 2 * np.pi) + np.random.normal(0, 0.1, 100)
-model = LinearRegression()
-model.fit(X.reshape(-1, 1), y)
-plt.figure(figsize=(3, 3))
-plt.scatter(X, y, color="#4596F3", label='Dados')
-plt.plot(X, model.predict(X.reshape(-1, 1)), color="#FF7070", label='Regressão Linear')
-plt.xlabel('Variável Independente')
-plt.ylabel('Variável Dependente')
-plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), 
-          ncol=2, frameon=False, fancybox=False)
-plt.tight_layout()
-plt.savefig('LateX\\figuras\modelo_linear_exemplo.svg', transparent = True)
+# # Gráfico exemplo modelo linear
+# from sklearn.linear_model import LinearRegression
+# X = np.random.rand(100)
+# y = np.sin(X * 2 * np.pi) + np.random.normal(0, 0.1, 100)
+# model = LinearRegression()
+# model.fit(X.reshape(-1, 1), y)
+# plt.figure(figsize=(3, 3))
+# plt.scatter(X, y, color="#4596F3", label='Dados')
+# plt.plot(X, model.predict(X.reshape(-1, 1)), color="#FF7070", label='Regressão Linear')
+# plt.xlabel('Variável Independente')
+# plt.ylabel('Variável Dependente')
+# plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), 
+#           ncol=2, frameon=False, fancybox=False)
+# plt.tight_layout()
+# plt.savefig('LateX\\figuras\modelo_linear_exemplo.svg', transparent = True)
 
 
 
@@ -200,7 +200,7 @@ plt.savefig('LateX\\figuras\modelo_linear_exemplo.svg', transparent = True)
 # ger_sol = geracao[['Fotovoltaica']]
 # ger_ter = geracao[['Térmica']]
 
-# # indices_df = pd.read_csv('Exportado/teleconexoes_NOVO.csv').set_index('Data')
+
 
 # ger_hidr.index = pd.to_datetime(ger_hidr.index, format = '%Y-%m-%d %H:%M:%S')
 # ger_eol.index = pd.to_datetime(ger_eol.index, format = '%Y-%m-%d %H:%M:%S')
@@ -255,16 +255,18 @@ plt.savefig('LateX\\figuras\modelo_linear_exemplo.svg', transparent = True)
 
 
 # Gráfico do índice ONI ---------------------------------------------------------------------------------------------- #
+# indices_df = pd.read_csv('Exportado/teleconexoes.csv').set_index('Data')
 # fig, ax = plt.subplots(figsize=(6, 3))
 # oni = indices_df['ONI']
 # oni = oni[oni.index >= '2000-01-01']
 # vmin = oni.min(); vmax = oni.max()
 # norm = plt.Normalize(vmin, vmax)
 # cmap = plt.get_cmap('coolwarm')
+# # cmap = ListedColormap(["#BBD9FA", "#FFFFFF", "#f7b6b0",])
 # ax.plot(oni.index, oni, color='black', label='ONI', alpha = 1, linewidth = 0.66)
 # ax.set_ylim(-2, 3)
 
-# for i in range(len(oni) - 1):
+# for i in range(len(oni) - 1): 
 #     ax.fill_between(oni.index[i:i+20], oni[i:i+20], color=cmap(norm(oni[i])), alpha=1)
 
 # sm = plt.cm.ScalarMappable(cmap = cmap, norm = norm)
@@ -278,29 +280,32 @@ plt.savefig('LateX\\figuras\modelo_linear_exemplo.svg', transparent = True)
 # ax.set_ylabel('Anomalia')
 # ax.set_xlabel('Série histórica')
 # plt.tight_layout()
+# plt.show()
 # plt.savefig('Graficos/oni.svg', transparent = True)
 
 
 # ---
-# geracao_yearly = geracao.resample('YE').sum()
-# sorted_columns = geracao_yearly.sum().sort_values(ascending = False).index
-# geracao_yearly_sorted = geracao_yearly[sorted_columns]
+geracao = pd.read_csv('Exportado/geracao_fontes_mensal_MWmed.csv', usecols = ['Data', 'Hidráulica', 'Térmica', 'Eólica', 'Fotovoltaica', 'Outras']).set_index('Data')  
+geracao.index = pd.to_datetime(geracao.index, format='%Y-%m-%d')
+geracao = geracao[geracao.index.year <= 2024]  # Filtrando os dados de geração para o período desejado
+geracao_yearly = geracao.resample('YE').sum()
+sorted_columns = geracao_yearly.sum().sort_values(ascending = False).index
+geracao_yearly_sorted = geracao_yearly[sorted_columns]
 
-# carga_df = carga_df.resample('YE').sum()
-# carga_df.index = carga_df.index.year
-# geracao_percentage_sorted = geracao_yearly_sorted.div(geracao_yearly_sorted.sum(axis = 1), axis = 0) * 100
-# geracao_percentage_sorted.index = geracao_percentage_sorted.index.year
+geracao_percentage_sorted = geracao_yearly_sorted.div(geracao_yearly_sorted.sum(axis = 1), axis = 0) * 100
+geracao_percentage_sorted.index = geracao_percentage_sorted.index.year
 
-# from matplotlib.colors import ListedColormap
-# cmap = ListedColormap(['#3867ff', '#ff6038', '#3E944F'])
-# ax = geracao_percentage_sorted.plot(kind='bar', stacked=True, figsize=(6, 3), colormap=cmap)
-# ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.135), ncol=5, frameon=False, fancybox=False)
-# ax.set_xticklabels(geracao_percentage_sorted.index, rotation=45, ha='right')
-# ax.set_ylabel('Geração [%]')
-# ax.set_xlabel('Série histórica')
-# plt.tight_layout()
+from matplotlib.colors import ListedColormap
+cmap = ListedColormap(["#7ABAFF", "#ff8b81", "#8dc454", "#949494", "#f0cc58"])
+ax = geracao_percentage_sorted.plot(kind='bar', stacked=True, figsize=(6, 3), colormap=cmap)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.135), ncol=5, frameon=False, fancybox=False)
+ax.set_xticklabels(geracao_percentage_sorted.index, rotation=45, ha='right')
+ax.set_yticks(np.arange(0, 101, 20))
+ax.set_ylabel('Geração [%]')
+ax.set_xlabel('Série histórica')
+plt.tight_layout()
 # plt.show()
-# plt.savefig('Graficos/geracao_anual_hidrica_termica.svg', transparent=True)
+plt.savefig('Graficos/geracao_anual_percentual.svg', transparent = True)
 
 # carga = pd.read_csv('Exportado/carga_subsist_mensal_MWh.csv').set_index('Data')
 # carga['Total'] = carga.sum(axis = 1)
@@ -316,6 +321,7 @@ plt.savefig('LateX\\figuras\modelo_linear_exemplo.svg', transparent = True)
 # # ax.set_xticklabels(years, rotation=45, ha='right')
 # # ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.135), ncol=5, frameon=False, fancybox=False)
 # plt.tight_layout()
+# plt.show()
 # plt.savefig('Graficos/carga_anual.svg', transparent=True)
 
 
