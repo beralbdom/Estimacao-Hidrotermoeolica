@@ -6,6 +6,7 @@ import numpy as np
 from matplotlib import rc, pyplot as plt, dates as mdates, patches as mpatches
 from matplotlib.colors import ListedColormap
 from sklearn.preprocessing import StandardScaler
+from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.patches as patches
 
 # Configurações de plotagem
@@ -15,7 +16,7 @@ rc('axes', axisbelow = True, grid = True)
 rc('lines', linewidth = .5, markersize = 1.5)
 rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
-# # Grafico geográfico indices
+# Grafico geográfico indices
 # regioes = {                                                                                                             # [North, West, South, East]
 #     'NIN 1.2': [0, -90, -10, -80],
 #     'NIN 3':   [5, -150, -5, -90],
@@ -27,15 +28,17 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 # fig, ax = plt.subplots(figsize=(6, 3), subplot_kw={'projection': None})
 
 # # Carregar dados geográficos do mundo
-# world = gpd.read_file('Arquivos/ne_110m_admin_0_countries.shp')
+# world = gpd.read_file('Misc/ne_110m_admin_0_countries.shp')
 # world.plot(ax=ax, color='lightgray', edgecolor='black', linewidth=0.5)
 
 # # Definir cores para cada região ENSO
+
+# # cmap = ListedColormap(["#8dc454", "#ff8b81", "#7ABAFF", "#f0cc58"])
 # cores_regioes = {
-#     'NIN 1.2': "#FF5656",  # Vermelho claro
-#     'NIN 3': "#FFCC24",    # Verde água
-#     'NIN 4': "#2D9929",    # Verde claro
-#     'NIN 3.4': "#46A4C9",  # Azul claro
+#     'NIN 1.2': "#ff8b81",  # Vermelho claro
+#     'NIN 3': "#f0cc58",    # Verde água
+#     'NIN 4': "#8dc454",    # Verde claro
+#     'NIN 3.4': "#7ABAFF",  # Azul claro
 # }
 
 # # Plotar as regiões ENSO como retângulos
@@ -82,7 +85,7 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
 # # Configurar o mapa
 # ax.set_xlim(-180, 180)
-# ax.set_ylim(-60, 20)
+# ax.set_ylim(-60, 60)
 # ax.set_xlabel('Longitude [°]')
 # ax.set_ylabel('Latitude [°]')
 
@@ -94,7 +97,7 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 #           ncol=4, frameon=False, fancybox=False)
 
 # plt.tight_layout()
-# plt.savefig('Graficos/regioes_enso_global.svg', transparent=True, dpi=300, bbox_inches='tight')
+# plt.savefig('LateX/figuras/regioes_enso_global.svg', transparent=True, bbox_inches='tight')
 # plt.show()
 
 
@@ -137,70 +140,59 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
 
 # Gráficos geográficos ----------------------------------------------------------------------------------------------- #
-# brasil = gpd.read_parquet('Dados/brasil_subsistemas.parquet')
-# cmap = ListedColormap(['#3E944F', '#ff6038', '#3665ff', '#ffc738'])
-# fig, ax = plt.subplots(figsize = (6, 6))
-# brasil.plot(ax = ax, column = 'subsistema', cmap = cmap, edgecolor = '#151515', lw = 0.2, label = 'Subsistemas', missing_kwds = {
-#                                                                                                                     "color": "lightgrey",
-#                                                                                                                     "edgecolor": "#000000",
-#                                                                                                                     "label": "Isolado"},
-#                                                                                                                     legend = True)
+# brasil = gpd.read_parquet('Misc/brasil_subsistemas.parquet')
+# print(brasil.head())
+# cmap = ListedColormap(["#8dc454", "#ff8b81", "#7ABAFF", "#f0cc58"])
+# # cmap = ListedColormap(['#3E944F', '#ff6038', '#3665ff', '#ffc738'])
+# fig, ax = plt.subplots(figsize = (4, 4))
+# brasil.plot(ax = ax, column = 'subsistema', cmap = cmap, edgecolor = '#151515', lw = 0.2, 
+#             label = 'Subsistemas', missing_kwds = {"color": "#AAAAAA", "edgecolor": "#000000", "label": "Isolado"},
+#             legend = True)
 
-
-# subsystem_colors = {
-#     'Norte': '#3E944F',
-#     'Nordeste': '#ff6038',
-#     'Sul': '#3665ff',
-#     'Sudeste/Centro-Oeste': '#ffc738'
+# subsist_cores = {
+#     'Norte': '#8dc454',
+#     'Nordeste': '#ff8b81',
+#     'Sul': '#7ABAFF',
+#     'Sudeste/Centro-Oeste': '#f0cc58'
 # }
 
 # handles = []
 # labels = []
-# for subsys, color in subsystem_colors.items():
+# for subsys, color in subsist_cores.items():
 #     handles.append(mpatches.Patch(facecolor = color, edgecolor='none'))
 #     labels.append(subsys)
 
-# ax.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=5, frameon=False, fancybox=False)
+# ax.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=2, frameon=False, fancybox=False)
 
 # for x, y, label in zip(brasil.geometry.representative_point().x, brasil.geometry.representative_point().y, brasil['uf']):
-#     ax.annotate(label, xy=(x, y), xytext=(-3, 0), textcoords='offset points', fontsize=7)
+#     if   label == 'DF': ax.annotate(label, xy=(x, y), xytext=(-7, 3), textcoords='offset points', fontsize=6)
+#     elif label == 'RJ': ax.annotate(label, xy=(x, y), xytext=(6, -6), textcoords='offset points', fontsize=6)
+#     elif label == 'ES': ax.annotate(label, xy=(x, y), xytext=(6, -6), textcoords='offset points', fontsize=6)
+#     elif label == 'SE': ax.annotate(label, xy=(x, y), xytext=(4, -7), textcoords='offset points', fontsize=6)
+#     elif label == 'AL': ax.annotate(label, xy=(x, y), xytext=(8, -3), textcoords='offset points', fontsize=6)
+#     elif label == 'PE': ax.annotate(label, xy=(x, y), xytext=(22, -2), textcoords='offset points', fontsize=6)
+#     elif label == 'PB': ax.annotate(label, xy=(x, y), xytext=(14, 0), textcoords='offset points', fontsize=6)
+#     elif label == 'RN': ax.annotate(label, xy=(x, y), xytext=(3, 7), textcoords='offset points', fontsize=6)
+
+#     else: ax.annotate(label, xy=(x, y), xytext=(-3, 0), textcoords='offset points', fontsize=6)
 
 # # ax.set_title('Subsistemas do SIN')
 # ax.set_xlabel('Latitude [graus]')
 # ax.set_ylabel('Longitude [graus]')
-# plt.savefig('Graficos/subsistemas_brasil.svg', transparent = True)
+# plt.tight_layout()
+# # plt.show()
+# plt.savefig('LateX/figuras/subsistemas_brasil.svg', transparent = True, bbox_inches='tight')
 
-
-
-# geracao_df = pd.read_csv(f'Exportado/geracao_usinas_horario.csv')
-# geracao = geracao_df.pivot_table(index = 'Data', columns = 'Tipo', values = 'Geracao', aggfunc='sum')
-
-# geracao_hidraulica = geracao['Hidráulica']
-# geracao_hidraulica.to_csv('Exportado/geracao_hidraulica_bruta_horaria.csv')
-# geracao_eolica = geracao['Eólica']
-# geracao_eolica.to_csv('Exportado/geracao_eolica_bruta_horaria.csv')
-# geracao_solar = geracao['Fotovoltaica']
-# geracao_solar.to_csv('Exportado/geracao_solar_bruta_horaria.csv')
-# geracao_termica = geracao.drop(columns = ['Hidráulica', 'Eólica', 'Fotovoltaica', 'Biomassa'])
-# geracao_termica.to_csv('Exportado/geracao_termica_bruta_horaria.csv')
-
-# carga = pd.read_csv('Exportado/carga_subsistemas_horario.csv')
-# carga = carga.pivot_table(index = 'Data', columns = 'Subsistema', values = 'Carga')
-# carga.index = pd.to_datetime(carga.index, format = '%Y-%m-%d %H:%M:%S')
-# carga['Total'] = carga.sum(axis = 1)
-# carga.to_csv('Exportado/carga_subsistemas_bruto_horario.csv')
 
 
 # Gráfico do dia de maior demanda e as gerações ---------------------------------------------------------------------- #
-# geracao = pd.read_csv('Exportado/geracao_fontes_horario_MWmed.csv').set_index('Data')                                               # Dados de geração em MWMed
-# carga = pd.read_csv('Exportado/carga_subsist_horario_MWmed.csv').set_index('Data')                                                  # Dados de carga em MWMed
-# carga['Total'] = carga.sum(axis = 1)                                                                                      # Somando a carga total                                                                                            # Encontrando a carga total máxima
+# geracao = pd.read_csv('Exportado/geracao_fontes_horario_MWmed.csv').set_index('Data')
+# carga = pd.read_csv('Exportado/carga_subsist_horario_MWmed.csv').set_index('Data')
+# carga['Total'] = carga.sum(axis = 1)
 # ger_hidr = geracao[['Hidráulica']]
 # ger_eol = geracao[['Eólica']]
 # ger_sol = geracao[['Fotovoltaica']]
 # ger_ter = geracao[['Térmica']]
-
-
 
 # ger_hidr.index = pd.to_datetime(ger_hidr.index, format = '%Y-%m-%d %H:%M:%S')
 # ger_eol.index = pd.to_datetime(ger_eol.index, format = '%Y-%m-%d %H:%M:%S')
@@ -208,7 +200,7 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 # ger_ter.index = pd.to_datetime(ger_ter.index, format = '%Y-%m-%d %H:%M:%S')
 # carga.index = pd.to_datetime(carga.index, format = '%Y-%m-%d %H:%M:%S')
 
-# max_carga_date = carga['Total'].idxmax().date()                                                                         # Encontrando o dia com maior carga
+# max_carga_date = carga['Total'].idxmax().date()
 # print(f'Dia com maior carga: {max_carga_date}')
 
 # # Filtrando os dados para o dia com maior carga
@@ -234,99 +226,108 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 # plt.ticklabel_format(axis='y', style='sci', scilimits=(3, 3))
 # ax.grid(True)
 # plt.tight_layout()
-# plt.savefig(f'Graficos/carga_max_dia_{max_carga_date}.svg', transparent=True)
+# plt.savefig(f'LateX/figuras/carga_max_dia_{max_carga_date}.svg', transparent=True)
 # plt.show()
 
 
+
+# Gráfico de linha com a carga do SIN -------------------------------------------------------------------------------- #
+# carga = pd.read_csv('Exportado/carga_subsist_mensal_MWh.csv').set_index('Data')
+# carga.index = pd.to_datetime(carga.index, format = '%Y-%m-%d')
+# carga = carga[carga.index.year < 2025]  # Filtrando os dados de carga para o período desejado
+# carga['Total'] = carga.sum(axis = 1)
+# # carga = carga / 1e3
+# carga.index = pd.to_datetime(carga.index, format = '%Y-%m-%d')
+# fig, ax = plt.subplots(figsize=(6, 3), sharey=False)
+# ax.plot(carga.index, carga['Total'], color="#FF6467", label='Carga', lw=0.66)
+# ax.set_ylabel('Carga [MWh]')
+# ax.set_xlabel('Série histórica')
+# plt.ticklabel_format(axis='y', style='sci', scilimits=(6, 6))
+# # years = carga_df.index
+# # ax.set_xticks(years)
+# # ax.set_xticklabels(years, rotation=45, ha='right')
+# # ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.135), ncol=5, frameon=False, fancybox=False)
+# plt.tight_layout()
+# # plt.show()
+# plt.savefig('LateX/figuras/carga_anual.svg', transparent=True, bbox_inches='tight')
+# # plt.close()
+
+
+
 # Gráfico de linha com a geração de energia hidráulica bruta --------------------------------------------------------- #
-# geracao = pd.read_csv('Exportado/geracao_fontes_mensal.csv').set_index('Data')
+# geracao = pd.read_csv('Exportado/geracao_fontes_mensal_mwh.csv').set_index('Data')
 # geracao.index = pd.to_datetime(geracao.index, format = '%Y-%m-%d')
+# geracao = geracao[geracao.index.year < 2025]  # Filtrando os dados de geração para o período desejado
 
 # fig, ax = plt.subplots(figsize = (6, 3))
-# ax.plot(geracao.index, geracao['Hidráulica'], color = '#3867ff', label = 'Geração')
+# ax.plot(geracao.index, geracao['Hidráulica'], color = "#5d82ff", label = 'Geração', lw = .66)
 # # ax.set_xlim(ger_hidr.index.min(), ger_hidr.index.max())
 # # ax.set_title('Geração hidráulica bruta')
 # ax.set_ylabel('Geração [MWh]')
 # ax.set_xlabel('Série histórica')
+# plt.ticklabel_format(axis='y', style='sci', scilimits=(6, 6))
 # ax.xaxis.set_major_locator(mdates.YearLocator(base = 2))
 # ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 # plt.tight_layout()
-# plt.savefig('Graficos/geracao_hidraulica_bruta.svg', transparent = True)
+# # plt.show()
+# plt.savefig('LateX/figuras/geracao_hidraulica_bruta.svg', transparent = True, bbox_inches='tight')
+
 
 
 # Gráfico do índice ONI ---------------------------------------------------------------------------------------------- #
 # indices_df = pd.read_csv('Exportado/teleconexoes.csv').set_index('Data')
+# indices_df.index = pd.to_datetime(indices_df.index, format='%Y-%m')
 # fig, ax = plt.subplots(figsize=(6, 3))
 # oni = indices_df['ONI']
-# oni = oni[oni.index >= '2000-01-01']
+# oni = oni[oni.index.year >= 2000]
 # vmin = oni.min(); vmax = oni.max()
 # norm = plt.Normalize(vmin, vmax)
-# cmap = plt.get_cmap('coolwarm')
-# # cmap = ListedColormap(["#BBD9FA", "#FFFFFF", "#f7b6b0",])
-# ax.plot(oni.index, oni, color='black', label='ONI', alpha = 1, linewidth = 0.66)
-# ax.set_ylim(-2, 3)
+# # cmap = plt.get_cmap('coolwarm')
+# cmap = LinearSegmentedColormap.from_list('custom_diverging', ["#5EACFF", "#C0DEFF", "#E0E0E0", "#ffb7b0", "#ff7265"])
+# ax.plot(oni, color='black', label='ONI', alpha = 1, linewidth = 0.66)
+# ax.set_ylim(-3, 3)
 
 # for i in range(len(oni) - 1): 
 #     ax.fill_between(oni.index[i:i+20], oni[i:i+20], color=cmap(norm(oni[i])), alpha=1)
 
 # sm = plt.cm.ScalarMappable(cmap = cmap, norm = norm)
 # sm.set_array([])
-# cbar = plt.colorbar(sm, ax=ax)
+# cbar = plt.colorbar(sm, ax=ax, aspect = 50)
 # ln_f = vmin; el_f = vmax
 # neutro = (vmax + vmin) / 2
 # lf_m = vmin / 4; ef_m = vmax / 2
 # cbar.set_ticks([ln_f, lf_m, neutro, ef_m, el_f])
-# cbar.set_ticklabels(['L.N intenso', 'L.N moderado', 'Neutro', 'E.N moderado', 'E.N intenso'])
+# cbar.set_ticklabels(['La Niña forte', 'La Niña médio', 'Neutralidade', 'El Niño médio', 'El Niño forte'])
+# # ax.set_xticks([ano for ano in oni.index.year])
 # ax.set_ylabel('Anomalia')
 # ax.set_xlabel('Série histórica')
 # plt.tight_layout()
-# plt.show()
-# plt.savefig('Graficos/oni.svg', transparent = True)
+# # plt.show()
+# plt.savefig('LateX/figuras/oni.svg', transparent = True, bbox_inches='tight')
 
 
-# ---
-geracao = pd.read_csv('Exportado/geracao_fontes_mensal_MWmed.csv', usecols = ['Data', 'Hidráulica', 'Térmica', 'Eólica', 'Fotovoltaica', 'Outras']).set_index('Data')  
-geracao.index = pd.to_datetime(geracao.index, format='%Y-%m-%d')
-geracao = geracao[geracao.index.year <= 2024]  # Filtrando os dados de geração para o período desejado
-geracao_yearly = geracao.resample('YE').sum()
-sorted_columns = geracao_yearly.sum().sort_values(ascending = False).index
-geracao_yearly_sorted = geracao_yearly[sorted_columns]
+# --- GRÁFICO DE GERAÇÃO ANUAL PERCENTUAL
+# geracao = pd.read_csv('Exportado/geracao_fontes_mensal_MWmed.csv', usecols = ['Data', 'Hidráulica', 'Térmica', 'Eólica', 'Fotovoltaica', 'Outras']).set_index('Data')  
+# geracao.index = pd.to_datetime(geracao.index, format='%Y-%m-%d')
+# geracao = geracao[geracao.index.year <= 2024]  # Filtrando os dados de geração para o período desejado
+# geracao_yearly = geracao.resample('YE').sum()
+# sorted_columns = geracao_yearly.sum().sort_values(ascending = False).index
+# geracao_yearly_sorted = geracao_yearly[sorted_columns]
 
-geracao_percentage_sorted = geracao_yearly_sorted.div(geracao_yearly_sorted.sum(axis = 1), axis = 0) * 100
-geracao_percentage_sorted.index = geracao_percentage_sorted.index.year
+# geracao_percentage_sorted = geracao_yearly_sorted.div(geracao_yearly_sorted.sum(axis = 1), axis = 0) * 100
+# geracao_percentage_sorted.index = geracao_percentage_sorted.index.year
 
-from matplotlib.colors import ListedColormap
-cmap = ListedColormap(["#7ABAFF", "#ff8b81", "#8dc454", "#949494", "#f0cc58"])
-ax = geracao_percentage_sorted.plot(kind='bar', stacked=True, figsize=(6, 3), colormap=cmap)
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.135), ncol=5, frameon=False, fancybox=False)
-ax.set_xticklabels(geracao_percentage_sorted.index, rotation=45, ha='right')
-ax.set_yticks(np.arange(0, 101, 20))
-ax.set_ylabel('Geração [%]')
-ax.set_xlabel('Série histórica')
-plt.tight_layout()
-# plt.show()
-plt.savefig('Graficos/geracao_anual_percentual.svg', transparent = True)
-
-# carga = pd.read_csv('Exportado/carga_subsist_mensal_MWh.csv').set_index('Data')
-# carga['Total'] = carga.sum(axis = 1)
-# carga = carga / 1e3
-# carga.index = pd.to_datetime(carga.index, format = '%Y-%m-%d')
-# fig, ax = plt.subplots(figsize=(6, 3), sharey=False)
-# ax.plot(carga.index, carga['Total'], color='#FF4A4D', label='Carga')
-# ax.set_ylabel('Carga [GWh]')
+# from matplotlib.colors import ListedColormap
+# cmap = ListedColormap(["#7ABAFF", "#ff8b81", "#8dc454", "#949494", "#f0cc58"])
+# ax = geracao_percentage_sorted.plot(kind='bar', stacked=True, figsize=(6, 3), colormap=cmap)
+# ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.135), ncol=5, frameon=False, fancybox=False)
+# ax.set_xticklabels(geracao_percentage_sorted.index, rotation=45, ha='right')
+# ax.set_yticks(np.arange(0, 101, 20))
+# ax.set_ylabel('Geração [%]')
 # ax.set_xlabel('Série histórica')
-# plt.ticklabel_format(axis='y', style='sci', scilimits=(3, 3))
-# # years = carga_df.index
-# # ax.set_xticks(years)
-# # ax.set_xticklabels(years, rotation=45, ha='right')
-# # ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.135), ncol=5, frameon=False, fancybox=False)
 # plt.tight_layout()
-# plt.show()
-# plt.savefig('Graficos/carga_anual.svg', transparent=True)
-
-
-
-
+# # plt.show()
+# plt.savefig('LateX/figuras/geracao_anual_percentual.svg', transparent = True)
 
 
 # # geracao_df = pd.read_csv(f'Exportado/geracao_usinas_bruto.csv').set_index('Data')

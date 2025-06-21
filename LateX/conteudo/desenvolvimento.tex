@@ -1,17 +1,14 @@
-\chapter{Metodologia}
-\section{Abordagem computacional}
+\chapter{Metodologia} % ============================================================================================== %
+\section{Abordagem Computacional} % ================================================================================== %
 
-Considerando o escopo do projeto e o grande volume de dados a serem processados, não há outra abordagem viável senão
-a utilização de técnicas computacionais. Sendo assim, optou-se por desenvolver o projeto em Python, devido à 
-familiaridade do autor com a linguagem e a vasta gama de bibliotecas disponíveis para manipulação de séries históricas, 
-análise estatística e aprendizado de máquina. 
+O projeto foi desenvolvido em \textit{Python} versão 3.12. Toda as etapas, da obtenção dos dados de entrada à implementação
+dos modelos computacionais foram organizadas em módulos. Todas as etapas de processamento intensivo foram realizadas em
+paralelo, utilizando todas as \textit{threads} disponíveis do sistema. 
 
-Como o computador utilizado possui uma placa de vídeo da AMD e o projeto foi desenvolvido em Windows, não foi possível 
-realizar o \textit{offload} do processamento para a \textit{Graphics Processing Unit} (GPU), como seria possível com placas 
-de vídeo NVIDIA nativamente com a biblioteca \textit{torch}. Para isso, seria necessário utilizar Linux, em que há suporte da biblioteca para 
-a plataforma \textit{Radeon Open Compute} (ROCm). Sendo assim, as etapas do projeto empregando modelos neurais foram 
-processadas apenas no CPU. O sistema utilizado possui um processador AMD Ryzen 5900X e 32 GB de memória
-RAM. Todo o processamento intensivo foi realizado em paralelo, utilizando todas as 24 \textit{threads} disponíveis.
+As etapas referentes ao modelo neural foram realizadas apenas no \textit{Central Processing Unit} (CPU), devido à
+incompatibilidade da biblioteca \textit{torch} com placas de vídeo AMD no Windows, com suporte apenas para placas NVIDIA.
+O sistema utilizado possui um processador AMD Ryzen 5900X e 32 GB de memória RAM. A tabela \ref{tab:bibliotecas} mostra 
+as bibliotecas utilizadas no projeto, suas finalidades e versões.
 
 \begin{table}[htb]
   \centering
@@ -41,46 +38,17 @@ RAM. Todo o processamento intensivo foi realizado em paralelo, utilizando todas 
       \fonte{o autor.}}
 \end{table}
 
-Além disso, toda a base de código foi desenvolvida em Python versão 3.12 e está disponível em um repositório público no
-GitHub. O projeto foi organizado em módulos, cada um responsável por uma etapa do processo, desde a obtenção dos dados 
-até a implementação dos modelos de aprendizado de máquina. A tabela \ref{tab:bibliotecas} mostra as bibliotecas 
-utilizadas no projeto, suas finalidades e versões.
-
-\section{Obtenção e pré-processamento dos dados}
-\subsection{Séries históricas do ONS}
+\section{Obtenção e Pré Processamento dos Dados} % =================================================================== %
+\subsection{Obtenção dos Dados Energéticos e Hidrológicos} % ========================================================= %
 
 A primeira etapa do projeto consiste na consolidação das séries históricas de geração, carga e variáveis hidrológicas,
 que são disponibilizadas publicamente no portal Dados Abertos do ONS, a partir do ano 2000. As séries referentes 
 às variáveis hidrológicas são disponibilizadas em base diária, e os dados de geração e carga são disponibilizados em 
-base horária.
+base horária. As Tabelas \ref{tab:geracao} e \ref{tab:carga} mostram os parâmetros dos dados de geração e carga, respectivamente.
 
 Os dados de geração são disponibilizados em Mega Watt médio (MWmed) por fonte de energia, subsistema, estado, 
 modalidade de operação, entre outras variáveis. Os dados de carga também são disponibilizados em MWmed e contêm 
 informações sobre a carga em cada subsistema do SIN.
-
-Para as séries de geração, os dados de 2000 a 2021 são agrupados pelos respectivos anos, e a partir de 2022,
-as informações estão agrupadas em arquivos por mês e ano. Para as séries de carga, os dados são disponibilizados por
-ano. Como o ONS não disponibiliza \textit{Aplication Programming Interface} (API) para a obtenção dos dados diretamente, foi 
-necessário uma outra abordagem, a fim de evitar o download manual dos dados. 
-
-Após identificar o padrão de nomenclatura utilizado pelo ONS para os arquivos, foram desenvolvidas as funções 
-\textit{GetGeracao}, \textit{GetCarga} e \textit{GetVazao} para obtenção dos dados de geração, carga e hidrológicos,
-respectivamente. Os arquivos foram baixados por meio de requisições HTTP, utilizando a biblioteca \textit{requests} e
-a biblioteca \textit{urllib3} para gerenciar as conexões. Além disso, as funções realizam o download dos arquivos em
-paralelo, utilizando todas as threads disponíveis do sistema. Ao todo, cerca de 10 GB de dados em arquivos Comma 
-Separated Values (CSV) foram consolidados.
-
-A fim de obter uma amostragem representativa e suficiente para aplicação dos modelos computacionais, optou-se por 
-fazer uma reamostragem dos dados em base horária para a base diária. Sendo assim, considerando o período de 2000 
-a 2024, foram consolidados ao todo 9132 amostras diárias para cada variável. Caso fosse considerada a amostragem mensal,
-o número de amostras seria de apenas 300, o que poderia não ser suficiente para a aplicação dos modelos. Ainda assim, 
-análises em base mensal poderão ser realizadas posteriormente, através de outro processo de reamostragem.
-
-O código \ref{listing:get_geracao} mostra a função \textit{GetGeracao}, que recebe como argumentos a lista de
-anos de interesse e a URL base em que os dados estão hospedados. A mesma abordagem foi utilizada para as funções
-\textit{GetCarga} e \textit{GetVazao}.
-
-% fazer um fluxograma dessas funções e passar o codigo pro anexo
 
 \begin{table}[htb]
   \centering
@@ -105,6 +73,17 @@ anos de interesse e a URL base em que os dados estão hospedados. A mesma aborda
     }
 \end{table}
 
+Para as séries de geração, os dados de 2000 a 2021 são agrupados pelos respectivos anos, e a partir de 2022,
+as informações estão agrupadas em arquivos por mês e ano. Para as séries de carga, os dados são disponibilizados por
+ano. Como o ONS não disponibiliza \textit{Aplication Programming Interface} (API) para a obtenção dos dados diretamente, foi 
+necessário uma outra abordagem, a fim de evitar o \textit{download} manual dos dados. 
+
+Um script foi desenvolvido para fazer o download dos dados por meio de requisições HTTP, utilizando as bibliotecas 
+\textit{requests} e \textit{urllib3} para gerenciar as conexões. Todos os downloads foram realizados em paralelo, utilizando 
+todas as threads disponíveis do sistema. Ao todo, cerca de 10 GB de dados em arquivos Comma Separated Values (CSV) foram consolidados.
+
+% fazer um fluxograma dessas funções e passar o codigo pro anexo
+
 \begin{table}[htb]
   \centering
    \IBGEtab{
@@ -122,33 +101,21 @@ anos de interesse e a URL base em que os dados estão hospedados. A mesma aborda
       \fonte{\citeonline{pen2024}}}
 \end{table}
 
-Verifica-se, a partir da tabela \ref{tab:geracao}, que os dados de geração contém informações que permitem uma análise 
-detalhada da operação do SIN em diferentes níveis de granulidade. Dessa maneira, possíveis impactos em diferentes 
-escalas geográficas e temporais poderão ser avaliados. Por outro lado, a tabela \ref{tab:carga} mostra que os dados de
-carga não possuem a mesma granulidade que os dados de geração, limitando a análise a nível de subsistema, conforme a
-figura \ref{fig:subsistemas_brasil}.
+Os dados de geração contém informações que permitem uma análise detalhada em diferentes níveis de granulidade. Dessa maneira, 
+possíveis impactos em diferentes escalas geográficas e temporais poderão ser avaliados.
 
-\subsection{Séries históricas de variáveis climatológicas}
-A fim de maximizar o potencial de análise do projeto, é essencial considerar um grande número de dados climatológicos, 
-como anomalis de temperatura, precipitação, pressão, radiação solar, entre outros. No entanto, a obtenção de todos esses
-dados em base diária só é possível através do portal Climate Data Store (CDS) do ECMWF (European Centre for Medium-Range
- Weather Forecasts), através do ERA5, que é um reanálise climática de alta resolução espacial e temporal. \cite{C3S2024}
-
-Embora os dados do ERA5 possam ser obtidos através da API do CDS, sendo possível especificar a escala temporal e a área
-geográfica de interesse, há um limite de requisições por usuário e uma file de espera para o processamento das 
-requisições. Sendo assim, apenas os dados de temperatura da superfície do mar (TSM) e precipitação das regiões do ENSO 
-foram obtidos em base diária. O código \ref{lst:get_era5} mostra como as solicitações à API do CDS foram realizadas,
-utilizando a biblioteca \textit{cdsapi}.
-
-Os dados do ECMWF foram obtidos através da API do CDS (Climate Data Store), que permite o download de dados 
-meteorológicos de alta resolução, sendo possível especificar a escala temporal e a área de interesse, especificando as 
-coordenadas geográficas. Os dados do NOAA foram obtidos através de requisições HTTP.
-
-É importante ressaltar que, embora a maioria dos dados climatológicos seja disponibilizada em base mensal, alguns
-possuem escala temporal diária, como alguns dados do ECMWF. Considerando que os dados de energia são disponibilizados em
-base horária, diferentes análises poderão ser realizadas, considerando as escalas temporais diária e mensal. Para isso,
-durante a etapa de pré-processamento dos dados, será realizada a consolidação dos dados de geração e carga de modo que
-estejam na mesma escala temporal dos dados climatológicos.
+\subsection{Pré Processamento dos Dados de Geração e Carga} % ======================================================== %
+Com as séries históricas de geração e carga consolidadas, se faz necessário preparar os dados para que possam ser utilizados 
+nos modelos computacionais. Essa etapa envolve a verificação, transformação e limpeza dos dados. Utilizando a biblioteca
+\textit{pandas}, todos os arquivos com o histórico de geração e carga foram lidos e consolidados em dois \textit{DataFrames} 
+distintos, estrutura de dados tabulares da biblioteca. Com isso, as seguintes operações foram realizadas:
+\begin{itemize}
+    \item Seleção das colunas relevantes;
+    \item Verificação de valores inválidos e tratamento de valores ausentes;
+    \item Agrupamento dos tipos de usinas por classes: hidráulica, térmica, eólica, fotovoltaica e outras;
+    \item Reamostragem para diferentes bases temporais, considerando a geração média (MWmed) e energia gerada (MWh);
+    \item Agrupamento dos dados de geração por subsistema e classe.
+\end{itemize}
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Subsistemas do SIN}
@@ -157,29 +124,40 @@ estejam na mesma escala temporal dos dados climatológicos.
 	{\fonte{o autor.}}
 \end{figure}
 
-Além disso, nas próximas etapas do projeto, será realizado a seleção das variáveis climatológicas mais relevantes para
-a análise, considerando a correlação com a geração de energia. Para isso, serão utilizadas técnicas de \textit{feature
-selection} e redução de dimensionalidade, como a análise de componentes principais. A tabela \ref{tab:variaveis_clima}
-mostra as variáveis climatológicas utilizadas no projeto.
+Optou-se por fazer o agrupamento dos dados de geração por subsistema e fonte para permitir avaliar os impactos das variáveis
+do ENSO em diferentes regiões do Brasil. Além disso, a representação por subsistema também é utilizada pelo modelo NEWAVE. 
+A figura \ref{fig:subsistemas_brasil} mostra os subsistemas do SIN.
 
-\subsection{Pré-processamento dos dados}
-
-
-\section{Análise exploratória dos dados}
+Diferentes arquivos CSV foram gerados, considerando a geração média (MWmed) e energia gerada (MWh) para as escalas diária e mensal.
+Os dados de geração contém o histórico de geração por subsistema e fonte, enquanto que os dados de carga contém o histórico de carga
+por subsistema. Considerando o período de 2000 a 2024, foram consolidados ao todo 9132 amostras diárias e 300 amostras mensais.
 
 
-\section{Implementação dos modelos de regressão}
+\subsection{Pré Processamento dos Dados Hidrológicos} % ============================================================== %
+
+\subsection{Obtenção dos Dados do ENSO} % ============================================================================ %
+
+\subsection{Pré Processamento dos Dados do ENSO} % =================================================================== %
 
 
-\subsection{Feature selection}
+\section{Análise Exploratória dos Dados} % =========================================================================== %
+
+\subsection{Dados de Geração e carga} % ============================================================================== %
+
+\subsection{Dados Hidrológicos} % ==================================================================================== %
+
+\subsection{Dados do ENSO} % ========================================================================================= %
 
 
-\subsection{Análise de componentes principais}
+\section{Implementação dos Modelos de Regressão} % =================================================================== %
+
+\subsection{Modelo Linear} % ========================================================================================= %
+
+\subsection{Modelo Não Linear} % ===================================================================================== %
 
 
-\subsection{Avaliação dos Modelos de regressão}
+\section{Implementação do Modelo Neural} % =========================================================================== %
 
+\subsection{Sem Variáveis Exógenas} % ================================================================================ %
 
-\section{Implementação do Modelo Neural}
-
-
+\subsection{Com Variáveis Exógenas} % ================================================================================ %

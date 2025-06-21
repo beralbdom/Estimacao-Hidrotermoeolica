@@ -136,7 +136,7 @@ O modelo linear utilizado foi o \textit{LinearRegression} da biblioteca \textit{
 aplicação do método dos mínimos quadrados para determinar os coeficientes da equação linear que melhor se ajusta aos dados,
 conforme ilustrado na Figura \ref{fig:modelo_linear}.
 \begin{figure}[!ht]
-	\IBGEtab{\caption{Regressão Linear de uma Senoide}
+	\IBGEtab{\caption{Regressão linear de uma senoide}
 			 \label{fig:modelo_linear}}
 	{\includesvg[scale=1]{figuras/modelo_linear_exemplo}}
 	{\fonte{o autor.}}
@@ -167,22 +167,26 @@ das relações lineares entre as variáveis, além de servir como ponto de parti
 
 % ----------------------------------------------------------------------------------------------------------------------
 \subsection{Modelo Não-linear}
-O modelo de regressão não linear utilizado foi o \textit{RandomForestRegressor} da biblioteca \textit{scikit-learn}.
-Esse modelo é baseado em árvores de decisão e é capaz de capturar relações não lineares entre as variáveis de entrada e 
-a variável de interesse. A figura ... ilustra a estrutura básica de uma árvore de decisão.
+O modelo de regressão não linear utilizado foi o \textit{RandomForestRegressor} da biblioteca \textit{scikit-learn}. O modelo 
+funciona a partir de árvores de decisão construídas a partir dos dados de entrada. Cada árvore é treinada em um \textit{subset}
+aleatório dos dados e então a árvore cresce por meio da bifurcação. A estrutura do modelo é ilustrada na Figura
+\ref{fig:modelo_random_forest}.
 
-O modelo funciona a partir de árvores de decisão que são construídas a partir dos dados de entrada. Cada árvore é treinada
-em um \textit{subset} aleatório dos dados. Durante a bifurcação, o modelo estabelece o melhor caminho através da
-combinação de subconjuntos das variáveis de entrada, de forma a minimizar o erro na previsão da variável de interesse.
-
-A previsão final é obtida através da média das previsões de todas as árvores, o que ajuda a reduzir o \textit{overfitting}
-e melhora a generalização do modelo. A equação \ref{eq:regressao_random_forest} representa a previsão do modelo,
+\begin{figure}[!ht]
+	\IBGEtab{\caption{Modelo com 2 árvores de decisão}
+			 \label{fig:modelo_random_forest}}
+	{\includesvg[scale=1]{figuras/randomforest}}
+	{\fonte{o autor.}}
+\end{figure}
+Durante a bifurcação, o modelo estabelece o melhor caminho através da combinação de subconjuntos das variáveis de entrada, 
+de forma a minimizar o erro na previsão da variável de interesse. A previsão final é obtida através da média das previsões 
+de todas as árvores, o que ajuda a reduzir o \textit{overfitting} e melhora a generalização do modelo. A saída do modelo
+é dada por:
 \begin{equation}
 \label{eq:regressao_random_forest}
 \hat{y} = \frac{1}{T} \sum_{t=1}^{T} y_t(x)
 \end{equation}
 em que $T$ é o número de árvores, $y_t(x)$ é a previsão da $t$-ésima árvore e $\hat{y}$ é a previsão final do modelo.
-
 
 
 % ----------------------------------------------------------------------------------------------------------------------
@@ -224,9 +228,6 @@ em que $ y $ é o valor real e $ \hat{y} $ a saída do Perceptron. A taxa de apr
 os pesos são atualizados durante o treinamento. A atualização é feita de forma a minimizar o erro entre a saída prevista
 e a saída real.
 
-Para problemas mais complexos, como aqueles que envolvem relações não-lineares entre as variáveis, outras abordagens
-são necessárias.
-
 
 % ----------------------------------------------------------------------------------------------------------------------
 \subsection{Multi Layer Perceptrons (MLPs)}
@@ -248,8 +249,9 @@ camadas ocultas.
 
 MLPs são treinadas utilizando o algoritmo de \textit{backpropagation}, ou retropropagação, que ajusta iterativamente os 
 pesos e vieses da rede de forma a minimizar o erro entre a saída prevista e a saída real. O algoritmo funciona em um ciclo 
-de quatro etapas:
+de quatro etapas, descritas abaixo.
 
+\newpage
 \begin{itemize}
 \item \textbf{Forward Pass:} os dados de entrada são propagados pelos neurônios até a camada de saída. A saída de cada 
 neurônio é calculada em duas fases. Primeiro, a entrada ponderada $ z_i^{(l)} $ para o neurônio $ i $ da camada
@@ -264,7 +266,6 @@ Em seguida, a saída ativada $ v_i^{(l)} $ é obtida aplicando-se a função de 
 \label{eq:ativacao_v}
 v_i^{(l)} = \sigma(z_i^{(l)})
 \end{equation}
-Esse processo é ilustrado na parte inferior da figura \ref{fig:mlp_1}.
 
 \item \textbf{Cálculo do Erro:} uma função de perda $ E $ é usada para quantificar o erro entre a saída $ \hat{y} $ da 
 rede e o valor real $ y $. Para tarefas de regressão, costuma-se usar o Erro Quadrático Médio (MSE):
@@ -356,7 +357,7 @@ muito pequeno ao ser propagado às camadas iniciais pelo algoritmo de \textit{ba
 \begin{figure}[!h]
 	\IBGEtab{\caption{Arquitetura do modelo neural usado}
 			 \label{fig:arquitetura_modelo_neural}}
-	{\includesvg[scale=.95]{figuras/tsmixer_1}}
+	{\includesvg[scale=1]{figuras/tsmixer_1}}
 	{\fonte{o autor (adaptado de \citeonline{Chen2023}).}}
 \end{figure}
 
