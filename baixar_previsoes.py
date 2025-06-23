@@ -271,11 +271,13 @@ request_base = {
 }
 dataset = 'derived-era5-single-levels-daily-statistics'
 
+
+
 # 1) baixa GLOBAL
-download_global_CMIP(variaveis, anos, dataset, request_base)
+# download_global_CMIP(variaveis, anos, dataset, request_base)
 
 # 2) extrai todas as regiões definidas no dicionário regioes
-extract_regions_from_global(regioes, variaveis, anos, dataset, request_base['product_type'])
+# extract_regions_from_global(regioes, variaveis, anos, dataset, request_base['product_type'])
 
 # DadosCMIP(regioes, anos = np.arange(2000, 2025, 1), dataset = 'derived-era5-single-levels-daily-statistics',
 #           request = {

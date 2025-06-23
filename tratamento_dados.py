@@ -22,8 +22,7 @@ from sklearn.metrics import mean_absolute_error as mae
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from scipy.stats import pearsonr
-from sklearn.neural_network import MLPRegressor
-from sklearn.ensemble import GradientBoostingRegressor, HistGradientBoostingRegressor, RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import RFECV
 
 

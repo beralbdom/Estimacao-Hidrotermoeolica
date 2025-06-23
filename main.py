@@ -28,7 +28,7 @@ anos = np.arange(2000, 2026, 1)                                                 
 
 # bd.ExportarDados('indices', anos = anos, merge = True, export = True)                                                   # Cria os dataframes de teleconexões            (/Exportado/teleconexoes.csv)
 bd.ExportarDados('geracao', anos = anos, merge = True, export = True)                                                   # Cria os dataframes de geração                 (/Exportado/geracao_usinas_<tipo>.csv)
-bd.ExportarDados('carga', anos = anos, merge = True, export = True)                                                     # Cria os dataframes de carga                   (/Exportado/carga_subsistemas_<tipo>.csv)
+# bd.ExportarDados('carga', anos = anos, merge = True, export = True)                                                     # Cria os dataframes de carga                   (/Exportado/carga_subsistemas_<tipo>.csv)
 # bd.ExportarDados('vazoes', anos = anos, merge = True, export = True)                                                    # Cria os dataframes de vazões                  (/Exportado/vazoes_mensais_bacias.csv)
 
 

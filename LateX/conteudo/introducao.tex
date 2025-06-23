@@ -111,12 +111,15 @@ vazões e velocidade do vento, que são obtidos a partir de medições locais, a
 
 \section{Objetivo}
 O projeto tem como objetivo investigar um possível impacto de variáveis climáticas externas na geração 
-de energia elétrica no Brasil, com foco nas fontes hidráulica, térmica e eólica. 
+de energia elétrica no Brasil, com foco nas fontes hidráulica, térmica e eólica. Para tanto, foram empregadas técnicas 
+computacionais para relacionar as séries históricas de geração com as séries de variáveis 
+climáticas, através de modelos lineares, não lineares e neurais. 
 
-Para tanto, foram empregadas técnicas computacionais para relacionar as séries históricas de geração com as séries de variáveis 
-climáticas, através de modelos lineares, não lineares e neurais. Além disso, foram utilizadas séries históricas de geração, 
+Além disso, foram utilizadas séries históricas de geração, 
 carga e vazões disponibilizados pelo ONS, bem como séries históricas de variáveis climáticas, como temperatura 
-da superfície do mar, obtidas a partir de dados do ERA5, um projeto de reanálise atmosférica do \textit{European Centre for Medium-Range Weather Forecasts} (ECMWF).
+da superfície do mar, obtidas a partir de dados do ERA5, um projeto de reanálise atmosférica que combina resultados de
+modelos computacionais com observações de diferentes fontes, como satélites e estações meteorológicas, resultando em
+um \textit{dataset} global de alta resolução espacial e temporal. \citeonline{Hersbach2020}
 
 A partir dessa investigação, espera-se poder avaliar o impacto dessas variáveis na geração de energia elétrica,
 o que pode contribuir para o planejamento energético do país, especialmente em cenários de eventos climáticos extremos e
@@ -148,10 +151,8 @@ considerados e suas respectivas etapas de obtenção, tratamento e análise. Al�
 utilizada para implementação dos modelos de previsão, incluindo seus parâmetros e métricas de avaliação. \textit{Snippets}
 de códigos serão apresentados para facilitar a compreensão.
 
-O capítulo 5 apresenta os resultados obtidos a partir da implementação de cada modelo de previsão. Inicia-se com os resultados
-do modelo linear, seguido pelo modelo não linear e, por fim, o modelo neural. Para cada modelo, serão apresentados os
-resultados de previsão, métricas de avaliação e uma análise crítica dos resultados obtidos. No capítulo 6, serão apresentadas 
-as considerações finais.
+O capítulo 5 apresenta os resultados do projeto. Para cada modelo, serão apresentados os resultados de previsão, métricas 
+de avaliação e uma análise crítica dos resultados obtidos. No capítulo 6, serão apresentadas as considerações finais.
 
 % \chapter{Trabalhos Relacionados}
 % Avaliação do Impacto de Secas Severas no Nordeste Brasileiro na Geração de Energia Elétrica Através do Modelo Newave: 

@@ -304,6 +304,9 @@ def ProcessarDadosGeracao(df):
     df_total_mensal = df_total_horario.resample('ME').sum()                                                             # Geração total por mês em MWh
     print(f'OK\n[i] Processando dados de geração médios diários...', end = ' ')
     df_medio_diario = df_total_horario.resample('D').mean()                                                             # Geração média por dia em MWmed
+    df_medio_diario.loc['2013-12-01'] = df_medio_diario.loc['2013-12-02'].values
+    # df_medio_diario.loc['2015-04-09'] = df_medio_diario.loc['2015-04-10'].values
+    # df_medio_diario.loc['2014-02-01'] = df_medio_diario.loc['2014-02-02'].values
     print(f'OK\n[i] Processando dados de geração médios mensais...', end = ' ')
     df_medio_mensal = df_total_horario.resample('ME').mean()                                                            # Geração média por mês em MWmed
     print(f'OK')
@@ -373,7 +376,6 @@ def ExportarDados(tipo, anos, merge = True, export = True):
         merged_df = merged_df.unstack(level = 1)                                                                        # Transforma o dataframe em wide (Data como índice e Subsistema como colunas)
 
         merged_df.columns = [f'{col[1]}_{col[0]}' for col in merged_df.columns]                                        # Renomeia as colunas para <subsistema>_<tipo>
-
 
         merged_df.to_csv('Exportado/dados_hidrologicos_diarios.csv', index = True)
 
@@ -456,7 +458,7 @@ def ExportarDados(tipo, anos, merge = True, export = True):
 
     elif tipo == 'geracao':
         dfs_ger = [pd.DataFrame() for _ in range(len(anos))]
-        print(f'[i] Consolidando dados de geração horários...', end = ' ')
+        print(f'[i] Consolidando dados de geração horários...\n', end = ' ')
         for i, ano in enumerate(anos):
             if ano < 2022:
                 df = pd.read_csv('Exportado/ONS/' + f'GERACAO_USINA-2_{ano}.csv', 
@@ -490,7 +492,7 @@ def ExportarDados(tipo, anos, merge = True, export = True):
                         dfs_mes[mes - 1] = df
 
                     except FileNotFoundError:
-                        print(f'[!] Arquivo não encontrado! Você tem os dados de {mes}/{ano}?')
+                        print(f'[!] Arquivos de {mes}/{ano} faltando. Continuando...')
                         continue
                 
                 merged_df = pd.concat(dfs_mes, ignore_index = True)

@@ -44,7 +44,8 @@ as bibliotecas utilizadas no projeto, suas finalidades e versões.
 A primeira etapa do projeto consiste na consolidação das séries históricas de geração, carga e variáveis hidrológicas,
 que são disponibilizadas publicamente no portal Dados Abertos do ONS, a partir do ano 2000. As séries referentes 
 às variáveis hidrológicas são disponibilizadas em base diária, e os dados de geração e carga são disponibilizados em 
-base horária. As Tabelas \ref{tab:geracao} e \ref{tab:carga} mostram os parâmetros dos dados de geração e carga, respectivamente.
+base horária. As Tabelas \ref{tab:hidrologicos}, \ref{tab:carga} e \ref{tab:geracao} mostram os parâmetros dos dados hidrológicos, 
+carga e geração, respectivamente.
 
 Os dados de geração são disponibilizados em Mega Watt médio (MWmed) por fonte de energia, subsistema, estado, 
 modalidade de operação, entre outras variáveis. Os dados de carga também são disponibilizados em MWmed e contêm 
@@ -53,19 +54,25 @@ informações sobre a carga em cada subsistema do SIN.
 \begin{table}[htb]
   \centering
    \IBGEtab{
-    \caption{Parâmetros dos dados de geração}
-    \label{tab:geracao}
+    \caption{Parâmetros dos dados hidrológicos}
+    \label{tab:hidrologicos}
     }{
       \begin{tabular}{llll}
           \hline
           \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \hline
           din\_instante & Instante de aferição & Datetime\\
-          nom\_subsistema & Subsistema da usina & String\\
-          id\_estado & Estado onde a usina está localizada & String\\ 
-          nom\_tipousina & Tipo de usina & String\\
-          nom\_tipocombustivel & Tipo de combustível & String\\
-          nom\_usina & Nome da usina & String\\
-          val\_geracao & Geração de energia (MWmed) & Float\\ \hline
+          nom\_subsistema & Subsistema & String\\
+          tip\_reservatorio & Tipo de reservatório & String\\
+          nom\_bacia  & Bacia hidrográfica & String\\
+          nom\_ree & Nome do REE & String\\
+          val\_nivelmontante & Valor do nível montante (m) & Float\\
+          val\_niveljusante & Valor do nível jusante (m) & Float\\
+          val\_volumeutilcon & Volume útil consistido (\%) & Float\\
+          val\_vazaoafluente & Vazão afluente (m³/s) & Float\\
+          val\_vazaoturbinada & Vazão turbinada (m³/s) & Float\\
+          val\_vazaovertida & Vazão vertida (m³/s) & Float\\
+          val\_vazaodefluente & Vazão defluente (m³/s) & Float\\
+          val\_vazaoevaporacaoliquida & Vazão de evaporação líquida (m³/s) & Float\\ \hline
       \end{tabular}
     } {
       \fonte{\citeonline{pen2024}}
@@ -77,12 +84,6 @@ Para as séries de geração, os dados de 2000 a 2021 são agrupados pelos respe
 as informações estão agrupadas em arquivos por mês e ano. Para as séries de carga, os dados são disponibilizados por
 ano. Como o ONS não disponibiliza \textit{Aplication Programming Interface} (API) para a obtenção dos dados diretamente, foi 
 necessário uma outra abordagem, a fim de evitar o \textit{download} manual dos dados. 
-
-Um script foi desenvolvido para fazer o download dos dados por meio de requisições HTTP, utilizando as bibliotecas 
-\textit{requests} e \textit{urllib3} para gerenciar as conexões. Todos os downloads foram realizados em paralelo, utilizando 
-todas as threads disponíveis do sistema. Ao todo, cerca de 10 GB de dados em arquivos Comma Separated Values (CSV) foram consolidados.
-
-% fazer um fluxograma dessas funções e passar o codigo pro anexo
 
 \begin{table}[htb]
   \centering
@@ -99,6 +100,33 @@ todas as threads disponíveis do sistema. Ao todo, cerca de 10 GB de dados em ar
     \end{tabular}
     }{
       \fonte{\citeonline{pen2024}}}
+\end{table}
+
+Um script foi desenvolvido para fazer o download dos dados por meio de requisições HTTP, utilizando as bibliotecas 
+\textit{requests} e \textit{urllib3} para gerenciar as conexões. Todos os downloads foram realizados em paralelo, utilizando 
+todas as threads disponíveis do sistema. Ao todo, cerca de 10 GB de dados em arquivos Comma Separated Values (CSV) foram consolidados.
+
+\begin{table}[htb]
+  \centering
+   \IBGEtab{
+    \caption{Parâmetros dos dados de geração}
+    \label{tab:geracao}
+    }{
+      \begin{tabular}{llll}
+          \hline
+          \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \hline
+          id\_subsistema & Instante de aferição & Datetime\\
+          nom\_subsistema & Subsistema da usina & String\\
+          id\_estado & Estado onde a usina está localizada & String\\ 
+          nom\_tipousina & Tipo de usina & String\\
+          nom\_tipocombustivel & Tipo de combustível & String\\
+          nom\_usina & Nome da usina & String\\
+          val\_geracao & Geração de energia (MWmed) & Float\\ \hline
+      \end{tabular}
+    } {
+      \fonte{\citeonline{pen2024}}
+      \nota{Variáveis não utilizadas foram omitidas.}
+    }
 \end{table}
 
 Os dados de geração contém informações que permitem uma análise detalhada em diferentes níveis de granulidade. Dessa maneira, 
@@ -118,7 +146,7 @@ distintos, estrutura de dados tabulares da biblioteca. Com isso, as seguintes op
 \end{itemize}
 
 \begin{figure}[!ht]
-	\IBGEtab{\caption{Subsistemas do SIN}
+	\IBGEtab{\caption{Subsistemas do SIN segundo o ONS}
 			 \label{fig:subsistemas_brasil}}
 	{\includesvg[scale=1]{figuras/subsistemas_brasil}}
 	{\fonte{o autor.}}
@@ -132,12 +160,70 @@ Diferentes arquivos CSV foram gerados, considerando a geração média (MWmed) e
 Os dados de geração contém o histórico de geração por subsistema e fonte, enquanto que os dados de carga contém o histórico de carga
 por subsistema. Considerando o período de 2000 a 2024, foram consolidados ao todo 9132 amostras diárias e 300 amostras mensais.
 
-
 \subsection{Pré Processamento dos Dados Hidrológicos} % ============================================================== %
+Os dados hidrológicos contém informações sobre o nível dos reservatórios e vazões. Para o contexto do projeto, espera-se que
+essas informações sejam altamente correlacionados com a geração hidrelétrica, o que será verificado a seguir na seção de análise 
+exploratória.
+
+Sendo assim, os dados hidrológicos foram utilizados para verificar a performance dos modelos quando as variáveis de entrada
+possuem alta correlação com a variável de saída. Dessa forma, é estabelecida uma referência para comparação entre os
+resultados dos modelos.
+
+As séries históricas foram consolidadas em um único \textit{DataFrame}, contendo as vazões totais em cada subsistema do SIN,
+considerando a soma das vazões de todos os reservatórios em cada subsistema, em base diária.
 
 \subsection{Obtenção dos Dados do ENSO} % ============================================================================ %
+Os dados do ENSO foram obtidos a partir do \textit{Climate Data Store} (CDS) do ECMWF. O CDS é um banco de dados com diversos
+\textit{datasets} de variáveis climáticas de diferentes regiões do mundo. Para esse projeto, o dataset utilizado foi o 
+\textit{ERA5 post-processed daily statistics on single levels from 1940 to present}, que contém dados diários de diversas 
+variáveis, incluindo a temperatura da superfície do mar (SST).
+
+Considerando que ENSO é um fenômeno definido pela temperatura da superfície do mar em regiões 
+específicas do Oceano Pacífico, e que os dados de geração, carga e hidrológicos são disponibilizados em base diária,
+optou-se por utilizar a temperatura absoluta da superfície do mar em base diária para cada uma das regiões do ENSO. As
+regiões do ENSO e suas coordenadas geográficas são mostradas na Tabela \ref{tab:regioes_enso}.
+
+\begin{table}[htb]
+  \centering
+   \IBGEtab{
+    \caption{Regiões do ENSO}
+    \label{tab:regioes_enso}
+    }{
+    \begin{tabular}{lll}
+  		  \hline
+    	  \textbf{Região} & \textbf{Latitude} & \textbf{Longitude} \\ \hline
+        Niño 1+2 & -10° a 0° & -90° a -80° \\
+        Niño 3 & -5° a 5° & -150° a -90° \\
+        Niño 3.4 & -5° a 5° & -170° a -120° \\
+        Niño 4 & -5° a 5° & -160° a -150° \\ \hline
+    \end{tabular}
+    }{
+      \fonte{\citeonline{TheDefinitionofElNio}}}
+\end{table}
+
+Os dados foram obtidos usando a biblioteca \textit{cdsapi}, que permite acessar o CDS através da
+API do ECMWF. O script desenvolvido para essa etapa realiza o download dos dados de temperatura da superfície do mar
+para cada uma das regiões do ENSO, considerando o período de 2000 a 2024. Os dados são obtidos em formato NetCDF, que é 
+um formato de arquivo utilizado para armazenar dados científicos multidimensionais.
 
 \subsection{Pré Processamento dos Dados do ENSO} % =================================================================== %
+Após o download, os arquivos NetCDF são processados para extrair as informações relevantes para cada região do ENSO. 
+Utilizando a biblioteca \textit{netCDF4}, cada arquivo anual é lido para extrair as dimensões de tempo, latitude e longitude, 
+além da variável de interesse, a temperatura da superfície do mar (SST).
+
+O processamento segue as seguintes etapas:
+\begin{itemize}
+\item Conversão do formato das coordenadas de longitude, de $ [0 a 360] $ graus, para -180 a 180 graus;
+\item Para cada uma das regiões do ENSO, um subconjunto geográfico dos dados globais é criado, selecionando os pontos
+de latitude e longitude que se encontram dentro dos limites de cada região;
+\item A média espacial da variável é calculada para cada dia sobre este subconjunto. Esse processo resulta em uma única série
+temporal diária, que representa o valor médio da variável para aquela região específica;
+\item Ao final, as séries temporais anuais de cada região são consolidadas, formando um conjunto de dados único que abrange
+todo o período de análise, de 2000 a 2024.
+\end{itemize}
+
+Em resumo, o processo transforma os dados brutos multidimensionais em séries temporais diárias para cada região
+do ENSO, que agora estão prontas para serem utilizadas como variáveis exógenas nos modelos computacionais.
 
 
 \section{Análise Exploratória dos Dados} % =========================================================================== %
@@ -150,6 +236,15 @@ por subsistema. Considerando o período de 2000 a 2024, foram consolidados ao to
 
 
 \section{Implementação dos Modelos de Regressão} % =================================================================== %
+Para o modelo linear, foi utilizado o modelo de regressão linear múltipla, uma técnica estatística que busca modelar
+a relação entre uma variável dependente e várias variáveis independentes, conforme descrito pela equação \ref{eq:regressao_linear}.
+Nesse contexto, a vartiável dependente é a geração de uma determinada fonte em um subsistema do SIN, e as variáveis independentes
+são as variáveis auxiliares (ou exógenas), como dados de SST, carga e hidrológicos.
+
+Para os modelos não linear e neural, a técnica de previsão multivariada foi utilizada, uma abordagem que permite estimar
+múltiplas variáveis dependentes simultaneamente a partir de um conjunto de variáveis independentes. Essa técnica é especialmente 
+útil quando as variáveis dependentes são interdependentes e podem influenciar umas às outras. Nesse contexto, 
+os modelos são capazes de capturar as relações entre cada fonte de geração, além das relações entre as variáveis exógenas.
 
 \subsection{Modelo Linear} % ========================================================================================= %
 

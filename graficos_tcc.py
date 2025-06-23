@@ -283,7 +283,7 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 # vmin = oni.min(); vmax = oni.max()
 # norm = plt.Normalize(vmin, vmax)
 # # cmap = plt.get_cmap('coolwarm')
-# cmap = LinearSegmentedColormap.from_list('custom_diverging', ["#5EACFF", "#C0DEFF", "#E0E0E0", "#ffb7b0", "#ff7265"])
+# cmap = LinearSegmentedColormap.from_list('custom_diverging', ["#5EACFF", "#C0DEFF", "#E0E0E0", "#ffa097", "#ff5d4f"])
 # ax.plot(oni, color='black', label='ONI', alpha = 1, linewidth = 0.66)
 # ax.set_ylim(-3, 3)
 
