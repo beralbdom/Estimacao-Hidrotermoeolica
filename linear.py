@@ -52,10 +52,10 @@ enso['dia_ano'] = enso.index.dayofyear
 enso['quadrimestre'] = enso.index.quarter
 
 dataset = pd.concat([geracao, enso, carga], axis = 1).dropna()
-# dataset = dataset[dataset.index.year > 2009]
+dataset = dataset[dataset.index.year > 2009]
 dataset = dataset[dataset.index.year < 2025]
 
-# dataset = dataset.resample('ME').mean()
+dataset = dataset.resample('ME').mean()
 
 target_cols = geracao.columns
 exog_cols = enso.columns.append(carga.columns)
@@ -72,7 +72,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     test_size = .3, shuffle = False
 )
 
-modelo = LinearRegression()
+modelo = LinearRegression(n_jobs = -1)
 
 reg = modelo.fit(X_train, y_train)
 print(f'Coeficientes do modelo: {reg.coef_}')
@@ -82,7 +82,7 @@ y_pred = pd.DataFrame(y_pred, columns = target_cols, index = y_test.index)
 y_pred[y_pred < 0] = 0
 # print(y_test)
 
-# # Resample mensal para visualização
+# Resample mensal para visualização
 # y_pred = y_pred.resample('ME').mean()
 # y_test = y_test.resample('ME').mean()
 # y_train = y_train.resample('ME').mean()
@@ -92,9 +92,9 @@ for col in target_cols:
     r2 = r2_score(y_test[col], y_pred[col])
     mse = mse_error(y_test[col], y_pred[col])
 
-    fig, ax = plt.subplot_mosaic(layout, figsize = (9, 3), width_ratios= [1, 2])
+    fig, ax = plt.subplot_mosaic(layout, figsize = (9, 3), width_ratios = [1, 2])
 
-    ax['a'].scatter(y_test[col], y_pred[col], s = 1, color = "#47B639", alpha = .5, label = 'Previsto')
+    ax['a'].scatter(y_test[col], y_pred[col], s = 2, color = "#E24C4C", alpha = .5, label = 'Previsto')
     ax['a'].plot([y_test[col].min(), y_test[col].max()], [y_test[col].min(), y_test[col].max()], 
                color = "#202020", linewidth = .66, ls = '--', label = 'Ideal')
     
@@ -107,7 +107,7 @@ for col in target_cols:
     
     ax['b'].plot(y_train.index, y_train[col], label = 'Treino', color = "#43AAFF", linewidth = .66)
     ax['b'].plot(y_test.index, y_test[col], label = 'Real', color = "#969696", linewidth = .66, ls = '--')
-    ax['b'].plot(y_pred.index, y_pred[col], label = 'Previsão', color = "#47B639", linewidth = .66)
+    ax['b'].plot(y_pred.index, y_pred[col], label = 'Previsão', color = "#E24C4C", linewidth = .66)
     
     ax['b'].legend(loc = 'upper center', bbox_to_anchor = (.5, 1.15), ncol = 3, frameon = False, fancybox = False)
     ax['b'].set_xlabel('Série histórica')
@@ -119,4 +119,5 @@ for col in target_cols:
                             bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none'))
     
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig(f'Graficos/Linear/linear_{col}.svg', bbox_inches = 'tight')

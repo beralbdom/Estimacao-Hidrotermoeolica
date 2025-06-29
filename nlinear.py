@@ -3,9 +3,8 @@ import pandas as pd
 
 from matplotlib import pyplot as plt
 from alive_progress import alive_bar
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.neural_network import MLPRegressor
+from sklearn.model_selection import train_test_split, GridSearchCV, TimeSeriesSplit
+from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
 from sklearn.metrics import r2_score
 from sklearn.metrics import root_mean_squared_error as mse_error
 from sklearn.preprocessing import StandardScaler
@@ -50,8 +49,12 @@ enso['dia_semana'] = enso.index.dayofweek
 enso['dia_ano'] = enso.index.dayofyear
 enso['quadrimestre'] = enso.index.quarter
 
+# lags = [15, 30, 60]
+# for lag in lags: 
+#     for fonte in geracao.columns: enso[f'geracao_{fonte}_lag_{lag}'] = geracao[fonte].shift(lag)
+
 dataset = pd.concat([geracao, carga, enso], axis = 1).dropna()
-# dataset = dataset[dataset.index.year > 2009]
+dataset = dataset[dataset.index.year > 2009]
 dataset = dataset[dataset.index.year < 2025]
 
 # dataset = dataset.resample('ME').mean()
@@ -73,23 +76,41 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 modelo = RandomForestRegressor(n_estimators = 1000,
                                random_state = 69,
-                               criterion = 'squared_error',
+                               max_features = .5,
+                            #    max_depth = 30,
+                            #    min_samples_split = 5,
+                            #    min_samples_leaf = 2,
+                            #    bootstrap = True,
+#                                criterion = 'squared_error',
                                n_jobs = -1,
                                verbose = 1)
 
-# modelo = MLPRegressor(
-#     hidden_layer_sizes=(50, 100, 50),  # Example: Two hidden layers with 100 and 50 neurons respectively.
-#     activation='relu',             # Standard activation function.
-#     solver='adam',                 # A robust and popular optimization algorithm.
-#     max_iter=100000,                  # Maximum number of training iterations (epochs).
-#     learning_rate='adaptive',      # Reduces the learning rate when loss plateaus.
-#     learning_rate_init=1e-3,       # Initial learning rate.
-#     early_stopping=True,           # Stops training early if validation performance stops improving, prevents overfitting.
-#     random_state=69,               # For reproducibility.
-#     verbose=True,                   # Set to True to see the training progress and loss.
-#     shuffle=False,
-#     n_iter_no_change=1000,  # Number of iterations with no improvement before stopping.
+# Melhores parâmetros:  {'bootstrap': True, 
+# 'max_depth': 30, 'max_features': 1.0, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 1500}
+
+# param_grid = {
+#     'n_estimators': [500, 1000, 1500],
+#     'max_features': ['sqrt', 'log2', 1.0],
+#     'max_depth': [10, 20, 30, None],
+#     'min_samples_split': [2, 5, 10],
+#     'min_samples_leaf': [1, 2, 4],
+#     'bootstrap': [True, False]
+# }
+
+# tscv = TimeSeriesSplit(n_splits = 5)
+
+# grid_search = GridSearchCV(
+#     estimator = modelo,
+#     param_grid=param_grid,
+#     cv=tscv,
+#     n_jobs=-1,  # Use all available CPU cores
+#     verbose=2,  # Show progress
+#     scoring='neg_root_mean_squared_error'
 # )
+
+# reg = grid_search.fit(X_train, y_train)
+# print("\nMelhores parâmetros: ", reg.best_params_)
+# print("Melhor score (Neg RMSE): ", reg.best_score_)
 
 reg = modelo.fit(X_train, y_train)
 # print(f'Caminho de decisão: {reg.estimators_[0].tree_}')
@@ -110,7 +131,7 @@ for col in target_cols:
 
     fig, ax = plt.subplot_mosaic(layout, figsize = (9, 3), width_ratios= [1, 2])
 
-    ax['a'].scatter(y_test[col], y_pred[col], s = 1, color = "#FF5B5B", alpha = .25, label = 'Previsto')
+    ax['a'].scatter(y_test[col], y_pred[col], s = 1, color = "#FF5B5B", alpha = .5, label = 'Previsto')
     ax['a'].plot([y_test[col].min(), y_test[col].max()], [y_test[col].min(), y_test[col].max()], 
                color = "#202020", linewidth = .66, ls = '--', label = 'Ideal')
     
@@ -135,4 +156,5 @@ for col in target_cols:
                             bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none'))
     
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig(f'Graficos/RF/rf_{col}.svg', bbox_inches = 'tight')

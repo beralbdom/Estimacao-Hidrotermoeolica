@@ -119,50 +119,50 @@ for target in targets:
         freq = freq,
     )
 
-    zeroshot_forecast = pipeline(df_test)
+    forecast = pipeline(df_test)
 
     # Resultados
-    # print(zeroshot_forecast)
+    print(forecast)
 
     ##################################################### GRÁFICOS #####################################################
     
-    zeroshot_forecast = zeroshot_forecast.set_index('Data')
-    pred_men = zeroshot_forecast.resample('ME').mean()
-    pred_men.index = pred_men.index.to_period('M').to_timestamp()
+    forecast = forecast.set_index('Data')
+    # pred_men = zeroshot_forecast.resample('ME').mean()
+    # pred_men.index = pred_men.index.to_period('M').to_timestamp()
 
     df_train.set_index('Data', inplace = True)
-    df_train = df_train.resample('ME').mean()
-    df_train.index = df_train.index.to_period('M').to_timestamp()
+    # df_train = df_train.resample('ME').mean()
+    # df_train.index = df_train.index.to_period('M').to_timestamp()
 
     df_test.set_index('Data', inplace = True)
-    df_test = df_test.resample('ME').mean()
-    df_test.index = df_test.index.to_period('M').to_timestamp()
+    # df_test = df_test.resample('ME').mean()
+    # df_test.index = df_test.index.to_period('M').to_timestamp()
 
-    geracao_men = geracao[target].resample('ME').mean()
+    # geracao_men = geracao[target].resample('ME').mean()
     geracao_men = geracao_men[geracao_men.index.year > 2024]
     geracao_men = pd.concat([df_test.tail(1), geracao_men])
 
-    y_pred = pred_men.reindex(df_test.index).dropna()
-    y_true = df_test.reindex(y_pred.index).dropna()
+    # y_pred = pred_men.reindex(df_test.index).dropna()
+    # y_true = df_test.reindex(y_pred.index).dropna()
 
     # print(f'\nPrevisão:\n {y_pred}')
     # print(f'\nGeração observada:\n {y_true}')
     
     fig, axs = plt.subplots(len(target), 1, figsize = (6, len(target) * 3), sharex = True)
-    for i, col in enumerate(pred_men.columns):
-        erro_r2 = r2_score(y_true[col], y_pred[col])
+    for i, col in enumerate(forecast.columns):
+        # erro_r2 = r2_score(y_true[col], y_pred[col])
 
         axs[i].plot(df_train.index, df_train[col], label = 'Treino', c = '#000000')
         axs[i].plot(df_test.index, df_test[col], label = 'Teste', c = '#000000', alpha = .33)
         axs[i].plot(geracao_men.index, geracao_men[col], label = 'Observado', c = "#000000", alpha = .33, ls = '--')
-        axs[i].plot(pred_men.index, pred_men[col], label = 'Previsão', c = "#4A7AFF", lw = .8)
+        axs[i].plot(forecast.index, forecast[col], label = 'Previsão', c = "#4A7AFF", lw = .8)
 
-        axs[i].text(
-            0.02, .98, 
-            f'R² = {erro_r2:.4f}',
-            transform = axs[i].transAxes, verticalalignment = 'top', fontsize = 7,
-            bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none')
-        )
+        # axs[i].text(
+        #     0.02, .98, 
+        #     f'R² = {erro_r2:.4f}',
+        #     transform = axs[i].transAxes, verticalalignment = 'top', fontsize = 7,
+        #     bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none')
+        # )
 
         axs[i].set_ylabel(f'{col.replace('_', ' ')} [MWmed]')
         axs[i].xaxis.set_major_locator(mdates.AutoDateLocator())

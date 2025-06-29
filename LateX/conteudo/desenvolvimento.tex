@@ -213,7 +213,7 @@ além da variável de interesse, a temperatura da superfície do mar (SST).
 
 O processamento segue as seguintes etapas:
 \begin{itemize}
-\item Conversão do formato das coordenadas de longitude, de $ [0 a 360] $ graus, para -180 a 180 graus;
+\item Conversão do formato das coordenadas de longitude, de 0 a 360 graus, para -180 a 180 graus;
 \item Para cada uma das regiões do ENSO, um subconjunto geográfico dos dados globais é criado, selecionando os pontos
 de latitude e longitude que se encontram dentro dos limites de cada região;
 \item A média espacial da variável é calculada para cada dia sobre este subconjunto. Esse processo resulta em uma única série
@@ -236,23 +236,85 @@ do ENSO, que agora estão prontas para serem utilizadas como variáveis exógena
 
 
 \section{Implementação dos Modelos de Regressão} % =================================================================== %
+Para os modelos não linear e neural, utilizou-se a técnica de \textit{multivariate forecasting}, ou previsão multivariada, 
+uma abordagem que permite estimar múltiplas variáveis dependentes simultaneamente a partir de um conjunto de variáveis independentes. 
+Essa técnica é especialmente útil quando as variáveis dependentes são correlacionadas e podem influenciar umas às outras, e 
+é um dos diferenciais da arquitetura \textit{TSMixer}.
+
+\subsection{Métricas de Avaliação} % ================================================================================= %
+Para todos os casos, duas métricas de avaliação foram utilizadas: o erro quadrático médio (MSE) e o coeficiente de determinação (R²).
+O MSE é uma medida que quantifica a média dos erros quadráticos entre os valores reais e as previsões do modelo. O R², por outro lado, 
+é uma medida que indica a proporção da variabilidade dos dados que é explicada pelo modelo, variando de 0 a 1, onde valores mais 
+próximos de 1 indicam um modelo mais preciso. As equações para o cálculo dessas métricas são apresentadas a seguir:
+\begin{equation}
+    \label{eq:mse}
+    MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+\end{equation}
+\begin{equation}
+    \label{eq:r2}
+    R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2}
+\end{equation}
+em que $ y_i $ são os valores reais, $ \hat{y}_i $ são os valores previstos pelo modelo, $ \bar{y} $ é a média dos valores 
+reais e $ n $ é o número de amostras. Essas métricas estão disponíveis na biblioteca \textit{scikit-learn} através das
+funções \textit{mean\_squared\_error} e \textit{r2\_score}, respectivamente.
+
+\subsection{Etapas Comuns} % ========================================================================================= %
+As etapas iniciais de implementação são comuns a todos os modelos, consistindo na leitura dos arquivos CSV contendo as séries
+históricas de geração, carga e variáveis do ENSO; alinhamento temporal dos dados; definição das variáveis e normalização.
+Além disso, para todos os casos, os dados referentes a 2025 foram removidos para serem posteriormente utilizados para avaliação.
+
+As séries temporais são consolidadas em um único \textit{DataFrame}. As colunas das variáveis dependentes (geração por fonte e subsistema)
+e independentes (carga e variáveis do ENSO) são definidas, e as variáveis exógenas são normalizadas utilizando o \textit{StandardScaler}
+do \textit{scikit-learn}. A normalização é importante para evitar que o modelo atribua maior peso às variáveis com maior amplitude,
+o que poderia resultar em resultados não representativos.
+
+Para a etapa de treinamento, na qual os modelos atualizam seus parâmetros para minimizar o erro, os dados são divididos
+em conjuntos de treino, teste e validação (para o caso do modelo neural). O conjunto de treino é utilizado para ajustar os parâmetros 
+do modelo, enquanto o conjunto de teste é utilizado para avaliar a performance do modelo em dados não vistos. Para o modelo neural, o 
+conjunto de validação é utilizado para monitorar o desempenho do modelo durante o treinamento e evitar o sobreajuste. Diferentes tamanhos 
+da janela de treinamento foram avaliados e serão apresentados no capítulo 5.
+
+Em todos os casos, os resultados foram avaliados visualmente por dois gráficos. Um de dispersão, que mostra os valores
+reais e estimados junto a uma linha ideal, de modo que valores próximos à linha indicam resultados mais precisos. O outro gráfico
+demonstra a separação dos períodos de treino e teste, permitindo uma avaliação mais direta entre os resultados reais e estimados.
+Para facilitar a visualização, os gráficos são apresentados em base temporal mensal, considerando a média mensal dos valores.
+
+\subsection{Modelo Linear} % ========================================================================================= %
 Para o modelo linear, foi utilizado o modelo de regressão linear múltipla, uma técnica estatística que busca modelar
 a relação entre uma variável dependente e várias variáveis independentes, conforme descrito pela equação \ref{eq:regressao_linear}.
 Nesse contexto, a vartiável dependente é a geração de uma determinada fonte em um subsistema do SIN, e as variáveis independentes
-são as variáveis auxiliares (ou exógenas), como dados de SST, carga e hidrológicos.
+são as variáveis auxiliares (ou exógenas), os dados de SST e carga.
 
-Para os modelos não linear e neural, a técnica de previsão multivariada foi utilizada, uma abordagem que permite estimar
-múltiplas variáveis dependentes simultaneamente a partir de um conjunto de variáveis independentes. Essa técnica é especialmente 
-útil quando as variáveis dependentes são interdependentes e podem influenciar umas às outras. Nesse contexto, 
-os modelos são capazes de capturar as relações entre cada fonte de geração, além das relações entre as variáveis exógenas.
+Para os modelos linear e não linear, foi considerado apenas o período de 2010 a 2024, já que a fonte eólica era pouco presente
+no SIN até até então. Além disso, ao analisar a curva de geração, observa-se um padrão de comportamento diferente entre os
+anos anteriores e posteriores a 2010. Esse comportamento é melhor observado na decomposição da série temporal, apresentada anterirmente.
 
-\subsection{Modelo Linear} % ========================================================================================= %
+Considerando as limitações do modelo, utilizar todo o
+dataset poderia resultar em resultados não representativos, uma vez que o modelo assume que a relação entre as variáveis
+é linear e constante ao longo do tempo. Assim, a escolha do período de 2010 a 2024 é justificada pela necessidade de garantir
+que os dados utilizados sejam representativos do comportamento atual do sistema, permitindo uma análise mais precisa e confiável.
+As etapas da implementação estão descritas a seguir.
+
+\begin{enumerate}
+    \item \textbf{Treinamento do Modelo:} O modelo é treinado utilizando o conjunto de treino, ajustando os parâmetros para minimizar
+o erro entre as previsões e os valores reais. Essa etapa é realizada em paralelo, utilizando todas as \textit{threads} do sistema.
+Inicialmente, foi considerado 70\% do conjunto de dados para o treinamento e 30\% para o conjunto de teste.
+
+    \item \textbf{Avaliação do Modelo:} O modelo é avaliado utilizando o conjunto de teste. Ou seja, a partir das variáveis independentes
+(exógenas) do conjunto de teste, o modelo gera previsões para as variáveis dependentes. As previsões são comparadas com os valores reais
+e as métricas de desempenho escolhidas são calculadas.
+\end{enumerate}
+
+O modelo linear permite uma interpretação direta dos resultados, uma vez que é possível obter os coeficientes da equação
+linear que descreve a relação entre as variáveis dependentes e independentes. Os demais modelos não permitem essa análise diretamente.
 
 \subsection{Modelo Não Linear} % ===================================================================================== %
 
 
 \section{Implementação do Modelo Neural} % =========================================================================== %
 
+
 \subsection{Sem Variáveis Exógenas} % ================================================================================ %
+
 
 \subsection{Com Variáveis Exógenas} % ================================================================================ %
