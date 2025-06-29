@@ -22,12 +22,11 @@ from tsfm_public import (
     get_datasets,
 )
 
-
 TTM_MODEL  = '90-30-ft-r2.1'
 CONTEXT    = 90
 PREDICTION = 30
 OUT_DIR    = 'Exportado/TTM'
-DEVICE     = 'cpu'
+DEVICE     = 'cuda' if torch.cuda.is_available() else 'cpu'
 SEED       = 1337
 
 random.seed(SEED)
@@ -63,21 +62,16 @@ carga = (
     .resample(freq).mean()
 )
 
-# geracao_2025 = geracao[geracao.index.year == 2025]
 geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols])
-
 target_cols = geracao.columns.tolist()
 exog_cols = enso.columns.append(carga.columns).tolist()
 dataset = pd.concat([geracao, enso, carga], axis = 1).dropna()
+dataset = dataset[dataset.index.year > 2009]
 dataset = dataset.reset_index()
 
 print(f'Dataset:\n{dataset}')
 
-split_config = {
-    'train': [0, 0.6],      # 0% to 60%
-    'valid': [0.6, 0.8],    # 60% to 80%
-    'test': [0.8, 1.0]      # 80% to 100%
-}
+split_config = {"train": 0.5, "test": 0.25}
 
 df_train, df_valid, df_test = prepare_data_splits(
     dataset,
@@ -105,7 +99,7 @@ finetune_model = TinyTimeMixerForPrediction.from_pretrained(
     prediction_channel_indices = tsp.prediction_channel_indices,
     exogenous_channel_indices = tsp.exogenous_channel_indices,
     fcm_context_length = 10,
-    fcm_use_mixer = True,
+    fcm_use_mixer = False,
     fcm_mix_layers = 3,
     enable_forecast_channel_mixing = True,
     fcm_prepend_past = True,
@@ -115,16 +109,16 @@ train_dataset, valid_dataset, test_dataset = get_datasets(
     tsp, dataset, split_config, use_frequency_token = finetune_model.config.resolution_prefix_tuning
 )
 
-num_epochs = 100
+num_epochs = 500
 batch_size = 256
-# learning_rate = 5e-4
+learning_rate = 5e-5
 
-learning_rate, finetune_model = optimal_lr_finder(
-    finetune_model,
-    train_dataset,
-    batch_size=batch_size,
-    enable_prefix_tuning=True,
-)
+# learning_rate, finetune_model = optimal_lr_finder(
+#     finetune_model,
+#     train_dataset,
+#     batch_size = batch_size,
+#     enable_prefix_tuning = True,
+# )
 
 tracking_callback = TrackingCallback()
 optimizer = AdamW(finetune_model.parameters(), lr = learning_rate)
@@ -158,12 +152,12 @@ finetune_forecast_args = TrainingArguments(
     load_best_model_at_end = True,
     metric_for_best_model = "eval_loss",
     greater_is_better = False,
-    use_cpu = True,
+    use_cpu = DEVICE == 'cpu',
 )
 
 early_stopping_callback = EarlyStoppingCallback(
-    early_stopping_patience = 10,
-    early_stopping_threshold = .001,
+    early_stopping_patience = 50,
+    early_stopping_threshold = 1e-6,
 )
 
 scheduler = OneCycleLR(
@@ -183,7 +177,7 @@ finetune_forecast_trainer = Trainer(
 )
 
 finetune_forecast_trainer.train()
-finetune_model.save_pretrained(f'{OUT_DIR}/finetune_{freq}{CONTEXT}-{PREDICTION}')
+finetune_model.save_pretrained(f'{OUT_DIR}/finetune_{freq}{CONTEXT}-{PREDICTION}_v2')
 
 pipeline = TimeSeriesForecastingPipeline(
     finetune_model,
@@ -193,6 +187,8 @@ pipeline = TimeSeriesForecastingPipeline(
     explode_forecasts = True,
     freq = freq,
 )
+
+
 
 df_pred = pipeline(df_test)
 
@@ -214,10 +210,7 @@ df_valid = df_valid.resample('ME').mean()
 df_test_ = df_test_.resample('ME').mean()
 df_pred_ = df_pred_.resample('ME').mean()
 
-# geracao_2025 = geracao_2025.resample('ME').mean()
-# geracao_2025 = pd.concat([df_test.tail(1), geracao_2025])
-
-df_train = pd.concat([df_train, df_valid]).drop_duplicates(keep = 'last')
+df_train = pd.concat([df_train, df_valid]).drop_duplicates()
 
 print(df_pred)
 
