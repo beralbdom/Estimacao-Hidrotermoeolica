@@ -3,12 +3,13 @@
 
 O projeto foi desenvolvido em \textit{Python} versão 3.12. Toda as etapas, da obtenção dos dados de entrada à implementação
 dos modelos computacionais foram organizadas em módulos. Todas as etapas de processamento intensivo foram realizadas em
-paralelo, utilizando todas as \textit{threads} disponíveis do sistema. 
+paralelo, utilizando todas as \textit{threads} disponíveis do sistema. As etapas referentes ao modelo neural foram 
+realizadas com aceleração da \textit{Graphics Processing Unit} (GPU).
 
-As etapas referentes ao modelo neural foram realizadas apenas no \textit{Central Processing Unit} (CPU), devido à
-incompatibilidade da biblioteca \textit{torch} com placas de vídeo AMD no Windows, com suporte apenas para placas NVIDIA.
-O sistema utilizado possui um processador AMD Ryzen 5900X e 32 GB de memória RAM. A tabela \ref{tab:bibliotecas} mostra 
-as bibliotecas utilizadas no projeto, suas finalidades e versões.
+Considerando que o suporte a aceleração por GPU é limitado no Windows, foi necessário realizar as etapas de treinamento do modelo 
+neural em Linux, utilizando a distribuição Fedora 42. A aceleração por GPU foi necessária para reduzir o tempo de treinamento do modelo. 
+O sistema utilizado possui um processador AMD Ryzen 5900X, 32 GB de memória RAM e placa de vídeo AMD RX 6800 XT. A tabela 
+\ref{tab:bibliotecas} mostra as bibliotecas utilizadas no projeto, suas finalidades e versões.
 
 \begin{table}[htb]
   \centering
@@ -103,7 +104,7 @@ necessário uma outra abordagem, a fim de evitar o \textit{download} manual dos 
 \end{table}
 
 Um script foi desenvolvido para fazer o download dos dados por meio de requisições HTTP, utilizando as bibliotecas 
-\textit{requests} e \textit{urllib3} para gerenciar as conexões. Todos os downloads foram realizados em paralelo, utilizando 
+\code{requests} e \code{urllib3} para gerenciar as conexões. Todos os downloads foram realizados em paralelo, utilizando 
 todas as threads disponíveis do sistema. Ao todo, cerca de 10 GB de dados em arquivos Comma Separated Values (CSV) foram consolidados.
 
 \begin{table}[htb]
@@ -135,7 +136,7 @@ possíveis impactos em diferentes escalas geográficas e temporais poderão ser 
 \subsection{Pré Processamento dos Dados de Geração e Carga} % ======================================================== %
 Com as séries históricas de geração e carga consolidadas, se faz necessário preparar os dados para que possam ser utilizados 
 nos modelos computacionais. Essa etapa envolve a verificação, transformação e limpeza dos dados. Utilizando a biblioteca
-\textit{pandas}, todos os arquivos com o histórico de geração e carga foram lidos e consolidados em dois \textit{DataFrames} 
+\code{pandas}, todos os arquivos com o histórico de geração e carga foram lidos e consolidados em dois \code{DataFrames} 
 distintos, estrutura de dados tabulares da biblioteca. Com isso, as seguintes operações foram realizadas:
 \begin{itemize}
     \item Seleção das colunas relevantes;
@@ -169,7 +170,7 @@ Sendo assim, os dados hidrológicos foram utilizados para verificar a performanc
 possuem alta correlação com a variável de saída. Dessa forma, é estabelecida uma referência para comparação entre os
 resultados dos modelos.
 
-As séries históricas foram consolidadas em um único \textit{DataFrame}, contendo as vazões totais em cada subsistema do SIN,
+As séries históricas foram consolidadas em um único \code{DataFrame}, contendo as vazões totais em cada subsistema do SIN,
 considerando a soma das vazões de todos os reservatórios em cada subsistema, em base diária.
 
 \subsection{Obtenção dos Dados do ENSO} % ============================================================================ %
@@ -201,14 +202,14 @@ regiões do ENSO e suas coordenadas geográficas são mostradas na Tabela \ref{t
       \fonte{\citeonline{TheDefinitionofElNio}}}
 \end{table}
 
-Os dados foram obtidos usando a biblioteca \textit{cdsapi}, que permite acessar o CDS através da
+Os dados foram obtidos usando a biblioteca \code{cdsapi}, que permite acessar o CDS através da
 API do ECMWF. O script desenvolvido para essa etapa realiza o download dos dados de temperatura da superfície do mar
 para cada uma das regiões do ENSO, considerando o período de 2000 a 2024. Os dados são obtidos em formato NetCDF, que é 
 um formato de arquivo utilizado para armazenar dados científicos multidimensionais.
 
 \subsection{Pré Processamento dos Dados do ENSO} % =================================================================== %
 Após o download, os arquivos NetCDF são processados para extrair as informações relevantes para cada região do ENSO. 
-Utilizando a biblioteca \textit{netCDF4}, cada arquivo anual é lido para extrair as dimensões de tempo, latitude e longitude, 
+Utilizando a biblioteca \code{netCDF4}, cada arquivo anual é lido para extrair as dimensões de tempo, latitude e longitude, 
 além da variável de interesse, a temperatura da superfície do mar (SST).
 
 O processamento segue as seguintes etapas:
@@ -227,19 +228,95 @@ do ENSO, que agora estão prontas para serem utilizadas como variáveis exógena
 
 
 \section{Análise Exploratória dos Dados} % =========================================================================== %
+A análise exploratória dos dados é uma etapa crucial para entender as características e padrões dos dados antes de aplicar modelos computacionais.
+Essa etapa envolve a visualização e análise estatística, permitindo identificar tendências, sazonalidades, correlações e possíveis outliers. 
+Além das bibliotecas \code{pandas} e \code{matplotlib}, a biblioteca \code{statsmodels} foi utilizada para realizar a decomposição
+das séries temporais, permitindo avaliar as sazonalidades e tendências presentes nos dados.
 
-\subsection{Dados de Geração e carga} % ============================================================================== %
+Para a decomposição das séries temporais, a função \code{MSTL} foi utilizada, que realiza a decomposição em componentes de 
+tendência, sazonalidade e resíduo. Essa função utiliza o método de \textit{local polynomial regression fitting}, ou ajuste
+de regressão polinomial local (LOESS) para decompor a série, sendo capaz de capturar sazonalidades de séries temporais
+não estacionárias, que é o caso das séries de geração e carga do SIN. Para todas as análises a seguir, os dados estão
+em base temporal mensal e foram normalizados utilizando o \code{StandardScaler} da biblioteca \code{scikit-learn}.
 
-\subsection{Dados Hidrológicos} % ==================================================================================== %
+\subsection{Dados de Geração e Carga} % ============================================================================== %
+\subsubsection{Dados de Geração} % =================================================================================== %
+A Figura \ref{fig:decomposicao_Hidráulica} mostra a decomposição da série temporal de geração hidráulica, que revela uma 
+tendência de aumento dos anos de 2000 a 2012, seguida por uma período de estabilidade de 2012 a 2024. Ao mesmo tempo,
+o regime de sazonalidade apresenta maior amplitude após o ano de 2012, sugerindo uma maior variabilidade da contribuição
+hidráulica para a geração do SIN. Esse comportamento pode ser explicado pela introdução em larga escala das fontes renováveis 
+variáveis, como a eólica e a solar fotovoltaica, na matriz elétrica. \cite{Silva2016}
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Decomposição da série temporal de geração hidráulica}
+       \label{fig:decomposicao_Hidráulica}}
+  {\includesvg[scale=1]{figuras/decomposicao_Hidráulica}}
+  {\fonte{o autor.}}
+\end{figure}
 
-\subsection{Dados do ENSO} % ========================================================================================= %
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Decomposição da série temporal de geração eólica}
+       \label{fig:decomposicao_Eólica}}
+  {\includesvg[scale=1]{figuras/decomposicao_Eólica}}
+  {\fonte{o autor.}}
+\end{figure}
+
+Conforme descrito no capítulo 1, a geração dessas fontes é intermitente e não despachável, ou seja, dependente da 
+disponibilidade de vento e sol. Nesse cenário, as usinas hidrelétricas, especialmente aquelas com reservatórios, passaram 
+a atuar como a principal ferramenta de flexibilidade do sistema, compensando a variabilidade das fontes intermitentes. 
+
+Em momentos de alta geração eólica e solar, o ONS reduz a produção hidrelétrica para absorver a energia renovável, criando vales 
+de geração mais profundos. Inversamente, em períodos de baixa geração renovável, como durante a noite, a geração hidrelétrica 
+é acionada para suprir a demanda, resultando em picos mais elevados. Portanto, o aumento da amplitude da sazonalidade após 
+2012 é a assinatura visual desse novo papel operacional, no qual a fonte hidráulica não apenas segue o ciclo hidrológico, 
+mas também responde dinamicamente à intermitência e situações de pico de demanda para garantir a estabilidade do SIN. \cite{Wang2025}
+
+A Figura \ref{fig:decomposicao_Eólica} mostra a decomposição da série temporal de geração eólica. A tendência
+evidencia o crescimento exponencial da capacidade instalada a partir de 2012, reflexo das políticas de incentivo e dos leilões 
+de energia. Diferentemente da fonte hidráulica, a sazonalidade da geração eólica é ditada exclusivamente 
+pela disponibilidade do recurso, com picos correspondentes à "safra dos ventos", que ocorre tipicamente no segundo semestre. 
+
+A amplitude crescente da sazonalidade e a maior variância do resíduo são consequências diretas da expansão 
+da capacidade instalada. Em conjunto, a sazonalidade e o resíduo da geração eólica são as principais causas da mudança no 
+perfil operacional da geração hidráulica, que ajusta sua produção para compensar a intermitência da fonte eólica.
+
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Decomposição da série temporal de geração térmica}
+       \label{fig:decomposicao_Térmica}}
+  {\includesvg[scale=1]{figuras/decomposicao_Térmica}}
+  {\fonte{o autor.}}
+\end{figure}
+
+A Figura \ref{fig:decomposicao_Térmica} apresenta a decomposição da geração térmica. A tendência atua 
+como um termômetro do risco hidrológico do país, com picos proeminentes que coincidem diretamente com períodos de crise hídrica, 
+como em 2014-2015 e 2021, quando o despacho térmico é massivo para garantir o suprimento. 
+
+A sazonalidade opera de forma inversa ao ciclo hidrológico, com maior geração no período seco para poupar os reservatórios. 
+O resíduo, por sua vez, exibe alta volatilidade e representa o papel da fonte térmica como recurso de ponta e de emergência, 
+acionada para cobrir a intermitência de outras fontes, atender picos de demanda e responder a indisponibilidades no sistema. 
+
+
+\subsubsection{Dados de Carga} % ===================================================================================== %
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Decomposição da série temporal de carga}
+       \label{fig:decomposicao_carga}}
+  {\includesvg[scale=1]{figuras/decomposicao_carga}}
+  {\fonte{o autor.}}
+\end{figure}
+A Figura \ref{fig:decomposicao_carga} mostra a decomposição da série temporal de carga. A tendência
+reflete diretamente a atividade econômica do país, com um crescimento contínuo até 2014, seguido por uma estagnação durante 
+a recessão de 2014-2016 e uma queda abrupta em 2020 devido à pandemia de COVID-19. \cite{Magazzino2021}
+
+A sazonalidade é a mais regular entre todas as séries, ditada pelo clima, com picos de consumo consistentes no verão devido 
+ao uso de sistemas de refrigeração. O resíduo captura variações de curto prazo, como ondas de temperatura e feriados, e 
+possui uma volatilidade relativamente baixa.
+
+
+\subsection{Análise de Correlações} % ================================================================================ %
 
 
 \section{Implementação dos Modelos de Regressão} % =================================================================== %
-Para os modelos não linear e neural, utilizou-se a técnica de \textit{multivariate forecasting}, ou previsão multivariada, 
-uma abordagem que permite estimar múltiplas variáveis dependentes simultaneamente a partir de um conjunto de variáveis independentes. 
-Essa técnica é especialmente útil quando as variáveis dependentes são correlacionadas e podem influenciar umas às outras, e 
-é um dos diferenciais da arquitetura \textit{TSMixer}.
+Para todos os casos, os códigos referentes às implementações dos modelos estão disponíveis no Apêncice A. A seguir, será
+apresentada uma visão geral das etapas de implementação, métricas de avaliação e os modelos computacionais utilizados.
 
 \subsection{Métricas de Avaliação} % ================================================================================= %
 Para todos os casos, duas métricas de avaliação foram utilizadas: o erro quadrático médio (MSE) e o coeficiente de determinação (R²).
@@ -255,66 +332,154 @@ próximos de 1 indicam um modelo mais preciso. As equações para o cálculo des
     R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2}
 \end{equation}
 em que $ y_i $ são os valores reais, $ \hat{y}_i $ são os valores previstos pelo modelo, $ \bar{y} $ é a média dos valores 
-reais e $ n $ é o número de amostras. Essas métricas estão disponíveis na biblioteca \textit{scikit-learn} através das
-funções \textit{mean\_squared\_error} e \textit{r2\_score}, respectivamente.
+reais e $ n $ é o número de amostras. Essas métricas estão disponíveis na biblioteca \code{scikit-learn} através das
+funções \code{mean\_squared\_error} e \code{r2\_score}, respectivamente.
 
 \subsection{Etapas Comuns} % ========================================================================================= %
-As etapas iniciais de implementação são comuns a todos os modelos, consistindo na leitura dos arquivos CSV contendo as séries
-históricas de geração, carga e variáveis do ENSO; alinhamento temporal dos dados; definição das variáveis e normalização.
-Além disso, para todos os casos, os dados referentes a 2025 foram removidos para serem posteriormente utilizados para avaliação.
+As etapas iniciais de implementação são comuns a todos os modelos, consistindo em: 
+\begin{enumerate}
+    \item \textbf{Entrada de dados:} Leitura dos arquivos CSV contendo os dados de geração, carga e variáveis do ENSO;
+    \item \textbf{Consolidação do dataset:} Alinhamento temporal dos dados, garantindo que as séries estejam sincronizadas;
+    \item \textbf{Definição das variáveis:} Seleção das clunas contendo as variáveis dependentes (geração por fonte e subsistema) e 
+independentes (carga e variáveis do ENSO);
+    \item \textbf{Normalização:} Normalização das variáveis independentes utilizando o \code{StandardScaler} do \code{scikit-learn};
+    \item \textbf{Definição dos conjuntos para treino:} Divisão dos dados em conjuntos de treino, teste e validação (para o modelo neural);
+    \item \textbf{Avaliação:} Avaliação através das métricas escolhidas e visual dos resultados através de gráficos de dispersão e linha.
+\end{enumerate}
 
-As séries temporais são consolidadas em um único \textit{DataFrame}. As colunas das variáveis dependentes (geração por fonte e subsistema)
-e independentes (carga e variáveis do ENSO) são definidas, e as variáveis exógenas são normalizadas utilizando o \textit{StandardScaler}
-do \textit{scikit-learn}. A normalização é importante para evitar que o modelo atribua maior peso às variáveis com maior amplitude,
-o que poderia resultar em resultados não representativos.
+A normalização é importante para evitar que o modelo atribua maior peso às variáveis com maior amplitude,
+o que poderia resultar em resultados não representativos. Para a etapa de treinamento, na qual os modelos atualizam seus parâmetros 
+para minimizar o erro, os dados são divididos em conjuntos de treino, teste e validação (para o caso do modelo neural). 
 
-Para a etapa de treinamento, na qual os modelos atualizam seus parâmetros para minimizar o erro, os dados são divididos
-em conjuntos de treino, teste e validação (para o caso do modelo neural). O conjunto de treino é utilizado para ajustar os parâmetros 
-do modelo, enquanto o conjunto de teste é utilizado para avaliar a performance do modelo em dados não vistos. Para o modelo neural, o 
-conjunto de validação é utilizado para monitorar o desempenho do modelo durante o treinamento e evitar o sobreajuste. Diferentes tamanhos 
-da janela de treinamento foram avaliados e serão apresentados no capítulo 5.
+O conjunto de treino é utilizado para ajustar os parâmetros 
+do modelo, enquanto o conjunto de teste é utilizado para avaliar a performance do modelo em dados não vistos. Para o modelo neural, 
+o conjunto de validação é utilizado para monitorar o desempenho do modelo durante o treinamento e evitar o sobreajuste. 
+Diferentes tamanhos da janela de treinamento foram avaliados e serão apresentados no capítulo 5.
 
-Em todos os casos, os resultados foram avaliados visualmente por dois gráficos. Um de dispersão, que mostra os valores
-reais e estimados junto a uma linha ideal, de modo que valores próximos à linha indicam resultados mais precisos. O outro gráfico
-demonstra a separação dos períodos de treino e teste, permitindo uma avaliação mais direta entre os resultados reais e estimados.
+Os gráficos de dispersão mostram os valores reais e estimados junto a uma linha ideal, de modo que valores próximos à linha indicam 
+resultados mais precisos. O outro gráfico demonstra a separação dos períodos de treino e teste, permitindo uma avaliação mais direta entre os resultados reais e estimados.
 Para facilitar a visualização, os gráficos são apresentados em base temporal mensal, considerando a média mensal dos valores.
 
 \subsection{Modelo Linear} % ========================================================================================= %
-Para o modelo linear, foi utilizado o modelo de regressão linear múltipla, uma técnica estatística que busca modelar
-a relação entre uma variável dependente e várias variáveis independentes, conforme descrito pela equação \ref{eq:regressao_linear}.
-Nesse contexto, a vartiável dependente é a geração de uma determinada fonte em um subsistema do SIN, e as variáveis independentes
-são as variáveis auxiliares (ou exógenas), os dados de SST e carga.
+O modelo \code{LinearRegression} da biblioteca \code{scikit-learn} foi implementado com a abordagem de regressão linear múltipla, 
+uma técnica estatística que busca modelar a relação entre uma variável dependente e várias variáveis independentes, conforme descrito pela 
+equação \ref{eq:regressao_linear}. Nesse contexto, a variável dependente é a geração de uma determinada fonte em um subsistema do 
+SIN, e as variáveis independentes são as variáveis auxiliares (ou exógenas), os dados de SST e carga.
 
-Para os modelos linear e não linear, foi considerado apenas o período de 2010 a 2024, já que a fonte eólica era pouco presente
-no SIN até até então. Além disso, ao analisar a curva de geração, observa-se um padrão de comportamento diferente entre os
-anos anteriores e posteriores a 2010. Esse comportamento é melhor observado na decomposição da série temporal, apresentada anterirmente.
+Foi considerado apenas o período de 2010 a 2024, já que a fonte eólica era pouco presente
+no SIN até então. Considerando as limitações do modelo, utilizar todo o dataset poderia resultar em resultados não representativos, 
+uma vez que o modelo assume que a relação entre as variáveis é linear e constante ao longo do tempo. Assim, a escolha do período 
+de 2010 a 2024 é justificada pela necessidade de garantir que os dados utilizados sejam representativos do comportamento atual 
+do sistema, permitindo uma análise mais precisa e confiável.
 
-Considerando as limitações do modelo, utilizar todo o
-dataset poderia resultar em resultados não representativos, uma vez que o modelo assume que a relação entre as variáveis
-é linear e constante ao longo do tempo. Assim, a escolha do período de 2010 a 2024 é justificada pela necessidade de garantir
-que os dados utilizados sejam representativos do comportamento atual do sistema, permitindo uma análise mais precisa e confiável.
-As etapas da implementação estão descritas a seguir.
-
-\begin{enumerate}
-    \item \textbf{Treinamento do Modelo:} O modelo é treinado utilizando o conjunto de treino, ajustando os parâmetros para minimizar
-o erro entre as previsões e os valores reais. Essa etapa é realizada em paralelo, utilizando todas as \textit{threads} do sistema.
-Inicialmente, foi considerado 70\% do conjunto de dados para o treinamento e 30\% para o conjunto de teste.
-
-    \item \textbf{Avaliação do Modelo:} O modelo é avaliado utilizando o conjunto de teste. Ou seja, a partir das variáveis independentes
-(exógenas) do conjunto de teste, o modelo gera previsões para as variáveis dependentes. As previsões são comparadas com os valores reais
-e as métricas de desempenho escolhidas são calculadas.
-\end{enumerate}
+Após as etapas comuns, de carregamento de dados e tratamento inicial, os datasets de treino e teste foram definidos, de modo que
+o conjunto de treino contenha 70\% dos dados e o conjunto de teste 30\%. O modelo é então instanciado com paralelismo do
+CPU habilitado e treinado no conjunto de treino. A seguir, o modelo é avaliado no conjunto de teste, e os resultados são
+apresentados através dos gráficos.
 
 O modelo linear permite uma interpretação direta dos resultados, uma vez que é possível obter os coeficientes da equação
 linear que descreve a relação entre as variáveis dependentes e independentes. Os demais modelos não permitem essa análise diretamente.
 
 \subsection{Modelo Não Linear} % ===================================================================================== %
+O modelo \code{RandomForestRegressor} da biblioteca \code{scikit-learn} foi implementado com a abordagem de previsão multivariada.
+O modelo é um dos poucos da biblioteca que permite prever múltiplas variáveis dependentes simultaneamente, sem considerar os modelos
+neurais, e foi selecionado por este motivo.
+
+Para este caso, também foi considerado o período de 2010 a 2024, e as etapas comuns foram realizadas. Após a consolidação 
+dos dados de geração, carga e ENSO, foram criados atributos temporais adicionais, como ano, mês e dia do ano, para enriquecer 
+o conjunto de dados. As variáveis exógenas (carga e ENSO) foram normalizadas com o \code{StandardScaler}. O conjunto de dados 
+foi então dividido cronologicamente, com 70\% dos dados para treino e 30\% para teste, utilizando a função \code{train\_test\_split} 
+com o parâmetro \code{shuffle = False}.
+
+Para definir os melhores hiperparâmetros do modelo, foi utilizado o \code{GridSearchCV}, que realiza uma busca exaustiva por 
+meio de validação cruzada em grade. A validação cruzada foi adaptada para séries temporais com o uso do \code{TimeSeriesSplit}, 
+que garante que os dados de treino sempre ocorram antes dos dados de validação em cada divisão. O modelo foi treinado no conjunto 
+de treino, e os melhores parâmetros foram selecionados com base na métrica de erro quadrático médio (MSE).
+
+Após a aplicação do \code{GridSearchCV}, o modelo foi instanciado com os parâmetros otimizados, com número de árvores de decisão 
+\code{n\_estimators = 1000} e profundidade máxima \code{max\_depth = 30}, com o paralelismo habilitado \code{n\_jobs = -1}. O modelo 
+treinado foi então utilizado para realizar as previsões no conjunto de teste. Os resultados foram avaliados com as métricas R² e MSE. 
+Por fim, para cada variável alvo, foram gerados e salvos gráficos de dispersão e de série temporal para a análise visual dos resultados.
 
 
 \section{Implementação do Modelo Neural} % =========================================================================== %
+O modelo neural utilizado foi o \textit{TinyTimeMixer}, versão 2.1, disponível na biblioteca \code{transformers} do \textit{Hugging Face}. Ele é
+um modelo de previsão de séries temporais pré-treinado baseado na arquitetura \textit{TSMixer}, apresentada no capítulo 3. Modelos pré treinados são modelos
+que já foram treinados em grandes conjuntos de dados. Ou seja, os pesos das camadas de \textit{perceptrons} já foram ajustados para capturar padrões gerais em séries temporais.
 
+Além disso, o modelo permite o processo de \textit{fine tuning}, que é a atualização dos pesos para adequar-se
+a um conjunto de dados específico, considerando variáveis dependentes e independentes, que no contexto do projeto são a geração de energia
+por subsistema e fonte, carga e variáveis do ENSO.
+
+O modelo possui diferentes variações, com diferentes tamanhos de janelas de contexto e previsão e tem suporte para escalas de tempo semanal, diária, horária e de minutos. 
+Para o projeto, foram utilizados as variantes com janelas de contexto e previsão de 512 e 96 dias, bem como a de 90 e 30 semanas.
+
+A biblioteca \code{tsfm\_public}, que contém funções auxiliares para a implementação dos modelos publicados pela IBM, foi
+utilizada para definir os conjuntos de treino, teste e validação, além de realizar o pré processamento dos dados, incluindo o
+processo de normalização.
+
+Vale destacar que, embora \citeonline{Ekambaram2024} sugira o congelamento de todo o \textit{backbone} do modelo, ou seja, 
+não atualizar todos os pesos das camadas escondidas durante o ajuste fino, de modo a preservar o conhecimento prévio do modelo,
+isso não foi seguido para esse projeto, dado que resultados superiores foram obtidos ao permitir que todas as camadas fossem atualizadas.
+Dessa forma, o modelo é capaz de aprender padrões mais complexos e específicos do conjunto de dados, o que pode levar a uma melhor performance nas previsões.
 
 \subsection{Sem Variáveis Exógenas} % ================================================================================ %
+Inicialmente, foi implementado o modelo sem considerar as variáveis exógenas, ou seja, apenas com as variáveis dependentes, a 
+geração de energia por subsistema e fonte. Essa abordagem, conhecida como \textit{one-shot forecasting}, consiste em aplicar 
+um modelo já treinado diretamente sobre a série temporal de interesse para realizar a inferência, sem uma nova etapa de treinamento.
+
+Para esta análise, os dados de 2000 a 2024 foram considerados, devido a capacidade do modelo capturar relações mais complexas. 
+O conjunto de dados foi então dividido em frações de treino (70\%), validação (10\%) e teste (20\%), utilizando a função 
+\code{prepare\_data\_splits}. Diferentes variantes do modelo foram avaliadas para diferentes amostragens temporais, e os resultados 
+serão apresentados no capítulo 5.
+
+O pré-processamento foi realizado pela classe \code{TimeSeriesPreprocessor}, configurada para as variáveis de geração como 
+alvo \code{target\_columns}. A classe ajusta os dados para o formato esperado pelo modelo, com janelas de contexto definidas
+considerando a variante selecionada, além de aplicar a normalização \code{StandardScaler}, cujos parâmetros são aprendidos 
+a partir do conjunto de treino.
+
+Os modelos \code{TinyTimeMixerForPrediction} utilizados nesta etapa foram diferentes variantes pré treinadas, carregadas a partir
+de suas respectivas identificações do \textit{Hugging Face}. Apenas as camadas de entrada e saída do modelo foram adaptada para corresponder 
+ao número de variáveis de geração.
+
+A previsão é executada através de uma \code{TimeSeriesForecastingPipeline}, que aplica o modelo pré-processado sobre o conjunto 
+de teste. Como as previsões são geradas em frequência semanal, um pós-processamento é realizado para agregar os resultados em 
+médias mensais, permitindo uma comparação direta com os demais modelos. As métricas R² e MSE são calculadas sobre os dados 
+com a mesma base temporal. Por fim, para cada variável, são gerados e salvos gráficos de dispersão e de série temporal para 
+análise visual dos resultados.
 
 
 \subsection{Com Variáveis Exógenas} % ================================================================================ %
+Para a implementação do modelo com variáveis exógenas, faz-se necessário realizar o processo de \textit{fine tuning}, que 
+é o processo de atualização dos pesos do modelo pré treinado para adequar-se ao conjunto de dados específico, considerando
+a presença de variáveis dependentes e independentes.
+
+Após a consolidação dos dados de geração, carga e ENSO, o conjunto de dados é dividido em frações de treino (70\%), validação 
+(10\%) e teste (20\%), utilizando a função \textit{prepare\_data\_splits}. A biblioteca \textit{tsfm\_public} é novamente empregada 
+para o pré-processamento através da classe \textit{TimeSeriesPreprocessor}, que desta vez é configurada para tratar tanto as variáveis 
+alvo (\textit{target\_columns}) quanto as exógenas (\textit{control\_columns}), aplicando a normalização \textit{StandardScaler} em ambas.
+
+O modelo \code{TinyTimeMixerForPrediction} é carregado, e sua arquitetura é ajustada para o novo conjunto de dados, especificando 
+os canais de entrada para as variáveis dependentes e independentes. Uma característica central do modelo é a sua capacidade de 
+\textit{mixing}, ou mistura de canais, que permite aprender as interdependências entre as múltiplas séries temporais. Isso é 
+habilitado pelos parâmetros \code{decoder\_mode = 'mix\_channel'} e \code{enable\_forecast\_channel\_mixing = True}. Adicionalmente, 
+o parâmetro \code{fcm\_prepend\_past = True} é utilizado para que os valores passados das séries também sejam considerados no processo 
+de mistura, enriquecendo o contexto disponível para a previsão.
+
+Para o treinamento, a taxa de aprendizado \code{learning\_rate} é definida dinamicamente pela função \code{optimal\_lr\_finder}, 
+que busca um valor otimizado para a convergência do modelo. O otimizador utilizado foi o \code{AdamW}, uma variante do otimizador 
+Adam que desacopla a regularização de decaimento de peso (\textit{weight decay}) da atualização do gradiente.
+
+O treinamento é gerenciado pela classe \code{Trainer} da biblioteca \code{transformers}, que recebe os hiperparâmetros, 
+como o número máximo de épocas, definido em 500, e \textit{batch size} (tamanho do lote) \code{batch\_size = 64}. O tamanho
+do lote define o número de amostras que são propagadas através da rede antes da atualização dos pesos. A escolha do tamanho
+do lote envolve um compromisso entre a estabilidade da convergência e a capacidade de generalização do modelo. Em tese, 
+lotes maiores podem resultar em um treinamento mais rápido, mas podem fazer com que o modelo convirja para um mínimo local, 
+enquanto lotes menores podem levar a uma convergência lenta, mas com maior chance de encontrar um mínimo global.
+
+Adicionalmente, o \code{OneCycleLR}, é empregado para variar a taxa de aprendizado de forma cíclica durante o treinamento, 
+começando com um valor baixo, aumentando até um máximo e depois diminuindo novamente, o que pode acelerar a convergência.
+
+Uma estratégia de parada antecipada \code{EarlyStoppingCallback} é implementada para monitorar a perda no conjunto de validação 
+e interromper o treinamento caso não haja melhora significativa de ao menos 0,001 por 50 épocas consecutivas, 
+evitando o sobreajuste (\textit{overfitting}). O modelo com o menor erro de validação é salvo ao final do processo.

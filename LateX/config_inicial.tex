@@ -18,6 +18,8 @@
 \usepackage{lastpage}            																						% Usado pela Ficha catalográfica
 \usepackage{indentfirst}         																						% Indenta o primeiro parágrafo de cada seção
 \usepackage{color}               																						% Controle das cores
+\usepackage{xcolor}
+\usepackage{tcolorbox}
 \usepackage{graphicx}            																						% Inclusão de gráficos
 \usepackage{amsfonts}            																						% Símbolos
 \usepackage[none]{hyphenat}      																						% Sem separação de sílabas
@@ -74,6 +76,22 @@ abnt-etal-list=3                 																						% abreviar com mais de 3 
 
 \hangcaption																											% Alinhamento de legendas
 \captionstyle[\raggedright]{}																							% Alinhamento de legendas																						% Alinhamento de legendas
+
+\definecolor{codegray}{gray}{.95}
+\newtcbox{\code}{
+  on line,
+  arc=3pt,
+  colback=codegray,
+  colframe=codegray,
+  boxsep=1pt,
+  left=2pt,
+  right=2pt,
+  top=2pt,
+  bottom=2pt,
+  boxrule=0pt,
+  tcbox raise base,
+  fontupper=\ttfamily
+}
 
 \renewcommand{\backref}{}																								% Não gera texto de referência nas citações
 \renewcommand*{\backrefalt}[4]{}																						% Define os textos da citação

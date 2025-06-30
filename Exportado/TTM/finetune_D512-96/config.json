@@ -28,9 +28,9 @@
     23
   ],
   "expansion_factor": 2,
-  "fcm_context_length": 30,
+  "fcm_context_length": 60,
   "fcm_gated_attn": true,
-  "fcm_mix_layers": 1,
+  "fcm_mix_layers": 3,
   "fcm_prepend_past": true,
   "fcm_prepend_past_offset": null,
   "fcm_use_mixer": false,

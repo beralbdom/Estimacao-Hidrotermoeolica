@@ -8,6 +8,7 @@ from matplotlib.colors import ListedColormap
 from sklearn.preprocessing import StandardScaler
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.patches as patches
+from statsmodels.tsa.seasonal import MSTL
 
 # Configurações de plotagem
 rc('font', family = 'serif', size = 8)                                                                                  # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.rc.html
@@ -16,7 +17,101 @@ rc('axes', axisbelow = True, grid = True)
 rc('lines', linewidth = .5, markersize = 1.5)
 rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
-# Grafico geográfico indices
+
+# Decomposição de séries temporais ----------------------------------------------------------------------------------- #
+geracao = pd.read_csv('Exportado/geracao_fontes_mensal_MWmed.csv', parse_dates=['Data']).set_index('Data')
+geracao = geracao.fillna(0)  # Preenchendo valores ausentes com zero
+for col in ['Hidráulica', 'Eólica', 'Térmica']:
+    geracao[col] = StandardScaler().fit_transform(geracao[[col]])  # Normalizando a série de geração hidráulica
+    decomposicao = MSTL(geracao[col]).fit()
+
+    fig, ax = plt.subplots(4, 1, figsize=(6, 4), sharex=True)
+    ax[0].plot(decomposicao.observed, color="#4596F3", label='Observado')
+    ax[0].set_ylabel('Observado')
+    ax[1].plot(decomposicao.trend, color="#ff5656", label='Tendência')
+    ax[1].set_ylabel('Tendência')
+    ax[2].plot(decomposicao.seasonal, color="#FFA722", label='Sazonalidade')
+    ax[2].set_ylabel('Sazonalidade')
+    ax[3].plot(decomposicao.resid, color="#47A730", label='Resíduo')
+    ax[3].set_ylabel('Resíduo')
+    ax[3].set_xlabel('Série histórica')
+    ax[3].xaxis.set_major_locator(mdates.YearLocator(base=4))
+    ax[3].xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+
+    handles, labels = [], []
+    for axis in ax:
+        h, l = axis.get_legend_handles_labels()
+        handles.extend(h)
+        labels.extend(l)
+    fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=4, frameon=False)
+
+    plt.tight_layout()
+    plt.savefig(f'LateX/figuras/decomposicao_{col}.svg', bbox_inches='tight')
+    plt.close()
+
+
+enso = (
+    pd.read_csv(
+        'Exportado/ECMWF/derived-era5-single-levels-daily-statistics_sea_surface_temperature_reanalysis.csv', 
+        parse_dates = ['Data'])
+        .set_index('Data')
+        .resample('ME').mean()
+    )
+
+enso['media'] = enso.mean(axis=1)
+enso['media'] = StandardScaler().fit_transform(enso[['media']])
+decomposicao = MSTL(enso['media']).fit()
+fig, ax = plt.subplots(4, 1, figsize=(6, 4), sharex=True)
+ax[0].plot(decomposicao.observed, color="#4596F3", label='Observado')
+ax[0].set_ylabel('Observado')
+ax[1].plot(decomposicao.trend, color="#ff5656", label='Tendência')
+ax[1].set_ylabel('Tendência')
+ax[2].plot(decomposicao.seasonal, color="#FFA722", label='Sazonalidade')
+ax[2].set_ylabel('Sazonalidade')
+ax[3].plot(decomposicao.resid, color="#47A730", label='Resíduo')
+ax[3].set_ylabel('Resíduo')
+ax[3].set_xlabel('Série histórica')
+ax[3].xaxis.set_major_locator(mdates.YearLocator(base=4))
+ax[3].xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+handles, labels = [], []
+for axis in ax:
+    h, l = axis.get_legend_handles_labels()
+    handles.extend(h)
+    labels.extend(l)
+fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=4, frameon=False)
+plt.tight_layout()
+plt.savefig(f'LateX/figuras/decomposicao_ENSO.svg', bbox_inches='tight')
+plt.close()
+
+carga = pd.read_csv('Exportado/carga_subsist_mensal_MWmed.csv', parse_dates=['Data']).set_index('Data')
+carga['Total'] = carga.sum(axis=1)
+carga = carga.fillna(0)  # Preenchendo valores ausentes com zero
+carga['Total'] = StandardScaler().fit_transform(carga[['Total']])
+decomposicao = MSTL(carga['Total']).fit()
+fig, ax = plt.subplots(4, 1, figsize=(6, 4), sharex=True)
+ax[0].plot(decomposicao.observed, color="#4596F3", label='Observado')
+ax[0].set_ylabel('Observado')
+ax[1].plot(decomposicao.trend, color="#ff5656", label='Tendência')
+ax[1].set_ylabel('Tendência')
+ax[2].plot(decomposicao.seasonal, color="#FFA722", label='Sazonalidade')
+ax[2].set_ylabel('Sazonalidade')
+ax[3].plot(decomposicao.resid, color="#47A730", label='Resíduo')
+ax[3].set_ylabel('Resíduo')
+ax[3].set_xlabel('Série histórica')
+ax[3].xaxis.set_major_locator(mdates.YearLocator(base=4))
+ax[3].xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+handles, labels = [], []
+for axis in ax:
+    h, l = axis.get_legend_handles_labels()
+    handles.extend(h)
+    labels.extend(l)
+fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=4, frameon=False)
+plt.tight_layout()
+plt.savefig(f'LateX/figuras/decomposicao_carga.svg', bbox_inches='tight')
+plt.close()
+
+
+# Grafico geográfico indices ----------------------------------------------------------------------------------------- #
 # regioes = {                                                                                                             # [North, West, South, East]
 #     'NIN 1.2': [0, -90, -10, -80],
 #     'NIN 3':   [5, -150, -5, -90],
@@ -102,7 +197,7 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
 
 
-# # Gráfico exemplo modelo linear
+# # Gráfico exemplo modelo linear ------------------------------------------------------------------------------------ #
 # from sklearn.linear_model import LinearRegression
 # X = np.random.rand(100)
 # y = np.sin(X * 2 * np.pi) + np.random.normal(0, 0.1, 100)
@@ -121,7 +216,7 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 
 
 
-# violinplots e boxplots
+# Violinplots e boxplots --------------------------------------------------------------------------------------------- #
 # indices = pd.read_csv('Exportado/teleconexoes.csv').set_index('Data')                                                   # Dados de teleconexões (índices climatológicos)
 # geracao = pd.read_csv('Exportado/geracao_fontes_mensal.csv').set_index('Data')                                          # Dados de geração em MWMed
 # carga = pd.read_csv('Exportado/carga_subsistemas_diario.csv').set_index('Data')
@@ -306,7 +401,7 @@ rc('axes.spines', top = False, right = False, left = True, bottom = True)
 # plt.savefig('LateX/figuras/oni.svg', transparent = True, bbox_inches='tight')
 
 
-# --- GRÁFICO DE GERAÇÃO ANUAL PERCENTUAL
+# --- GRÁFICO DE GERAÇÃO ANUAL PERCENTUAL ---------------------------------------------------------------------------- #
 # geracao = pd.read_csv('Exportado/geracao_fontes_mensal_MWmed.csv', usecols = ['Data', 'Hidráulica', 'Térmica', 'Eólica', 'Fotovoltaica', 'Outras']).set_index('Data')  
 # geracao.index = pd.to_datetime(geracao.index, format='%Y-%m-%d')
 # geracao = geracao[geracao.index.year <= 2024]  # Filtrando os dados de geração para o período desejado

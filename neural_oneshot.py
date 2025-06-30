@@ -1,17 +1,22 @@
+import numpy as np
+import pandas as pd
 import os
 import math
 import torch
 import random
 
-import pandas as pd
-import numpy as np
-# import torch_directml
+import matplotlib.dates as mdates
+from matplotlib import pyplot as plt
+from alive_progress import alive_bar
+from sklearn.model_selection import train_test_split, GridSearchCV, TimeSeriesSplit
+from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
+from sklearn.metrics import r2_score
+from sklearn.metrics import root_mean_squared_error as mse_error
+from sklearn.preprocessing import StandardScaler
 
 from transformers import set_seed
 from tsfm_public.toolkit.time_series_preprocessor import prepare_data_splits
 from tsfm_public.toolkit import RecursivePredictor, RecursivePredictorConfig
-from matplotlib import rc, pyplot as plt, dates as mdates
-from sklearn.metrics import r2_score
 
 from tsfm_public import (
     TimeSeriesForecastingPipeline,
@@ -19,25 +24,13 @@ from tsfm_public import (
     TinyTimeMixerForPrediction,
 )
 
+import matplotlib_config
 
-# Configurações de plotagem --------------------------------------------------------------------------------------------
-rc('font', family = 'serif', size = 8)
-rc('grid', linestyle = '--', alpha = .5)
-rc('axes', axisbelow = True, grid = True)
-rc('lines', linewidth = .8, markersize = 1.5)
-rc('axes.spines', top = False, right = False, left = True, bottom = True)
-
-# Definições do TTM ----------------------------------------------------------------------------------------------------
-# torch.Tensor.clamp_min = lambda self, v: self.clamp(min=v.item() if isinstance(v, torch.Tensor) else v)
-# _dml = torch_directml.device()
-# print(Using DirectML device:, _dml)
-
-TTM_MODEL_REVISION = '180-60-ft-l1-r2.1'
-CONTEXT            = 180
-PREDICTION         = 60
+TTM_MODEL_REVISION = '90-30-ft-r2.1'
+CONTEXT            = 90
+PREDICTION         = 30
 OUT_DIR            = 'Exportado/TTM'
 DEVICE             = 'cpu'
-# DEVICE             = _dml
 SEED               = 1337
 
 random.seed(SEED)
@@ -45,131 +38,126 @@ np.random.seed(SEED)
 torch.manual_seed(SEED)
 set_seed(SEED)
 
-# Entrada de dados -----------------------------------------------------------------------------------------------------
+freq = 'W'
+tempo = 'Data'
+
 geracao = (
     pd.read_csv(
         'Exportado/geracao_fontes_diario_MWmed.csv', 
-        parse_dates = ['Data'],
-    )
+        parse_dates = ['Data'])
     .set_index('Data')
     .fillna(0)
-    # .resample('D').mean()
+    .resample(freq).mean()
 )
 
-freq = 'D'
-tempo = 'Data'
-fontes = ['Hidráulica', 'Eólica', 'Fotovoltaica', 'Térmica', 'Outras']
-targets = np.zeros((len(fontes)), dtype = object)
-subsistemas = ['N', 'NE', 'S', 'SE']
+geracao_2025 = geracao[geracao.index.year == 2025]
+geracao = geracao[geracao.index.year < 2025]
+geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols])
+targets = geracao.columns.tolist()
+geracao = geracao.reset_index()
 
-for i, fonte in enumerate(fontes):
-    targets[i] = []
-    targets[i].append(f'{fonte}')
-    for subsistema in subsistemas:
-        targets[i].append(f'{fonte}_{subsistema}')
+split_config = {
+    'train': [0, 0.6],      # 0% to 60%
+    'valid': [0.6, 0.8],    # 60% to 80%
+    'test': [0.8, 1.0]      # 80% to 100%
+}
 
-print(f'\nTargets:\n {targets}')
+df_train, df_valid, df_test = prepare_data_splits(
+    geracao,
+    context_length = CONTEXT, 
+    split_config = split_config,
+)
 
-for target in targets:
-    df = geracao[target]
-    df = df[df.index.year <= 2024]
-    df = df.reset_index()
-    # print(f'\nX:\n {df}')
+tsp = TimeSeriesPreprocessor(
+    target_columns = targets,
+    timestamp_column = tempo,
+    context_length = CONTEXT,
+    prediction_length = PREDICTION,
+    scaling = True,
+    scaling_type = 'standard',
+    freq = freq,
+)
 
-    # Zero shot
-    split_config = {
-        'train': [0, 0.6],      # 0% to 60%
-        'valid': [0.6, 0.8],    # 60% to 80%  
-        'test': [0.8, 1.0]      # 80% to 100%
-    }
+zeroshot_model = TinyTimeMixerForPrediction.from_pretrained(
+    # 'ibm-granite/granite-timeseries-ttm-r2',
+    'Exportado\TTM\\finetune',
+    revision = TTM_MODEL_REVISION,
+    num_input_channels = len(targets),
+)
 
-    df_train, df_valid, df_test = prepare_data_splits(
-        df,
-        context_length = CONTEXT, 
-        split_config = split_config,
-    )
+trained_tsp = tsp.train(df_train)
 
-    # print(f'\nTrain:\n {df_train}')
+pipeline = TimeSeriesForecastingPipeline(
+    zeroshot_model,
+    device = DEVICE,
+    feature_extractor = tsp,
+    batch_size = 512,
+    explode_forecasts = True,
+    freq = freq,
+)
 
-    tsp = TimeSeriesPreprocessor(
-        target_columns = target,
-        timestamp_column = tempo,
-        context_length = CONTEXT,
-        prediction_length = PREDICTION,
-        scaling = True,
-        scaling_type = 'standard',
-        freq = freq,
-    )
+df_pred = pipeline(df_test)
 
-    zeroshot_model = TinyTimeMixerForPrediction.from_pretrained(
-        'ibm-granite/granite-timeseries-ttm-r2',
-        revision = TTM_MODEL_REVISION,
-        num_input_channels = len(target),
-    )
+df_pred = df_pred.set_index('Data')
+df_test = df_test.set_index('Data')
+df_train = df_train.set_index('Data')
+df_valid = df_valid.set_index('Data')
 
-    trained_tsp = tsp.train(df_train)
-    # print(f'\nTrained TSP:\n {trained_tsp}')
+df_pred = df_pred.groupby(df_pred.index).mean()
 
-    pipeline = TimeSeriesForecastingPipeline(
-        zeroshot_model,
-        device = DEVICE,
-        feature_extractor = tsp,
-        batch_size = 512,
-        explode_forecasts = True,
-        freq = freq,
-    )
+idx_comum = df_test.index.intersection(df_pred.index)
+df_test_ = df_test.loc[idx_comum]
+df_pred_ = df_pred.loc[idx_comum]
 
-    forecast = pipeline(df_test)
+df_pred = df_pred.resample('ME').mean()
+df_test = df_test.resample('ME').mean()
+df_train = df_train.resample('ME').mean()
+df_valid = df_valid.resample('ME').mean()
+df_test_ = df_test_.resample('ME').mean()
+df_pred_ = df_pred_.resample('ME').mean()
 
-    # Resultados
-    print(forecast)
+geracao_2025 = geracao_2025.resample('ME').mean()
+geracao_2025 = pd.concat([df_test.tail(1), geracao_2025])
 
-    ##################################################### GRÁFICOS #####################################################
+df_train = pd.concat([df_train, df_valid]).drop_duplicates(keep = 'last')
+
+print(df_pred)
+print(df_test)
+
+layout = [['a', 'b']]
+for col in targets:
+    r2 = r2_score(df_test_[col], df_pred_[col])
+    mse = mse_error(df_test_[col], df_pred_[col])
+
+    fig, ax = plt.subplot_mosaic(layout, figsize = (9, 3), width_ratios= [1, 2])
+
+    ax['a'].scatter(df_test_[col], df_pred_[col], s = 1, color = "#FF5B5B", alpha = 1, label = 'Previsto')
+    ax['a'].plot([df_test_[col].min(), df_test_[col].max()], [df_test_[col].min(), df_test_[col].max()], 
+               color = "#202020", linewidth = .66, ls = '--', label = 'Ideal')
     
-    forecast = forecast.set_index('Data')
-    # pred_men = zeroshot_forecast.resample('ME').mean()
-    # pred_men.index = pred_men.index.to_period('M').to_timestamp()
-
-    df_train.set_index('Data', inplace = True)
-    # df_train = df_train.resample('ME').mean()
-    # df_train.index = df_train.index.to_period('M').to_timestamp()
-
-    df_test.set_index('Data', inplace = True)
-    # df_test = df_test.resample('ME').mean()
-    # df_test.index = df_test.index.to_period('M').to_timestamp()
-
-    # geracao_men = geracao[target].resample('ME').mean()
-    geracao_men = geracao_men[geracao_men.index.year > 2024]
-    geracao_men = pd.concat([df_test.tail(1), geracao_men])
-
-    # y_pred = pred_men.reindex(df_test.index).dropna()
-    # y_true = df_test.reindex(y_pred.index).dropna()
-
-    # print(f'\nPrevisão:\n {y_pred}')
-    # print(f'\nGeração observada:\n {y_true}')
+    ax['a'].set_xticks(np.linspace(df_test[col].min(), df_test[col].max(), num = 5))
+    ax['a'].set_yticks(np.linspace(df_test[col].min(), df_test[col].max(), num = 5))
+    ax['a'].legend(loc = 'upper center', bbox_to_anchor = (.5, 1.15), ncol = 2, frameon = False, fancybox = False)
+    ax['a'].ticklabel_format(axis = 'both', style = 'sci', scilimits = (3, 3))
+    ax['a'].set_xlabel('Real')
+    ax['a'].set_ylabel('Previsto')
     
-    fig, axs = plt.subplots(len(target), 1, figsize = (6, len(target) * 3), sharex = True)
-    for i, col in enumerate(forecast.columns):
-        # erro_r2 = r2_score(y_true[col], y_pred[col])
+    ax['b'].plot(df_train.index, df_train[col], label = 'Treino', color = "#43AAFF", linewidth = .66)
+    ax['b'].plot(df_test.index, df_test[col], label = 'Real', color = "#969696", linewidth = .66)
+    ax['b'].plot(df_pred.index, df_pred[col], label = 'Previsto', color = "#FF5B5B", linewidth = .66)
+    ax['b'].plot(geracao_2025.index, geracao_2025[col], color = "#969696", linewidth = .66)
+    ax['b'].xaxis.set_major_locator(mdates.YearLocator(base=5))
+    ax['b'].xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+    
+    ax['b'].legend(loc = 'upper center', bbox_to_anchor = (.5, 1.15), ncol = 5, frameon = False, fancybox = False)
+    ax['b'].set_xlabel('Série histórica')
+    ax['b'].set_ylabel(f'Geração {col.replace('_', ' ')} (MWMed)')
+    ax['b'].ticklabel_format(axis = 'y', style = 'sci', scilimits = (3, 3))
 
-        axs[i].plot(df_train.index, df_train[col], label = 'Treino', c = '#000000')
-        axs[i].plot(df_test.index, df_test[col], label = 'Teste', c = '#000000', alpha = .33)
-        axs[i].plot(geracao_men.index, geracao_men[col], label = 'Observado', c = "#000000", alpha = .33, ls = '--')
-        axs[i].plot(forecast.index, forecast[col], label = 'Previsão', c = "#4A7AFF", lw = .8)
-
-        # axs[i].text(
-        #     0.02, .98, 
-        #     f'R² = {erro_r2:.4f}',
-        #     transform = axs[i].transAxes, verticalalignment = 'top', fontsize = 7,
-        #     bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none')
-        # )
-
-        axs[i].set_ylabel(f'{col.replace('_', ' ')} [MWmed]')
-        axs[i].xaxis.set_major_locator(mdates.AutoDateLocator())
-        axs[i].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
-
-    axs[0].legend(loc = 'upper center', bbox_to_anchor = (0.5, 1.15), ncol = 4, frameon = False)
-    axs[-1].set_xlabel('Série temporal')
+    ax['b'].text(.02, .95, (f'R² = {r2:.3f}\nRMSE = {mse:.2E}'), 
+                            transform = ax['b'].transAxes, verticalalignment = 'top', fontsize = 7,
+                            bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none'))
+    
     plt.tight_layout()
-    plt.savefig(f'Graficos/Neural/{target[0]}_zeroshot_{freq}{CONTEXT}.png')
-    plt.show()
+    # plt.show()
+    plt.savefig(f'Graficos/Neural/FineTune/{col}_{freq}{CONTEXT}-{PREDICTION}.png', bbox_inches = 'tight')

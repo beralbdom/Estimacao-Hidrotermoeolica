@@ -126,13 +126,13 @@ vazões e velocidade de ventos utilizadas como dados de entrada.
 \newpage
 \section{Modelos Linear e Não-linear}
 Nesse projeto, foram utilizados modelos de regressão linear e não linear a fim de se obter uma \textit{baseline} para
-comparação com o modelo neural. Para ambos os casos, a biblioteca \textit{scikit-learn} foi utilizada, uma biblioteca
+comparação com o modelo neural. Para ambos os casos, a biblioteca \code{scikit-learn} foi utilizada, uma biblioteca
 que contém diversos algoritmos para análise de dados, incluindo modelos de classificação e regressão. A biblioteca
-é construída utilizando as bibliotecas \textit{NumPy} e \textit{SciPy}, que fornecem suporte para operações
+é construída utilizando as bibliotecas \code{NumPy} e \code{SciPy}, que fornecem suporte para operações
 matemáticas e científicas, amplamente utilizadas na comunidade de ciência de dados e aprendizado de máquina.
 
 \subsection{Modelo Linear}
-O modelo linear utilizado foi o \textit{LinearRegression} da biblioteca \textit{scikit-learn}. Ele consiste na
+O modelo linear utilizado foi o \code{LinearRegression} da biblioteca \code{scikit-learn}. Ele consiste na
 aplicação do método dos mínimos quadrados para determinar os coeficientes da equação linear que melhor se ajusta aos dados,
 conforme ilustrado na Figura \ref{fig:modelo_linear}.
 \begin{figure}[!ht]
@@ -167,7 +167,7 @@ das relações lineares entre as variáveis, além de servir como ponto de parti
 
 % ----------------------------------------------------------------------------------------------------------------------
 \subsection{Modelo Não-linear}
-O modelo de regressão não linear utilizado foi o \textit{RandomForestRegressor} da biblioteca \textit{scikit-learn}. O modelo 
+O modelo de regressão não linear utilizado foi o \code{RandomForestRegressor} da biblioteca \code{scikit-learn}. O modelo 
 funciona a partir de árvores de decisão construídas a partir dos dados de entrada. Cada árvore é treinada em um \textit{subset}
 aleatório dos dados e então a árvore cresce por meio da bifurcação. A estrutura do modelo é ilustrada na Figura
 \ref{fig:modelo_random_forest}.
@@ -252,7 +252,7 @@ pesos e vieses da rede de forma a minimizar o erro entre a saída prevista e a s
 de quatro etapas, descritas abaixo.
 
 \newpage
-\begin{itemize}
+\begin{enumerate}
 \item \textbf{Forward Pass:} os dados de entrada são propagados pelos neurônios até a camada de saída. A saída de cada 
 neurônio é calculada em duas fases. Primeiro, a entrada ponderada $ z_i^{(l)} $ para o neurônio $ i $ da camada
 $ l $ é a soma das saídas da camada anterior, $ v_j^{(l-1)} $, multiplicadas pelos seus respectivos pesos $ w_{ij}^{(l)} $, 
@@ -322,7 +322,7 @@ w_{ij}^{(l)}(t+1) \leftarrow w_{ij}^{(l)}(t) - r \frac{\partial E}{\partial w_{i
 b_i^{(l)}(t+1) \leftarrow b_i^{(l)}(t) - r \frac{\partial E}{\partial b_i^{(l)}}
 \end{equation}
 em que $t$ representa a iteração atual e $r$ é a taxa de aprendizado, que controla a magnitude da atualização.
-\end{itemize}
+\end{enumerate}
 
 Em resumo, o processo de aprendizado de um MLP envolve a propagação dos dados de entrada pela rede, o cálculo do erro entre 
 a saída prevista e a real, a retropropagação do erro para calcular os gradientes e a atualização dos pesos e vieses para 
@@ -368,7 +368,7 @@ As MLPs no domínio do tempo tem seus pesos compartilhados entre todas a todas a
 características tem seus pesos compartilhados entre todos os instantes de tempo. Para a projeção final, uma camada totalmente 
 conectada é usada para mapear o tamanho da entrada (contexto) para o tamanho da saída (previsão). As etapas estão descritas a seguir:
 
-\begin{itemize}
+\begin{enumerate}
 	\item \textbf{Mixing Temporal}: modela padrões temporais da série. Constitui uma única camada de neurônios totalmente
 conectada (MLP de camada única), seguida de uma função de ativação e \textit{dropout}. A entrada é transposta para aplicar 
 as conexões no domínio do tempo, ou seja, as entradas $ X_i = [x_i(t_1), x_i(t_2), \dots x_i(t_n)] $ são cada variável em todos 
@@ -383,7 +383,7 @@ mesmos pesos.
 
 	\item \textbf{Projeção Temporal}: projetam a saída, mapeando o tamanho da janela de entrada (contexto) para o tamanho 
 da janela de saída (previsão). Constitui uma camada totalmente conectada aplicada no domínio do tempo.
-\end{itemize}
+\end{enumerate}
 
 \citeonline{Chen2023} também propõem uma variante para uso de variáveis exógenas, que são variáveis auxiliares que podem
 explicar o comportamento da variável de interesse. No contexto deste projeto, as variáveis exógenas são os dados referentes
