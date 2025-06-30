@@ -26,12 +26,12 @@ carga = (
     .set_index('Data')
 )
 
-vazoes = (
-    pd.read_csv(
-        'Exportado/dados_hidrologicos_diarios.csv', 
-        parse_dates = ['Data'])
-    .set_index('Data')
-)
+# vazoes = (
+#     pd.read_csv(
+#         'Exportado/dados_hidrologicos_diarios.csv', 
+#         parse_dates = ['Data'])
+#     .set_index('Data')
+# )
 
 enso = (
     pd.read_csv(
@@ -44,23 +44,24 @@ geracao = geracao.fillna(0) # sem geração eólica e fotovoltaica no início do
 geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols]) 
 
 # Feature engineering
-enso['ano'] = enso.index.year
-enso['mes'] = enso.index.month
-enso['dia_mes'] = enso.index.day
-enso['dia_semana'] = enso.index.dayofweek
-enso['dia_ano'] = enso.index.dayofyear
-enso['quadrimestre'] = enso.index.quarter
+carga['ano'] = carga.index.year
+carga['mes'] = carga.index.month
+carga['dia_mes'] = carga.index.day
+carga['dia_semana'] = carga.index.dayofweek
+carga['dia_ano'] = carga.index.dayofyear
+carga['quadrimestre'] = carga.index.quarter
 
-dataset = pd.concat([geracao, enso, carga], axis = 1).dropna()
+dataset = pd.concat([geracao, carga, enso], axis = 1).dropna()
 dataset = dataset[dataset.index.year > 2009]
 dataset = dataset[dataset.index.year < 2025]
 
-dataset = dataset.resample('ME').mean()
+# dataset = dataset.resample('ME').mean()
 
-target_cols = geracao.columns
-exog_cols = enso.columns.append(carga.columns)
-print(f'Colunas objetivo:\n {target_cols.values}')
-print(f'\nColunas exógenas:\n {exog_cols.values}')
+target_cols = geracao.columns.to_list()
+# exog_cols = carga.columns.append(enso.columns).to_list()
+exog_cols = carga.columns.to_list()
+print(f'Colunas objetivo:\n {target_cols}')
+print(f'\nColunas exógenas:\n {exog_cols}')
 print(dataset.head())
 
 # Normalização dos dados
@@ -83,16 +84,16 @@ y_pred[y_pred < 0] = 0
 # print(y_test)
 
 # Resample mensal para visualização
-# y_pred = y_pred.resample('ME').mean()
-# y_test = y_test.resample('ME').mean()
-# y_train = y_train.resample('ME').mean()
+y_pred = y_pred.resample('ME').mean()
+y_test = y_test.resample('ME').mean()
+y_train = y_train.resample('ME').mean()
 
 layout = [['a', 'b']]
 for col in target_cols:
     r2 = r2_score(y_test[col], y_pred[col])
     mse = mse_error(y_test[col], y_pred[col])
 
-    fig, ax = plt.subplot_mosaic(layout, figsize = (9, 3), width_ratios = [1, 2])
+    fig, ax = plt.subplot_mosaic(layout, figsize = (7, 2.5), width_ratios = [1, 2])
 
     ax['a'].scatter(y_test[col], y_pred[col], s = 2, color = "#E24C4C", alpha = .5, label = 'Previsto')
     ax['a'].plot([y_test[col].min(), y_test[col].max()], [y_test[col].min(), y_test[col].max()], 
@@ -120,4 +121,4 @@ for col in target_cols:
     
     plt.tight_layout()
     # plt.show()
-    plt.savefig(f'Graficos/Linear/linear_{col}.svg', bbox_inches = 'tight')
+    plt.savefig(f'Graficos/Linear/linear_{col}_mensal_CARGA.svg', bbox_inches = 'tight')

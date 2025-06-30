@@ -26,11 +26,11 @@ from tsfm_public import (
 
 import matplotlib_config
 
-TTM_MODEL  = '90-30-ft-r2.1'
-CONTEXT    = 90
-PREDICTION = 30
+TTM_MODEL  = '512-96-ft-r2.1'
+CONTEXT    = 512
+PREDICTION = 96
 OUT_DIR    = 'Exportado/TTM'
-DEVICE     = 'cpu'
+DEVICE     = 'cuda'
 SEED       = 1337
 
 random.seed(SEED)
@@ -38,8 +38,11 @@ np.random.seed(SEED)
 torch.manual_seed(SEED)
 set_seed(SEED)
 
-freq = 'W'
+freq = 'D'
 tempo = 'Data'
+
+if freq == 'D': cor = "#FF9046" 
+else: cor = "#FF5B5B"
 
 geracao = (
     pd.read_csv(
@@ -47,7 +50,7 @@ geracao = (
         parse_dates = ['Data'])
     .set_index('Data')
     .fillna(0)
-    .resample(freq).mean()
+    # .resample(freq).mean()
 )
 
 enso = (
@@ -55,7 +58,7 @@ enso = (
         'Exportado/ECMWF/derived-era5-single-levels-daily-statistics_sea_surface_temperature_reanalysis.csv', 
         parse_dates = ['Data'])
     .set_index('Data')
-    .resample(freq).mean()
+    # .resample(freq).mean()
 )
 
 carga = (
@@ -63,10 +66,9 @@ carga = (
         'Exportado/carga_subsist_diario_MWmed.csv', 
         parse_dates = ['Data'])
     .set_index('Data')
-    .resample(freq).mean()
+    # .resample(freq).mean()
 )
 
-geracao_2025 = geracao[geracao.index.year == 2025]
 geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols])
 
 target_cols = geracao.columns.tolist()
@@ -79,14 +81,10 @@ print(f'Quantidade de valores faltantes: {dataset.isna().sum().sum()}')
 print(f'Variáveis alvo: {target_cols}')
 print(f'Variáveis exógenas: {exog_cols}')
 
-split_config = {
-    'train': [0, 0.6],      # 0% to 60%
-    'valid': [0.6, 0.8],    # 60% to 80%
-    'test': [0.8, 1.0]      # 80% to 100%
-}
+split_config = {"train": 0.7, "test": 0.2}
 
 df_train, df_valid, df_test = prepare_data_splits(
-    geracao,
+    dataset,
     context_length = CONTEXT, 
     split_config = split_config,
 )
@@ -104,15 +102,15 @@ tsp = TimeSeriesPreprocessor(
 )
 
 model = TinyTimeMixerForPrediction.from_pretrained(
-    'Exportado/TTM/finetune',
+    'Exportado/TTM/finetune_D512-96',
     revision = TTM_MODEL,
     num_input_channels = tsp.num_input_channels,
     decoder_mode = 'mix_channel',
     prediction_channel_indices = tsp.prediction_channel_indices,
     exogenous_channel_indices = tsp.exogenous_channel_indices,
-    fcm_context_length = CONTEXT,
-    fcm_use_mixer = True,
-    fcm_mix_layers = 1,
+    fcm_context_length = 60,
+    fcm_use_mixer = False,
+    # fcm_mix_layers = 3,
     enable_forecast_channel_mixing = True,
     fcm_prepend_past = True,
 )
@@ -148,11 +146,6 @@ df_valid = df_valid.resample('ME').mean()
 df_test_ = df_test_.resample('ME').mean()
 df_pred_ = df_pred_.resample('ME').mean()
 
-geracao_2025 = geracao_2025.resample('ME').mean()
-geracao_2025 = pd.concat([df_test.tail(1), geracao_2025])
-
-df_train = pd.concat([df_train, df_valid]).drop_duplicates(keep = 'last')
-
 # print(df_pred)
 # print(df_test)
 
@@ -163,7 +156,7 @@ for col in target_cols:
 
     fig, ax = plt.subplot_mosaic(layout, figsize = (9, 3), width_ratios= [1, 2])
 
-    ax['a'].scatter(df_test_[col], df_pred_[col], s = 1, color = "#FF5B5B", alpha = 1, label = 'Previsto')
+    ax['a'].scatter(df_test_[col], df_pred_[col], s = 1, color = cor, alpha = 1, label = 'Previsto')
     ax['a'].plot([df_test_[col].min(), df_test_[col].max()], [df_test_[col].min(), df_test_[col].max()], 
                color = "#202020", linewidth = .66, ls = '--', label = 'Ideal')
     
@@ -175,9 +168,9 @@ for col in target_cols:
     ax['a'].set_ylabel('Previsto')
     
     ax['b'].plot(df_train.index, df_train[col], label = 'Treino', color = "#43AAFF", linewidth = .66)
+    ax['b'].plot(df_valid.index, df_valid[col], color = "#43AAFF", linewidth = .66)
     ax['b'].plot(df_test.index, df_test[col], label = 'Real', color = "#969696", linewidth = .66)
-    ax['b'].plot(df_pred.index, df_pred[col], label = 'Previsto', color = "#FF5B5B", linewidth = .66)
-    ax['b'].plot(geracao_2025.index, geracao_2025[col], color = "#969696", linewidth = .66)
+    ax['b'].plot(df_pred.index, df_pred[col], label = 'Previsto', color = cor, linewidth = .66)
     ax['b'].xaxis.set_major_locator(mdates.YearLocator(base=5))
     ax['b'].xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
     
@@ -192,4 +185,4 @@ for col in target_cols:
     
     plt.tight_layout()
     # plt.show()
-    plt.savefig(f'Graficos/Neural/FineTune/{col}_{freq}{CONTEXT}-{PREDICTION}.png', bbox_inches = 'tight')
+    plt.savefig(f'Graficos/Neural/FineTune/{col}_{freq}{CONTEXT}-{PREDICTION}.svg', bbox_inches = 'tight')

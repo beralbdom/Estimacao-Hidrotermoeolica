@@ -364,11 +364,11 @@ uma técnica estatística que busca modelar a relação entre uma variável depe
 equação \ref{eq:regressao_linear}. Nesse contexto, a variável dependente é a geração de uma determinada fonte em um subsistema do 
 SIN, e as variáveis independentes são as variáveis auxiliares (ou exógenas), os dados de SST e carga.
 
-Foi considerado apenas o período de 2010 a 2024, já que a fonte eólica era pouco presente
-no SIN até então. Considerando as limitações do modelo, utilizar todo o dataset poderia resultar em resultados não representativos, 
-uma vez que o modelo assume que a relação entre as variáveis é linear e constante ao longo do tempo. Assim, a escolha do período 
-de 2010 a 2024 é justificada pela necessidade de garantir que os dados utilizados sejam representativos do comportamento atual 
-do sistema, permitindo uma análise mais precisa e confiável.
+Foi considerado apenas o período de 2010 a 2024, já que a fonte eólica era pouco presente no SIN até então. Utilizar todo
+o dataset poderia resultar em resultados não representativos, uma vez que o modelo assume que a relação entre as variáveis 
+é linear e constante ao longo do tempo, dado que as séries de geração são não estacionárias. Assim, a escolha do período de 2010 
+a 2024 é justificada pela necessidade de garantir que os dados utilizados sejam representativos do comportamento atual do 
+sistema, permitindo uma análise mais precisa e confiável.
 
 Após as etapas comuns, de carregamento de dados e tratamento inicial, os datasets de treino e teste foram definidos, de modo que
 o conjunto de treino contenha 70\% dos dados e o conjunto de teste 30\%. O modelo é então instanciado com paralelismo do
@@ -424,7 +424,7 @@ isso não foi seguido para esse projeto, dado que resultados superiores foram ob
 fossem atualizadas. Dessa forma, o modelo é capaz de aprender padrões mais complexos e específicos do conjunto de dados, 
 o que pode levar a uma melhor performance nas previsões.
 
-\subsection{Sem Variáveis Exógenas} % ================================================================================ %
+\subsection{Modelo Pré-treinado} % ================================================================================ %
 Inicialmente, foi implementado o modelo sem considerar as variáveis exógenas, ou seja, apenas com as variáveis dependentes, a 
 geração de energia por subsistema e fonte. Essa abordagem, conhecida como \textit{one-shot forecasting}, consiste em aplicar 
 um modelo já treinado diretamente sobre a série temporal de interesse para realizar a inferência, sem uma nova etapa de treinamento.
@@ -450,7 +450,7 @@ com a mesma base temporal. Por fim, para cada variável, são gerados e salvos g
 análise visual dos resultados.
 
 
-\subsection{Com Variáveis Exógenas} % ================================================================================ %
+\subsection{Ajuste Fino} % ================================================================================ %
 Para a implementação do modelo com variáveis exógenas, faz-se necessário realizar o processo de \textit{fine tuning}, que 
 é o processo de atualização dos pesos do modelo pré treinado para adequar-se ao conjunto de dados específico, considerando
 a presença de variáveis dependentes e independentes.

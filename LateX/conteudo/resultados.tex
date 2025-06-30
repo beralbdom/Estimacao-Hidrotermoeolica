@@ -1,15 +1,147 @@
 \chapter{Resultados}
-
+Esse capítulo apresentará os resultados das implementações dos modelos considerando os dados de geração, carga e ENSO.
+Para todos os casos, o conjunto de variáveis dependentes foi constituído pelas séries de geração por fonte e subsistema,
+e o conjunto de variáveis independentes foi constituído pelas séries de carga e ENSO. Serão apresentados os gráficos
+de geração total das fontes. Demais gráficos dos resultados para os subsistemas estão disponíveis no Apêndice B.
 
 \section{Modelo Linear}
+\subsection{Fonte Hidráulica}
+A Figura \ref{fig:linear_hidraulica} apresenta os resultados da regressão linear para a fonte hidráulica. Para esse caso,
+foram consdierados os dados de 2010 em diante. O conjunto de treino foi constituído pelos dados de 2010 a 2021, e o 
+conjunto de teste pelos dados restantes. 
+
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Regressão linear para fonte hidráulica (carga + ENSO) em base diária}
+       \label{fig:linear_hidraulica}}
+  {\includesvg[scale=.9]{figuras/linear_Hidráulica}}
+  {\fonte{o autor.}}
+\end{figure}
+Fica evidente que, para a geração hidráulcia total, o modelo é capaz de estimar os valores de geração do conjunto de teste
+com um valor de R² de 0,593, o que indica uma correlação moderada entre os valores estimados e os valores reais, considerando
+as limitações do modelo linear. 
+
+A fim de validar a utilidade dos dados do ENSO, uma nova regressão foi realizada, dessa vez
+considerando apenas a carga como variável independente, conforme a Figura \ref{fig:linear_hidraulica_carga}. Observa-se 
+uma queda de 0,593 para 0,525 no valor de R², indicando que a inclusão do ENSO melhora a capacidade preditiva do modelo.
+Além disso, o resultado é compatível com a fundamentação teórica apresentada no Capítulo 3, na qual a influência do ENSO
+na geração hidráulica é direta e significativa.
+
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Regressão linear para fonte hidráulica (apenas carga) em base diária}
+       \label{fig:linear_hidraulica_carga}}
+  {\includesvg[scale=.9]{figuras/linear_Hidráulica_CARGA}}
+  {\fonte{o autor.}}
+\end{figure}
+
+A fim de melhor avaliar os resultados, os demais gráficos serão apresentados em base temporal mensal, indicando a média 
+dos valores de geração para cada mês em MWmed, consdierando os valores médios das variáveis independentes para o mesmo período. 
+A Figura \ref{fig:linear_hidraulica_mensal} apresenta os resultados mensais da regressão linear para a fonte hidráulica, 
+considerando a carga e o ENSO. 
+
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Regressão linear para fonte hidráulica (carga + ENSO) em base mensal}
+       \label{fig:linear_hidraulica_mensal}}
+  {\includesvg[scale=.9]{figuras/linear_Hidráulica_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Regressão linear para fonte hidráulica (apenas carga) em base mensal}
+       \label{fig:linear_hidraulica_mensal_carga}}
+  {\includesvg[scale=.9]{figuras/linear_Hidráulica_mensal_CARGA}}
+  {\fonte{o autor.}}
+\end{figure}
+
+Novamente, é realizado uma avaliação do modelo considerando apenas a carga, conforme a Figura 
+\ref{fig:linear_hidraulica_mensal_carga}. Observa-se que, para a regressão mensal, a queda na performance do modelo é ainda
+maior: o valor de R² cai de 0,519 para 0,420. Isso pode indicar que a inclusão de variáveis do ENSO é ainda mais significante 
+para a base temporal mensal.
+
+\subsection{Fonte Eólica e Térmica}
+Para as fontes eólica e térmica, o modelo linear não foi capaz de apresentar resultados satisfatórios, o que pode indicar
+que a relação entre as variáveis independentes e dependentes é não linear.
+
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Regressão linear para fonte eólica (carga + ENSO) em base mensal}
+       \label{fig:linear_eolica_mensal}}
+  {\includesvg[scale=.9]{figuras/linear_Eólica_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Regressão linear para fonte térmica (carga + ENSO) em base mensal}
+       \label{fig:linear_termica_mensal}}
+  {\includesvg[scale=.9]{figuras/linear_Térmica_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+
+A regressão para a fonte eólica resultou em um valor de R² de 0,004, o que indica que o modelo não é capaz de explicar a 
+variabilidade dos dados, enquanto que para a fonte térmica, o valor de R² foi negativo, indicando que o modelo é pior do 
+que uma média simples dos dados. Esses resultados corroboram a hipótese de que a relação entre as variáveis independentes 
+e dependentes é não linear, o que justifica a escolha de modelos mais complexos para essas fontes.
 
 
 \section{Modelo Não Linear}
+\subsection{Fonte Hidráulica}
+\subsection{Fonte Eólica}
+\subsection{Fonte Térmica}
 
 
 \section{Modelo Neural}
-\subsection{Sem Variáveis Exógenas}
+\subsection{Baseline: Previsão com Modelo Pré-treinado}
+Ao fazer a implementação \textit{oneshot}, todos os pesos do \textit{backbone}, as camadas escondidas, permanecem inalterados
+em relação ao modelo pré treinado, e apenas a \textit{head}, ou cabeça de previsão, é ajustada para gerar a saída desejada,
+considerando o número de variáveis dependentes.
+
+A seguir serão apresentados os resultados da previsão \textit{oneshot} para cada fonte de geração, considerando os dados de carga e ENSO
+como variáveis independentes. Para cada fonte, serão apresentados os resultados considerando as janelas de contexto e previsão
+de 90/30 semanas e 512/96 dias. Demais gráficos dos resultados para os subsistemas estão disponíveis no Apêndice B.
+
+\subsubsection{Fonte Hidráulica}
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Oneshot para fonte hidráulica (contexto/previsão: 90/30 semanas)}
+       \label{fig:oneshot_hidraulica_w90-30}}
+  {\includesvg[scale=.9]{figuras/Hidráulica_W90-30}}
+  {\fonte{o autor.}}
+\end{figure}
+
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Oneshot para fonte hidráulica (contexto/previsão: 512/96 dias)}
+       \label{fig:oneshot_hidraulica_d512-96}}
+  {\includesvg[scale=.9]{figuras/Hidráulica_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+
+\subsubsection{Fonte Eólica}
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Oneshot para fonte eólica (contexto/previsão: 90/30 semanas)}
+       \label{fig:oneshot_eolica_w90-30}}
+  {\includesvg[scale=.9]{figuras/Eólica_W90-30}}
+  {\fonte{o autor.}}
+\end{figure}
+
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Oneshot para fonte eólica (contexto/previsão: 512/96 dias)}
+       \label{fig:oneshot_eolica_d512-96}}
+  {\includesvg[scale=.9]{figuras/Eólica_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+
+\subsubsection{Fonte Térmica}
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Oneshot para fonte térmica (contexto/previsão: 90/30 semanas)}
+       \label{fig:oneshot_termica_w90-30}}
+  {\includesvg[scale=.9]{figuras/Térmica_W90-30}}
+  {\fonte{o autor.}}
+\end{figure}
+
+\begin{figure}[!ht]
+  \IBGEtab{\caption{Oneshot para fonte térmica (contexto/previsão: 512/96 dias)}
+       \label{fig:oneshot_termica_d512-96}}
+  {\includesvg[scale=.9]{figuras/Térmica_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
 
 
-\subsection{Com Variáveis Exógenas}
-
+\subsection{Impacto e Análise do Ajuste Fino}
+\subsubsection{Fonte Hidráulica}
+\subsubsection{Fonte Eólica}
+\subsubsection{Fonte Térmica}

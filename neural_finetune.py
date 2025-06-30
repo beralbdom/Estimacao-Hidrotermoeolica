@@ -65,8 +65,9 @@ carga = (
 geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols])
 target_cols = geracao.columns.tolist()
 exog_cols = enso.columns.append(carga.columns).tolist()
+# exog_cols = enso.columns.tolist()
 dataset = pd.concat([geracao, enso, carga], axis = 1).dropna()
-# dataset = dataset[dataset.index.year > 2009]
+dataset = dataset[dataset.index.year < 2025]
 dataset = dataset.reset_index()
 
 print(f'Dataset:\n{dataset}')
@@ -102,7 +103,7 @@ finetune_model = TinyTimeMixerForPrediction.from_pretrained(
     fcm_use_mixer = False,
     # fcm_mix_layers = 3,
     enable_forecast_channel_mixing = True,
-    fcm_prepend_past = True,
+    # fcm_prepend_past = True,
 )
 
 train_dataset, valid_dataset, test_dataset = get_datasets(
@@ -110,15 +111,15 @@ train_dataset, valid_dataset, test_dataset = get_datasets(
 )
 
 num_epochs = 500
-batch_size = 64
-# learning_rate = 5e-4
+batch_size = 256
+learning_rate = 5e-4
 
-learning_rate, finetune_model = optimal_lr_finder(
-    finetune_model,
-    train_dataset,
-    batch_size = batch_size,
-    enable_prefix_tuning = True,
-)
+# learning_rate, finetune_model = optimal_lr_finder(
+#     finetune_model,
+#     train_dataset,
+#     batch_size = batch_size,
+#     enable_prefix_tuning = True,
+# )
 
 tracking_callback = TrackingCallback()
 optimizer = AdamW(finetune_model.parameters(), lr = learning_rate)
@@ -156,8 +157,8 @@ finetune_forecast_args = TrainingArguments(
 )
 
 early_stopping_callback = EarlyStoppingCallback(
-    early_stopping_patience = 50,
-    early_stopping_threshold = 1e-6,
+    early_stopping_patience = 10,
+    early_stopping_threshold = 1e-4,
 )
 
 scheduler = OneCycleLR(
@@ -178,74 +179,3 @@ finetune_forecast_trainer = Trainer(
 
 finetune_forecast_trainer.train()
 finetune_model.save_pretrained(f'{OUT_DIR}/finetune_{freq}{CONTEXT}-{PREDICTION}')
-
-pipeline = TimeSeriesForecastingPipeline(
-    finetune_model,
-    device = DEVICE,
-    feature_extractor = tsp,
-    batch_size = batch_size,
-    explode_forecasts = True,
-    freq = freq,
-)
-
-df_pred = pipeline(df_test)
-
-df_pred = df_pred.set_index('Data')
-df_test = df_test.set_index('Data')
-df_train = df_train.set_index('Data')
-df_valid = df_valid.set_index('Data')
-
-df_pred = df_pred.groupby(df_pred.index).mean()
-
-idx_comum = df_test.index.intersection(df_pred.index)
-df_test_ = df_test.loc[idx_comum]
-df_pred_ = df_pred.loc[idx_comum]
-
-df_pred = df_pred.resample('ME').mean()
-df_test = df_test.resample('ME').mean()
-df_train = df_train.resample('ME').mean()
-df_valid = df_valid.resample('ME').mean()
-df_test_ = df_test_.resample('ME').mean()
-df_pred_ = df_pred_.resample('ME').mean()
-
-# df_train = pd.concat([df_train, df_valid]).drop_duplicates()
-
-print(df_pred)
-
-layout = [['a', 'b']]
-for col in target_cols:
-    r2 = r2_score(df_test_[col], df_pred_[col])
-    mse = mse_error(df_test_[col], df_pred_[col])
-
-    fig, ax = plt.subplot_mosaic(layout, figsize = (9, 3), width_ratios= [1, 2])
-
-    ax['a'].scatter(df_test_[col], df_pred_[col], s = 1, color = "#FF5B5B", alpha = 1, label = 'Previsto')
-    ax['a'].plot([df_test_[col].min(), df_test_[col].max()], [df_test_[col].min(), df_test_[col].max()], 
-               color = "#202020", linewidth = .66, ls = '--', label = 'Ideal')
-    
-    ax['a'].set_xticks(np.linspace(df_test_[col].min(), df_test_[col].max(), num = 5))
-    ax['a'].set_yticks(np.linspace(df_test_[col].min(), df_test_[col].max(), num = 5))
-    ax['a'].legend(loc = 'upper center', bbox_to_anchor = (.5, 1.15), ncol = 2, frameon = False, fancybox = False)
-    ax['a'].ticklabel_format(axis = 'both', style = 'sci', scilimits = (3, 3))
-    ax['a'].set_xlabel('Real')
-    ax['a'].set_ylabel('Previsto')
-    
-    ax['b'].plot(df_train.index, df_train[col], label = 'Treino', color = "#43AAFF", linewidth = .66)
-    ax['b'].plot(df_valid.index, df_valid[col], color = "#43AAFF", linewidth = .66)
-    ax['b'].plot(df_test.index, df_test[col], label = 'Real', color = "#969696", linewidth = .66)
-    ax['b'].plot(df_pred.index, df_pred[col], label = 'Previsto', color = "#FF5B5B", linewidth = .66)
-    ax['b'].xaxis.set_major_locator(mdates.YearLocator(base=5))
-    ax['b'].xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
-    
-    ax['b'].legend(loc = 'upper center', bbox_to_anchor = (.5, 1.15), ncol = 5, frameon = False, fancybox = False)
-    ax['b'].set_xlabel('Série histórica')
-    ax['b'].set_ylabel(f'Geração {col.replace('_', ' ')} (MWMed)')
-    ax['b'].ticklabel_format(axis = 'y', style = 'sci', scilimits = (3, 3))
-
-    ax['b'].text(.02, .95, (f'R² = {r2:.3f}\nRMSE = {mse:.2E}'), 
-                            transform = ax['b'].transAxes, verticalalignment = 'top', fontsize = 7,
-                            bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none'))
-    
-    plt.tight_layout()
-    # plt.show()
-    plt.savefig(f'Graficos/Neural/FineTune/finetune_{col}_{freq}{CONTEXT}-{PREDICTION}.png', bbox_inches = 'tight')
