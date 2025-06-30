@@ -354,8 +354,9 @@ o conjunto de validação é utilizado para monitorar o desempenho do modelo dur
 Diferentes tamanhos da janela de treinamento foram avaliados e serão apresentados no capítulo 5.
 
 Os gráficos de dispersão mostram os valores reais e estimados junto a uma linha ideal, de modo que valores próximos à linha indicam 
-resultados mais precisos. O outro gráfico demonstra a separação dos períodos de treino e teste, permitindo uma avaliação mais direta entre os resultados reais e estimados.
-Para facilitar a visualização, os gráficos são apresentados em base temporal mensal, considerando a média mensal dos valores.
+resultados mais precisos. O outro gráfico demonstra a separação dos períodos de treino e teste, permitindo uma avaliação mais direta 
+entre os resultados reais e estimados. Para facilitar a visualização, os gráficos são apresentados em base temporal mensal, 
+considerando a média mensal dos valores.
 
 \subsection{Modelo Linear} % ========================================================================================= %
 O modelo \code{LinearRegression} da biblioteca \code{scikit-learn} foi implementado com a abordagem de regressão linear múltipla, 
@@ -400,16 +401,18 @@ Por fim, para cada variável alvo, foram gerados e salvos gráficos de dispersã
 
 
 \section{Implementação do Modelo Neural} % =========================================================================== %
-O modelo neural utilizado foi o \textit{TinyTimeMixer}, versão 2.1, disponível na biblioteca \code{transformers} do \textit{Hugging Face}. Ele é
-um modelo de previsão de séries temporais pré-treinado baseado na arquitetura \textit{TSMixer}, apresentada no capítulo 3. Modelos pré treinados são modelos
-que já foram treinados em grandes conjuntos de dados. Ou seja, os pesos das camadas de \textit{perceptrons} já foram ajustados para capturar padrões gerais em séries temporais.
+O modelo neural utilizado foi o \textit{TinyTimeMixer}, versão 2.1, disponível na biblioteca \code{transformers} do 
+\textit{Hugging Face}. Ele é um modelo de previsão de séries temporais pré-treinado baseado na arquitetura \textit{TSMixer}, 
+apresentada no capítulo 3. Modelos pré treinados são modelos que já foram treinados em grandes conjuntos de dados. Ou seja, 
+os pesos das camadas de \textit{perceptrons} já foram ajustados para capturar padrões gerais em séries temporais.
 
 Além disso, o modelo permite o processo de \textit{fine tuning}, que é a atualização dos pesos para adequar-se
 a um conjunto de dados específico, considerando variáveis dependentes e independentes, que no contexto do projeto são a geração de energia
 por subsistema e fonte, carga e variáveis do ENSO.
 
-O modelo possui diferentes variações, com diferentes tamanhos de janelas de contexto e previsão e tem suporte para escalas de tempo semanal, diária, horária e de minutos. 
-Para o projeto, foram utilizados as variantes com janelas de contexto e previsão de 512 e 96 dias, bem como a de 90 e 30 semanas.
+O modelo possui diferentes variações, com diferentes tamanhos de janelas de contexto e previsão e tem suporte para escalas 
+de tempo semanal, diária, horária e de minutos. Para o projeto, foram utilizados as variantes com janelas de contexto e 
+previsão de 512 e 96 dias, bem como a de 90 e 30 semanas.
 
 A biblioteca \code{tsfm\_public}, que contém funções auxiliares para a implementação dos modelos publicados pela IBM, foi
 utilizada para definir os conjuntos de treino, teste e validação, além de realizar o pré processamento dos dados, incluindo o
@@ -417,8 +420,9 @@ processo de normalização.
 
 Vale destacar que, embora \citeonline{Ekambaram2024} sugira o congelamento de todo o \textit{backbone} do modelo, ou seja, 
 não atualizar todos os pesos das camadas escondidas durante o ajuste fino, de modo a preservar o conhecimento prévio do modelo,
-isso não foi seguido para esse projeto, dado que resultados superiores foram obtidos ao permitir que todas as camadas fossem atualizadas.
-Dessa forma, o modelo é capaz de aprender padrões mais complexos e específicos do conjunto de dados, o que pode levar a uma melhor performance nas previsões.
+isso não foi seguido para esse projeto, dado que resultados superiores foram obtidos ao permitir que todas as camadas 
+fossem atualizadas. Dessa forma, o modelo é capaz de aprender padrões mais complexos e específicos do conjunto de dados, 
+o que pode levar a uma melhor performance nas previsões.
 
 \subsection{Sem Variáveis Exógenas} % ================================================================================ %
 Inicialmente, foi implementado o modelo sem considerar as variáveis exógenas, ou seja, apenas com as variáveis dependentes, a 
@@ -436,8 +440,8 @@ considerando a variante selecionada, além de aplicar a normalização \code{Sta
 a partir do conjunto de treino.
 
 Os modelos \code{TinyTimeMixerForPrediction} utilizados nesta etapa foram diferentes variantes pré treinadas, carregadas a partir
-de suas respectivas identificações do \textit{Hugging Face}. Apenas as camadas de entrada e saída do modelo foram adaptada para corresponder 
-ao número de variáveis de geração.
+de suas respectivas identificações do \textit{Hugging Face}. Apenas as camadas de entrada e saída do modelo foram adaptada 
+para corresponder ao número de variáveis de geração.
 
 A previsão é executada através de uma \code{TimeSeriesForecastingPipeline}, que aplica o modelo pré-processado sobre o conjunto 
 de teste. Como as previsões são geradas em frequência semanal, um pós-processamento é realizado para agregar os resultados em 
