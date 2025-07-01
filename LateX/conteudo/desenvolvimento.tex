@@ -316,8 +316,8 @@ Para todos os casos, os códigos referentes às implementações dos modelos est
 apresentada uma visão geral das etapas de implementação, métricas de avaliação e os modelos computacionais utilizados.
 
 \subsection{Métricas de Avaliação} % ================================================================================= %
-Para todos os casos, duas métricas de avaliação foram utilizadas: o erro quadrático médio ($MSE$) e o coeficiente de determinação ($R^2$).
-O $MSE$ é uma medida que quantifica a média dos erros quadráticos entre os valores reais e as previsões do modelo. O $R^2$, por outro lado, 
+Para todos os casos, duas métricas de avaliação foram utilizadas: o erro quadrático médio (MSE) e o coeficiente de determinação (R²).
+O MSE é uma medida que quantifica a média dos erros quadráticos entre os valores reais e as previsões do modelo. O R², por outro lado, 
 é uma medida que indica a proporção da variabilidade dos dados que é explicada pelo modelo, variando de 0 a 1, onde valores mais 
 próximos de 1 indicam um modelo mais preciso. As equações para o cálculo dessas métricas são apresentadas a seguir:
 \begin{equation}
@@ -392,16 +392,16 @@ com o parâmetro \code{shuffle = False}.
 Para definir os melhores hiperparâmetros do modelo, foi utilizado o \code{GridSearchCV}, que realiza uma busca exaustiva por 
 meio de validação cruzada em grade. A validação cruzada foi adaptada para séries temporais com o uso do \code{TimeSeriesSplit}, 
 que garante que os dados de treino sempre ocorram antes dos dados de validação em cada divisão. O modelo foi treinado no conjunto 
-de treino, e os melhores parâmetros foram selecionados com base na métrica de erro quadrático médio ($MSE$).
+de treino, e os melhores parâmetros foram selecionados com base na métrica de erro quadrático médio (MSE).
 
 Após a aplicação do \code{GridSearchCV}, o modelo foi instanciado com os parâmetros otimizados, com número de árvores de decisão 
 \code{n\_estimators = 1000} e profundidade máxima \code{max\_depth = 30}, com o paralelismo habilitado \code{n\_jobs = -1}. O modelo 
-treinado foi então utilizado para realizar as previsões no conjunto de teste. Os resultados foram avaliados com as métricas $R^2$ e $MSE$. 
+treinado foi então utilizado para realizar as previsões no conjunto de teste. Os resultados foram avaliados com as métricas R² e MSE. 
 Por fim, para cada variável alvo, foram gerados e salvos gráficos de dispersão e de série temporal para a análise visual dos resultados.
 
 
 \section{Implementação do Modelo Neural} % =========================================================================== %
-O modelo neural utilizado foi o \textit{TinyTimeMixer}, versão 2.1, disponível na biblioteca \code{transformers} do 
+O modelo neural utilizado foi o \textit{Tiny Time Mixer}, versão 2.1, disponível na biblioteca \code{transformers} do 
 \textit{Hugging Face}. Ele é um modelo de previsão de séries temporais pré-treinado baseado na arquitetura \textit{TSMixer}, 
 apresentada no capítulo 3. Modelos pré treinados são modelos que já foram treinados em grandes conjuntos de dados. Ou seja, 
 os pesos das camadas de \textit{perceptrons} já foram ajustados para capturar padrões gerais em séries temporais.
@@ -445,7 +445,7 @@ para corresponder ao número de variáveis de geração.
 
 A previsão é executada através de uma \code{TimeSeriesForecastingPipeline}, que aplica o modelo pré-processado sobre o conjunto 
 de teste. Como as previsões são geradas em frequência semanal, um pós-processamento é realizado para agregar os resultados em 
-médias mensais, permitindo uma comparação direta com os demais modelos. As métricas $R^2$ e $MSE$ são calculadas sobre os dados 
+médias mensais, permitindo uma comparação direta com os demais modelos. As métricas R² e MSE são calculadas sobre os dados 
 com a mesma base temporal. Por fim, para cada variável, são gerados e salvos gráficos de dispersão e de série temporal para 
 análise visual dos resultados.
 

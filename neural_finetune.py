@@ -7,7 +7,7 @@ import matplotlib_config
 from matplotlib import pyplot as plt
 from alive_progress import alive_bar
 from sklearn.metrics import r2_score
-from sklearn.metrics import root_mean_squared_error as mse_error
+from sklearn.metrics import mean_squared_error as mse_error
 from sklearn.preprocessing import StandardScaler
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import OneCycleLR
@@ -65,7 +65,7 @@ carga = (
 geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols])
 target_cols = geracao.columns.tolist()
 exog_cols = enso.columns.append(carga.columns).tolist()
-# exog_cols = enso.columns.tolist()
+
 dataset = pd.concat([geracao, enso, carga], axis = 1).dropna()
 dataset = dataset[dataset.index.year < 2025]
 dataset = dataset.reset_index()
@@ -99,11 +99,11 @@ finetune_model = TinyTimeMixerForPrediction.from_pretrained(
     decoder_mode = 'mix_channel',
     prediction_channel_indices = tsp.prediction_channel_indices,
     exogenous_channel_indices = tsp.exogenous_channel_indices,
-    fcm_context_length = 60,
-    fcm_use_mixer = False,
-    # fcm_mix_layers = 3,
+    # fcm_context_length = 60,
+    fcm_use_mixer = True,
+    fcm_mix_layers = 3,
     enable_forecast_channel_mixing = True,
-    # fcm_prepend_past = True,
+    fcm_prepend_past = True,
 )
 
 train_dataset, valid_dataset, test_dataset = get_datasets(
@@ -111,8 +111,8 @@ train_dataset, valid_dataset, test_dataset = get_datasets(
 )
 
 num_epochs = 500
-batch_size = 256
-learning_rate = 5e-4
+batch_size = 64
+learning_rate = 5e-5
 
 # learning_rate, finetune_model = optimal_lr_finder(
 #     finetune_model,
@@ -157,8 +157,8 @@ finetune_forecast_args = TrainingArguments(
 )
 
 early_stopping_callback = EarlyStoppingCallback(
-    early_stopping_patience = 10,
-    early_stopping_threshold = 1e-4,
+    early_stopping_patience = 30,
+    early_stopping_threshold = 1e-6,
 )
 
 scheduler = OneCycleLR(

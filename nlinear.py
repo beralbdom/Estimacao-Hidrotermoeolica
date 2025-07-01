@@ -6,7 +6,7 @@ from alive_progress import alive_bar
 from sklearn.model_selection import train_test_split, GridSearchCV, TimeSeriesSplit
 from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
 from sklearn.metrics import r2_score
-from sklearn.metrics import root_mean_squared_error as mse_error
+from sklearn.metrics import mean_squared_error as mse_error
 from sklearn.preprocessing import StandardScaler
 
 import matplotlib_config
@@ -120,16 +120,16 @@ y_pred = pd.DataFrame(y_pred, columns = target_cols, index = y_test.index)
 y_pred[y_pred < 0] = 0
 # print(y_test)
 
-# y_pred = y_pred.resample('ME').mean()
-# y_test = y_test.resample('ME').mean()
-# y_train = y_train.resample('ME').mean()
+y_pred = y_pred.resample('ME').mean()
+y_test = y_test.resample('ME').mean()
+y_train = y_train.resample('ME').mean()
 
 layout = [['a', 'b']]
 for col in target_cols:
     r2 = r2_score(y_test[col], y_pred[col])
     mse = mse_error(y_test[col], y_pred[col])
 
-    fig, ax = plt.subplot_mosaic(layout, figsize = (9, 3), width_ratios= [1, 2])
+    fig, ax = plt.subplot_mosaic(layout, figsize = (7, 2.5), width_ratios= [1, 2])
 
     ax['a'].scatter(y_test[col], y_pred[col], s = 1, color = "#FF5B5B", alpha = .5, label = 'Previsto')
     ax['a'].plot([y_test[col].min(), y_test[col].max()], [y_test[col].min(), y_test[col].max()], 
@@ -151,10 +151,10 @@ for col in target_cols:
     ax['b'].set_ylabel(f'Geração {col.replace('_', ' ')} (MWMed)')
     ax['b'].ticklabel_format(axis = 'y', style = 'sci', scilimits = (3, 3))
 
-    ax['b'].text(.02, .95, (f'R² = {r2:.3f}\nRMSE = {mse:.2E}'), 
+    ax['b'].text(.02, .95, (f'R² = {r2:.3f}\nMSE = {mse:.2E}'), 
                             transform = ax['b'].transAxes, verticalalignment = 'top', fontsize = 7,
                             bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none'))
     
     plt.tight_layout()
     # plt.show()
-    plt.savefig(f'Graficos/RF/rf_{col}.svg', bbox_inches = 'tight')
+    plt.savefig(f'LateX/figuras/nlinear/rf_{col}.svg', bbox_inches = 'tight')

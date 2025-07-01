@@ -11,7 +11,7 @@ from alive_progress import alive_bar
 from sklearn.model_selection import train_test_split, GridSearchCV, TimeSeriesSplit
 from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
 from sklearn.metrics import r2_score
-from sklearn.metrics import root_mean_squared_error as mse_error
+from sklearn.metrics import mean_squared_error as mse_error
 from sklearn.preprocessing import StandardScaler
 
 from transformers import set_seed
@@ -26,9 +26,9 @@ from tsfm_public import (
 
 import matplotlib_config
 
-TTM_MODEL  = '512-96-ft-r2.1'
-CONTEXT    = 512
-PREDICTION = 96
+TTM_MODEL  = '90-30-ft-r2.1'
+CONTEXT    = 90
+PREDICTION = 30
 OUT_DIR    = 'Exportado/TTM'
 DEVICE     = 'cuda'
 SEED       = 1337
@@ -38,7 +38,7 @@ np.random.seed(SEED)
 torch.manual_seed(SEED)
 set_seed(SEED)
 
-freq = 'D'
+freq = 'W'
 tempo = 'Data'
 
 if freq == 'D': cor = "#FF9046" 
@@ -50,7 +50,7 @@ geracao = (
         parse_dates = ['Data'])
     .set_index('Data')
     .fillna(0)
-    # .resample(freq).mean()
+    .resample(freq).mean()
 )
 
 enso = (
@@ -58,7 +58,7 @@ enso = (
         'Exportado/ECMWF/derived-era5-single-levels-daily-statistics_sea_surface_temperature_reanalysis.csv', 
         parse_dates = ['Data'])
     .set_index('Data')
-    # .resample(freq).mean()
+    .resample(freq).mean()
 )
 
 carga = (
@@ -66,7 +66,7 @@ carga = (
         'Exportado/carga_subsist_diario_MWmed.csv', 
         parse_dates = ['Data'])
     .set_index('Data')
-    # .resample(freq).mean()
+    .resample(freq).mean()
 )
 
 geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols])
@@ -102,15 +102,15 @@ tsp = TimeSeriesPreprocessor(
 )
 
 model = TinyTimeMixerForPrediction.from_pretrained(
-    'Exportado/TTM/finetune_D512-96',
+    f'Exportado/TTM/finetune_{freq}{CONTEXT}-{PREDICTION}',
     revision = TTM_MODEL,
     num_input_channels = tsp.num_input_channels,
     decoder_mode = 'mix_channel',
     prediction_channel_indices = tsp.prediction_channel_indices,
     exogenous_channel_indices = tsp.exogenous_channel_indices,
-    fcm_context_length = 60,
-    fcm_use_mixer = False,
-    # fcm_mix_layers = 3,
+    # fcm_context_length = 60,
+    fcm_use_mixer = True,
+    fcm_mix_layers = 3,
     enable_forecast_channel_mixing = True,
     fcm_prepend_past = True,
 )
@@ -154,7 +154,7 @@ for col in target_cols:
     r2 = r2_score(df_test_[col], df_pred_[col])
     mse = mse_error(df_test_[col], df_pred_[col])
 
-    fig, ax = plt.subplot_mosaic(layout, figsize = (9, 3), width_ratios= [1, 2])
+    fig, ax = plt.subplot_mosaic(layout, figsize = (7, 2.5), width_ratios= [1, 2])
 
     ax['a'].scatter(df_test_[col], df_pred_[col], s = 1, color = cor, alpha = 1, label = 'Previsto')
     ax['a'].plot([df_test_[col].min(), df_test_[col].max()], [df_test_[col].min(), df_test_[col].max()], 
@@ -179,10 +179,10 @@ for col in target_cols:
     ax['b'].set_ylabel(f'Geração {col.replace('_', ' ')} (MWMed)')
     ax['b'].ticklabel_format(axis = 'y', style = 'sci', scilimits = (3, 3))
 
-    ax['b'].text(.02, .95, (f'R² = {r2:.3f}\nRMSE = {mse:.2E}'), 
+    ax['b'].text(.02, .95, (f'R² = {r2:.3f}\nMSE = {mse:.2E}'), 
                             transform = ax['b'].transAxes, verticalalignment = 'top', fontsize = 7,
                             bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none'))
     
     plt.tight_layout()
     # plt.show()
-    plt.savefig(f'Graficos/Neural/FineTune/{col}_{freq}{CONTEXT}-{PREDICTION}.svg', bbox_inches = 'tight')
+    plt.savefig(f'LateX/figuras/finetune/fn_{col}_{freq}{CONTEXT}-{PREDICTION}.svg', bbox_inches = 'tight')

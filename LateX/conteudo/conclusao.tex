@@ -1,1 +1,25 @@
 \chapter{Conclusão}
+Este trabalho teve como objetivo central investigar e quantificar o impacto de variáveis climáticas externas, associadas ao 
+fenômeno ENSO, na estimação da geração de energia das fontes hidráulica, térmica e eólica no SIN. 
+Para tal, foram implementados e comparados modelos computacionais de complexidade crescente, desde regressões lineares e 
+não-lineares até uma arquitetura de rede neural pré-treinada, avaliando o ganho de performance ao especializar o modelo com 
+os dados do ENSO.
+
+Os resultados obtidos permitiram extrair conclusões importantes. Foi demonstrado que modelos de regressão tradicionais, tanto 
+lineares quanto o Random Forest, são insuficientes para capturar a dinâmica complexa das fontes eólica e térmica, apresentando 
+valores de R² insatisfatórios e até negativos, o que valida a hipótese de não-linearidade das relações envolvidas. A introdução 
+do modelo neural pré-treinado (TinyTimeMixer) representou um salto qualitativo significativo, especialmente para a fonte eólica, 
+que atingiu um R² de 0,826, evidenciando o poder de generalização dessa arquitetura.
+
+Foram observados ganhos de performance substanciais ao realizar o ajuste fino do modelo neural, o que responde afirmativamente 
+à questão central da pesquisa: a incorporação de variáveis climáticas externas, aliada a uma arquitetura neural adequada, 
+aprimora de forma mensurável e significativa a estimação da geração energética.
+
+Reconhece-se, contudo, as limitações deste estudo. A análise se restringiu às variáveis do fenômeno ENSO, enquanto outras 
+variáveis climáticas e indicadores econômicos poderiam ser incorporados para enriquecer os modelos. Adicionalmente, foi 
+utilizada uma arquitetura neural específica (TSMixer), e a exploração de outras arquiteturas, como as baseadas em Transformers 
+ou LSTMs, poderia trazer resultados distintos.
+
+Em trabalhos futuros, será feita a expansão do conjunto de variáveis exógenas, incluindo outros índices 
+climáticos relevantes para o território brasileiro e indicadores macroeconômicos. Além disso, a aplicação da metodologia de 
+fine-tuning de modelos pré-treinados a outras tarefas, como a previsão de carga ou de preços de energia (PLD), poderá ser estudada.
