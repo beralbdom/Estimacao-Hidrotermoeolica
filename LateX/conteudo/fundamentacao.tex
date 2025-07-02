@@ -352,9 +352,10 @@ do modelo apenas memorizar os dados de treinamento (\textit{overfitting}).
 
 A técnica de resíduo é usada para permitir que a entrada de uma camada seja somada à sua saída. O objetivo é manter o
 processo de aprendizado eficiente, evitando o efeito de \textit{vanishing gradient}, no qual o gradiente do erro se torna
-muito pequeno ao ser propagado às camadas iniciais pelo algoritmo de \textit{backpropagation}.
+muito pequeno ao ser propagado às camadas iniciais pelo algoritmo de \textit{backpropagation}. Esse efeito pode ocorrer 
+em redes com muitas camadas quando as derivadas parciais da função de erro podem ser muito pequenas para as camadas iniciais.
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
 	\IBGEtab{\caption{Arquitetura do modelo neural usado}
 			 \label{fig:arquitetura_modelo_neural}}
 	{\includesvg[scale=1]{figuras/tsmixer_1}}
@@ -385,8 +386,24 @@ mesmos pesos.
 da janela de saída (previsão). Constitui uma camada totalmente conectada aplicada no domínio do tempo.
 \end{enumerate}
 
-\citeonline{Chen2023} também propõem uma variante para uso de variáveis exógenas, que são variáveis auxiliares que podem
-explicar o comportamento da variável de interesse. No contexto deste projeto, as variáveis exógenas são os dados referentes
-ao fenômeno ENSO, como os índices de SST. Considerando que essa variante ainda não foi disponibilizada publicamente,
+\citeonline{Chen2023} também propõem uma variante (\textit{TSMixer-Ext}) para uso de variáveis exógenas, que são variáveis auxiliares que podem
+explicar o comportamento da variável de interesse. Considerando que essa variante ainda não foi disponibilizada publicamente,
 para esse projeto foi utilizada uma implementação da arquitetura TSMixer com suporte a variáveis exógenas,
-disponibilizada por \citeonline{Ekambaram2024}, denominada de \textit{Tiny Time Mixer}.
+disponibilizada por \citeonline{Ekambaram2024}, denominada de \textit{Tiny Time Mixer} (TTM).
+
+\subsubsection{Extensão para Variáveis Exógenas (TSMixer-Ext)}
+Essa variante da arquitetura é capaz de trabalhar com recursos estáticos, que não variam ao longo do tempo, como
+localização e características da usina; e também recuros variáveis no tempo, como índices climáticos. A TSMixer-Ext 
+introduz os processos de Alinhamento e Mistura, antes de aplicar as camadas de mistura principais:
+
+\begin{enumerate}
+\item \textbf{Alinhamento:} o objetivo é fazer com que todas as entradas (históricas, futuras e estáticas) tenham o mesmo 
+comprimento de sequência para que possam ser combinadas. Recursos estáticos, por exemplo, são repetidos ao longo da 
+dimensão do tempo para se alinharem ao horizonte de previsão. Após o alinhamento, todas as variáveis são concatenadas 
+em uma única matriz de características.
+\item \textbf{Mistura:} a matriz de características combinada é então processada pelas mesmas Mixing Layers 
+(temporal e de características) descritas anteriormente. Essa abordagem permite que o modelo aprenda não apenas os 
+padrões da série principal, mas também as complexas interações e influências que as variáveis exógenas exercem sobre ela.
+\end{enumerate}
+
+No contexto deste projeto, as variáveis exógenas são os dados referentes ao fenômeno ENSO, ou seja, os dados de SST.

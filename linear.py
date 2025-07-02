@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
-
 from matplotlib import pyplot as plt
-from alive_progress import alive_bar
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
@@ -11,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 
 import matplotlib_config
 
-
+# Entrada das séries
 geracao = (
     pd.read_csv(
         'Exportado/geracao_fontes_diario_MWmed.csv', 
@@ -25,13 +23,6 @@ carga = (
         parse_dates = ['Data'])
     .set_index('Data')
 )
-
-# vazoes = (
-#     pd.read_csv(
-#         'Exportado/dados_hidrologicos_diarios.csv', 
-#         parse_dates = ['Data'])
-#     .set_index('Data')
-# )
 
 enso = (
     pd.read_csv(
@@ -55,16 +46,13 @@ dataset = pd.concat([geracao, carga, enso], axis = 1).dropna()
 dataset = dataset[dataset.index.year > 2009]
 dataset = dataset[dataset.index.year < 2025]
 
-# dataset = dataset.resample('ME').mean()
-
 target_cols = geracao.columns.to_list()
-# exog_cols = carga.columns.append(enso.columns).to_list()
-exog_cols = carga.columns.to_list()
+exog_cols = carga.columns.append(enso.columns).to_list()
 print(f'Colunas objetivo:\n {target_cols}')
 print(f'\nColunas exógenas:\n {exog_cols}')
 print(dataset.head())
 
-# Normalização dos dados
+# Normalização e separação das séries de treino/teste
 scaler = StandardScaler()
 dataset[exog_cols] = scaler.fit_transform(dataset[exog_cols])
 
@@ -73,15 +61,14 @@ X_train, X_test, y_train, y_test = train_test_split(
     test_size = .3, shuffle = False
 )
 
+# Aplicação do modelo
 modelo = LinearRegression(n_jobs = -1)
-
 reg = modelo.fit(X_train, y_train)
 print(f'Coeficientes do modelo: {reg.coef_}')
 print(f'Intercepto do modelo: {reg.intercept_}')
 y_pred = reg.predict(X_test)
 y_pred = pd.DataFrame(y_pred, columns = target_cols, index = y_test.index) 
 y_pred[y_pred < 0] = 0
-# print(y_test)
 
 # Resample mensal para visualização
 y_pred = y_pred.resample('ME').mean()

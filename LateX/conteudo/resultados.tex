@@ -2,7 +2,7 @@
 Este capítulo apresenta os resultados obtidos na estimação da geração das fontes hidráulica, eólica e térmica. A análise 
 se inicia com modelos de regressão linear e não linear (Random Forest) para estabelecer um baseline de performance e 
 avaliar a linearidade das relações (Seções 5.1 e 5.2). Em seguida, na Seção 5.3, avalia-se o desempenho do modelo 
-neural (\textit{Tiny Time Mixer}) em sua aplicação direta. Por fim, na Seção 5.3.2, demonstra-se o impacto e a 
+neural \textit{Tiny Time Mixer} (TTM) em sua aplicação direta. Por fim, na Seção 5.3.2, demonstra-se o impacto e a 
 eficácia do ajuste fino (\textit{finetuning}) deste modelo com a inclusão de variáveis do fenômeno ENSO, quantificando o ganho de 
 acurácia obtido com a especialização do modelo. Serão apresentados os gráficos de geração total das fontes. Demais gráficos 
 dos resultados para os subsistemas estão disponíveis no Apêndice B.
@@ -42,7 +42,7 @@ afastam da linha ideal especialmente nos extremos. Nota-se que o modelo tende a 
 linear ao tentar capturar a amplitude total de uma série com forte sazonalidade.
 
 A fim de melhor avaliar os resultados, os demais gráficos serão apresentados em base temporal mensal, indicando a média 
-dos valores de geração para cada mês em MWmed, consdierando os valores médios das variáveis independentes para o mesmo período. 
+dos valores de geração para cada mês em MWmed, considerando os valores médios das variáveis independentes para o mesmo período. 
 A Figura \ref{fig:linear_hidraulica_mensal} apresenta os resultados mensais da regressão linear para a fonte hidráulica, 
 considerando a carga e o ENSO. 
 
@@ -89,10 +89,10 @@ que uma média simples dos dados. Esses resultados corroboram a hipótese de que
 e dependentes é não linear, o que justifica a escolha de modelos mais complexos para essas fontes.
 
 
-\section{Modelo Não Linear}
+\section{Modelo Não Linear (Random Forest Regressor)}
 \subsection{Fonte Hidráulica}
 \begin{figure}[!ht]
-  \IBGEtab{\caption{Random forest para fonte hidráulica}
+  \IBGEtab{\caption{Random Forest para fonte hidráulica (carga + ENSO)}
        \label{fig:rf_hidraulica}}
   {\includesvg[scale=.9]{figuras/nlinear/rf_Hidráulica}}
   {\fonte{o autor.}}
@@ -103,13 +103,13 @@ ligeiramente superiores aos do modelo de regressão linear, com um valor de R² 
 
 \subsection{Fonte Eólica e Térmica}
 \begin{figure}[!ht]
-  \IBGEtab{\caption{Random forest para fonte eólica}
+  \IBGEtab{\caption{Random Forest para fonte eólica (carga + ENSO)}
        \label{fig:rf_eolica}}
   {\includesvg[scale=.9]{figuras/nlinear/rf_Eólica}}
   {\fonte{o autor.}}
 \end{figure}
 \begin{figure}[!ht]
-  \IBGEtab{\caption{Random forest para fonte térmica}
+  \IBGEtab{\caption{Random Forest para fonte térmica (carga + ENSO)}
        \label{fig:rf_termica}}
   {\includesvg[scale=.9]{figuras/nlinear/rf_Térmica}}
   {\fonte{o autor.}}
@@ -123,14 +123,14 @@ Ainda que o modelo Random Forest apresente uma capacidade superior para modelar 
 fontes eólica e térmica permaneceram insatisfatórios. Essa dificuldade sugere que as relações temporais são complexas e 
 podem ser mais bem capturadas por modelos como o avaliado a seguir.
 
-\section{Modelo Neural}
+\section{Modelo Neural TTM}
 \subsection{Modelo Pré-treinado}
 Ao fazer a implementação \textit{oneshot}, todos os pesos do \textit{backbone}, as camadas escondidas, permanecem inalterados
 em relação ao modelo pré treinado, e apenas a \textit{head}, ou cabeça de previsão, é ajustada para gerar a saída desejada,
 considerando o número de variáveis dependentes.
 
 A seguir serão apresentados os resultados da previsão \textit{oneshot} para cada fonte de geração, considerando os dados de carga e ENSO
-como variáveis independentes. Para cada fonte, serão apresentados os resultados considerando as janelas de contexto e previsão
+como variáveis exógenas. Para cada fonte, serão apresentados os resultados considerando as janelas de contexto e previsão
 de 90/30 semanas e 512/96 dias. Demais gráficos dos resultados para os subsistemas estão disponíveis no Apêndice B.
 
 \subsubsection{Fonte Hidráulica}
@@ -257,11 +257,86 @@ para a fonte térmica, considerando as janelas de contexto e previsão de 90/30 
 A fonte térmica apresentou melhoria de 37,15\% no valor de R² para o caso de 90/30 semanas, passando de 0,183 para 0,251.
 Para o caso de 512/96 dias, o ajuste fino não apresentou melhoria significativa. 
 
+\subsection{Análise Geral}
 Os resultados demonstram uma clara hierarquia de performance entre os modelos testados. Foi evidenciado que modelos 
-lineares e não-lineares tradicionais são insuficientes para capturar a complexa dinâmica das gerações eólica e térmica. 
+lineares e não-lineares tradicionais são insuficientes para capturar a complexa dinâmica das gerações eólica e térmica, sendo 
+amplamente superados pelo modelo TTM. As Tabelas \ref{tab:performance_modelos}, \ref{tab:matriz_mse_hidraulica_correta}, 
+\ref{tab:matriz_mse_eolica_corrigida} e \ref{tab:matriz_mse_termica_corrigida} resumem as métricas de performance dos modelos 
+testados, incluindo os valores de R² e MSE para cada fonte de geração.
 
-O modelo neural pré-treinado (Tiny Time Mixer) representou um salto de qualidade, especialmente para a fonte eólica 
-(R² de 0,826). Contudo, a análise demonstrou que a maior acurácia em todas as fontes foi atingida através do processo 
-de ajuste fino (fine-tuning), que especializou o modelo com variáveis do ENSO, resultando em melhorias de performance 
-significativas no R². Estes achados validam a hipótese central do trabalho: a incorporação de variáveis 
-climáticas externas, aliada a uma arquitetura neural adequada, aprimora significativamente a estimação da geração energética.
+\begin{table}[htb]
+  \centering
+    \IBGEtab{
+      \caption{Métricas de performance dos modelos}
+      \label{tab:performance_modelos}
+      }{
+        \begin{tabular}{lcccccc}
+          \toprule
+          \multirow{2}{*}{\textbf{Modelo}} & \multicolumn{2}{c}{\textbf{Hidráulica}} & \multicolumn{2}{c}{\textbf{Eólica}} & \multicolumn{2}{c}{\textbf{Térmica}} \\
+          \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+           & \textbf{R²} & \textbf{MSE} & \textbf{R²} & \textbf{MSE} & \textbf{R²} & \textbf{MSE} \\ \midrule
+          Linear & 0,519 & 2,22$\times$ 10$^7$ & 0,004 & 7,78$\times$ 10$^6$ & -2,322 & 4,84$\times$ 10$^7$ \\
+          % \addlinespace
+          Não Linear & 0,525 & 2,19$\times$ 10$^7$ & -2,318 & 2,59$\times$ 10$^7$ & -0,068 & 1,56$\times$ 10$^7$ \\
+          % \addlinespace
+          Neural Oneshot & 0,581 & 1,87$\times$ 10$^7$ & 0,826 & 1,69$\times$ 10$^6$ & 0,531 & 6,63$\times$ 10$^6$ \\
+          % \addlinespace
+          Neural Finetune & 0,671 & 1,47$\times$ 10$^7$ & 0,835 & 1,61$\times$ 10$^6$ & 0,535 & 6,35$\times$ 10$^6$ \\ \bottomrule
+        \end{tabular}
+      }{
+        \fonte{o autor.}}
+\end{table}
+\begin{table}[htb]
+  \centering
+  \IBGEtab{
+    \caption{Comparação percentual de MSE para a fonte hidráulica}
+    \label{tab:matriz_mse_hidraulica_correta}
+  }{
+    \begin{tabular}{lcccc}
+      \toprule
+      \textbf{Modelo} & \textbf{Linear} & \textbf{Não Linear} & \textbf{Neural Oneshot} & \textbf{Neural Finetune} \\
+      \midrule
+      Linear & -- & -1,37\% & -18,72\% & -51,02\% \\
+      Não Linear & +1,35\% & -- & -17,11\% & -48,98\% \\
+      Neural Oneshot & +15,77\% & +14,61\% & -- & -27,21\% \\
+      Neural Finetune & +33,78\% & +32,88\% & +21,39\%  -- \\
+      \bottomrule
+    \end{tabular}
+  }{\fonte{o autor.}}
+\end{table}
+\begin{table}[htb]
+  \centering
+  \IBGEtab{
+    \caption{Comparação percentual de MSE para a fonte eólica}
+    \label{tab:matriz_mse_eolica_corrigida}
+  }{
+    \begin{tabular}{lcccc}
+      \toprule
+      \textbf{Modelo} & \textbf{Linear} & \textbf{Não Linear} & \textbf{Neural Oneshot} & \textbf{Neural Finetune} \\
+      \midrule
+      Linear & -- & +232,91\% & -360,36\% & -383,23\% \\
+      Não Linear & -232,91\% & -- & +93,47\% & +93,78\% \\
+      Neural Oneshot & +78,28\% & -93,47\% & -- & +4,73\% \\
+      Neural Finetune & +79,31\% & -93,78\% & -4,97\% & -- \\
+      \bottomrule
+    \end{tabular}
+  }{\fonte{o autor.}}
+\end{table}
+\begin{table}[htb]
+  \centering
+  \IBGEtab{
+    \caption{Comparação percentual de MSE para a fonte térmica}
+    \label{tab:matriz_mse_termica_corrigida}
+  }{
+    \begin{tabular}{lcccc}
+      \toprule
+      \textbf{Modelo} & \textbf{Linear} & \textbf{Não Linear} & \textbf{Neural Oneshot} & \textbf{Neural Finetune} \\
+      \midrule
+      Linear & -- & -210,26\% & -630,02\% & -662,20\% \\
+      Não Linear & +67,77\% & -- & +57,50\% & +59,29\% \\
+      Neural Oneshot & +86,30\% & -135,29\% & -- & +4,22\% \\
+      Neural Finetune & +86,88\% & -145,67\% & -4,41\% & -- \\
+      \bottomrule
+    \end{tabular}
+  }{\fonte{o autor.}}
+\end{table}

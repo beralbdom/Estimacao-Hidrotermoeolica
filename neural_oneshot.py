@@ -11,7 +11,7 @@ from alive_progress import alive_bar
 from sklearn.model_selection import train_test_split, GridSearchCV, TimeSeriesSplit
 from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
 from sklearn.metrics import r2_score
-from sklearn.metrics import root_mean_squared_error as mse_error
+from sklearn.metrics import mean_squared_error as mse_error
 from sklearn.preprocessing import StandardScaler
 
 from transformers import set_seed
@@ -26,9 +26,9 @@ from tsfm_public import (
 
 import matplotlib_config
 
-TTM_MODEL_REVISION = '90-30-ft-r2.1'
-CONTEXT            = 90
-PREDICTION         = 30
+TTM_MODEL_REVISION = '512-96-ft-r2.1'
+CONTEXT            = 512
+PREDICTION         = 96
 OUT_DIR            = 'Exportado/TTM'
 DEVICE             = 'cuda'
 SEED               = 1337
@@ -38,7 +38,7 @@ np.random.seed(SEED)
 torch.manual_seed(SEED)
 set_seed(SEED)
 
-freq = 'W'
+freq = 'D'
 tempo = 'Data'
 
 if freq == 'D': cor = "#FF9046" 
@@ -50,7 +50,7 @@ geracao = (
         parse_dates = ['Data'])
     .set_index('Data')
     .fillna(0)
-    .resample(freq).mean()
+    # .resample(freq).mean()
 )
 
 geracao_2025 = geracao[geracao.index.year == 2025]

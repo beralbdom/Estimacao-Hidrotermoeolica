@@ -155,7 +155,8 @@ distintos, estrutura de dados tabulares da biblioteca. Com isso, as seguintes op
 
 Optou-se por fazer o agrupamento dos dados de geração por subsistema e fonte para permitir avaliar os impactos das variáveis
 do ENSO em diferentes regiões do Brasil. Além disso, a representação por subsistema também é utilizada pelo modelo NEWAVE. 
-A figura \ref{fig:subsistemas_brasil} mostra os subsistemas do SIN.
+A figura \ref{fig:subsistemas_brasil} mostra os subsistemas do SIN, na qual o estado de Roraima (RR) ainda é considerado
+um subsistema isolado, ainda que as obras de interligação com o sistema nacional tenham sido iniciadas.
 
 Diferentes arquivos CSV foram gerados, considerando a geração média (MWmed) e energia gerada (MWh) para as escalas diária e mensal.
 Os dados de geração contém o histórico de geração por subsistema e fonte, enquanto que os dados de carga contém o histórico de carga
@@ -232,6 +233,10 @@ A análise exploratória dos dados é uma etapa crucial para entender as caracte
 Essa etapa envolve a visualização e análise estatística, permitindo identificar tendências, sazonalidades, correlações e possíveis outliers. 
 Além das bibliotecas \code{pandas} e \code{matplotlib}, a biblioteca \code{statsmodels} foi utilizada para realizar a decomposição
 das séries temporais, permitindo avaliar as sazonalidades e tendências presentes nos dados.
+
+As análises foram realizadas em base temporal mensal visando otimizar a relação sinal-ruído. Na prática, a agregação
+mensal funciona como um filtro passa-baixas, suavizando as variações diárias devido a ajustes operacionais (alta frequência),
+permitindo uma melhor visualização das tendências e sazonalidades de longo prazo (baixas frequências). 
 
 Para a decomposição das séries temporais, a função \code{MSTL} foi utilizada, que realiza a decomposição em componentes de 
 tendência, sazonalidade e resíduo. Essa função utiliza o método de \textit{local polynomial regression fitting}, ou ajuste
@@ -335,13 +340,13 @@ funções \code{mean\_squared\_error} e \code{r2\_score}, respectivamente.
 \subsection{Etapas Comuns} % ========================================================================================= %
 As etapas iniciais de implementação são comuns a todos os modelos, consistindo em: 
 \begin{enumerate}
-    \item \textbf{Entrada de dados:} Leitura dos arquivos CSV contendo os dados de geração, carga e variáveis do ENSO;
-    \item \textbf{Consolidação do dataset:} Alinhamento temporal dos dados, garantindo que as séries estejam sincronizadas;
-    \item \textbf{Definição das variáveis:} Seleção das clunas contendo as variáveis dependentes (geração por fonte e subsistema) e 
+    \item \textbf{Entrada de dados:} leitura dos arquivos CSV contendo os dados de geração, carga e variáveis do ENSO;
+    \item \textbf{Consolidação do dataset:} alinhamento temporal dos dados, garantindo que as séries estejam sincronizadas;
+    \item \textbf{Definição das variáveis:} seleção das clunas contendo as variáveis dependentes (geração por fonte e subsistema) e 
 independentes (carga e variáveis do ENSO);
-    \item \textbf{Normalização:} Normalização das variáveis independentes utilizando o \code{StandardScaler} do \code{scikit-learn};
-    \item \textbf{Definição dos conjuntos para treino:} Divisão dos dados em conjuntos de treino, teste e validação (para o modelo neural);
-    \item \textbf{Avaliação:} Avaliação através das métricas escolhidas e visual dos resultados através de gráficos de dispersão e linha.
+    \item \textbf{Normalização:} normalização das variáveis independentes utilizando o \code{StandardScaler} do \code{scikit-learn};
+    \item \textbf{Definição dos conjuntos para treino:} divisão dos dados em conjuntos de treino, teste e validação (para o modelo neural);
+    \item \textbf{Avaliação:} avaliação através das métricas escolhidas e visual dos resultados através de gráficos de dispersão e linha.
 \end{enumerate}
 
 A normalização é importante para evitar que o modelo atribua maior peso às variáveis com maior amplitude,
@@ -401,7 +406,7 @@ Por fim, para cada variável alvo, foram gerados e salvos gráficos de dispersã
 
 
 \section{Implementação do Modelo Neural} % =========================================================================== %
-O modelo neural utilizado foi o \textit{Tiny Time Mixer}, versão 2.1, disponível na biblioteca \code{transformers} do 
+O modelo neural utilizado foi o \textit{Tiny Time Mixer} (TTM), versão 2.1, disponível na biblioteca \code{transformers} do 
 \textit{Hugging Face}. Ele é um modelo de previsão de séries temporais pré-treinado baseado na arquitetura \textit{TSMixer}, 
 apresentada no capítulo 3. Modelos pré treinados são modelos que já foram treinados em grandes conjuntos de dados. Ou seja, 
 os pesos das camadas de \textit{perceptrons} já foram ajustados para capturar padrões gerais em séries temporais.
@@ -411,7 +416,7 @@ a um conjunto de dados específico, considerando variáveis dependentes e indepe
 por subsistema e fonte, carga e variáveis do ENSO.
 
 O modelo possui diferentes variações, com diferentes tamanhos de janelas de contexto e previsão e tem suporte para escalas 
-de tempo semanal, diária, horária e de minutos. Para o projeto, foram utilizados as variantes com janelas de contexto e 
+de tempo semanal, diária, horária e de minutos. Para o projeto, foram utilizadas as variantes com janelas de contexto e 
 previsão de 512 e 96 dias, bem como a de 90 e 30 semanas.
 
 A biblioteca \code{tsfm\_public}, que contém funções auxiliares para a implementação dos modelos publicados pela IBM, foi
@@ -425,8 +430,8 @@ fossem atualizadas. Dessa forma, o modelo é capaz de aprender padrões mais com
 o que pode levar a uma melhor performance nas previsões.
 
 \subsection{Modelo Pré-treinado} % ================================================================================ %
-Inicialmente, foi implementado o modelo sem considerar as variáveis exógenas, ou seja, apenas com as variáveis dependentes, a 
-geração de energia por subsistema e fonte. Essa abordagem, conhecida como \textit{one-shot forecasting}, consiste em aplicar 
+Inicialmente, foi implementado o modelo sem considerar as variáveis exógenas, ou seja, apenas com as variáveis dependentes, os 
+dados de geração por subsistema e fonte. Essa abordagem, conhecida como \textit{one-shot forecasting}, consiste em aplicar 
 um modelo já treinado diretamente sobre a série temporal de interesse para realizar a inferência, sem uma nova etapa de treinamento.
 
 Para esta análise, os dados de 2000 a 2024 foram considerados, devido a capacidade do modelo capturar relações mais complexas. 
@@ -455,13 +460,13 @@ Para a implementação do modelo com variáveis exógenas, faz-se necessário re
 é o processo de atualização dos pesos do modelo pré treinado para adequar-se ao conjunto de dados específico, considerando
 a presença de variáveis dependentes e independentes.
 
-Após a consolidação dos dados de geração, carga e ENSO, o conjunto de dados é dividido em frações de treino (70\%), validação 
+Após a consolidação dos dados de geração (variáveis dependentes), carga e ENSO (variáveis exógenas), o conjunto de dados é dividido em frações de treino (70\%), validação 
 (10\%) e teste (20\%), utilizando a função \code{prepare\_data\_splits}. A biblioteca \code{tsfm\_public} é novamente empregada 
 para o pré-processamento através da classe \code{TimeSeriesPreprocessor}, que desta vez é configurada para tratar tanto as variáveis 
 alvo \code{target\_columns} quanto as exógenas \code{control\_columns}, aplicando a normalização \code{StandardScaler} em ambas.
 
 O modelo \code{TinyTimeMixerForPrediction} é carregado, e sua arquitetura é ajustada para o novo conjunto de dados, especificando 
-os canais de entrada para as variáveis dependentes e independentes. Uma característica central do modelo é a sua capacidade de 
+os canais de entrada para as variáveis dependentes e exógenas. Uma característica central do modelo é a sua capacidade de 
 \textit{mixing}, ou mistura de canais, que permite aprender as interdependências entre as múltiplas séries temporais. Isso é 
 habilitado pelos parâmetros \code{decoder\_mode = 'mix\_channel'} e \code{enable\_forecast\_channel\_mixing = True}. Adicionalmente, 
 o parâmetro \code{fcm\_prepend\_past = True} é utilizado para que os valores passados das séries também sejam considerados no processo 
