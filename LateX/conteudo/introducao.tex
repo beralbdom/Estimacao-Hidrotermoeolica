@@ -33,8 +33,7 @@ de tornar o sistema como um todo mais vulnerável.
 Além disso, ao analisar a curva de carga do SIN, observa-se que, embora o seu pico ocorra no início da 
 tarde, momento no qual a geração solar fotovoltaica apresenta significativa contribuição, o período noturno também 
 apresenta carga considerável, conforme a Figura \ref{fig:carga_max_dia}, que mostra a curva de carga do SIN para o 
-dia 15 de março de 2024, dia em que registrou-se um recorde de demanda máxima instantânea de 102.478 MW, segundo o ONS, 
-e como pode ser observado na Figura \ref{fig:carga_anual}.
+dia 15 de março de 2024, dia em que registrou-se um recorde de demanda máxima instantânea de 102.478 MW, segundo o ONS.
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Curva de carga diária do SIN em base horária}
@@ -59,8 +58,8 @@ até então. \cite{Soares2023}
 \end{figure}
 
 Portanto, o estudo do sistema elétrico brasileiro, no contexto de cenários de eventos
-climatológicos extremos é altamente relevante para a segurança energética do país, considerando uma estimativa de 
-crescimento médio anual da carga do SIN de 3,2\%. \cite{pen2024}
+climatológicos extremos é altamente relevante para a segurança energética do país, considerando a tendência crescente
+na curva de carga do SIN, ilustrada na Figura \ref{fig:carga_anual}, e uma projeção de crescimento médio anual de 3,2\%. \cite{pen2024}
 
 Ao analisar a geração hidráulica bruta na Figura \ref{fig:geracao_hidraulica_bruta}, evidenciam-se pontos nos 
 quais a geração é reduzida. Isso ocorre devido à sazonalidade das vazões nas bacias hidrográficas, responsáveis pelo 
@@ -91,7 +90,6 @@ eventos em três categorias: \textit{El-Niño} (EN), \textit{La-Niña} (LN) e ne
 classificação dos eventos de EN e LN ocorridos entre 2000 e 2024, na qual a escala de cores indica a intensidade do 
 evento, representado pela anomalia, que é a diferença do valor observado para um período em relação à sua média histórica.
 
-
 Fundamentalmente, no sistema elétrico brasileiro, cuja fonte hidráulica constitui a base da matriz, é essencial, para um
 planejamento energético eficiente, otimizar o sistema de modo a considerar a incerteza associada à disponibilidade de recursos
 hidrológicos futuros. Dessa forma, estima-se o valor da geração hidrelétrica que poderia substituir a geração térmica a curto
@@ -110,16 +108,16 @@ como o EN e LN, que podem impactar a geração de energia elétrica. Esses model
 vazões e velocidade do vento, que são obtidos a partir de medições locais, além de dados individuais de cada usina.
 
 \section{Objetivo}
-O projeto tem como objetivo investigar um possível impacto de variáveis climáticas externas na geração 
+Este trabalho tem como objetivo investigar o impacto de variáveis climáticas externas na geração 
 de energia elétrica no Brasil, com foco nas fontes hidráulica, térmica e eólica. Para tanto, foram empregadas técnicas 
 computacionais para relacionar as séries históricas de geração com as séries de variáveis 
 climáticas, através de modelos lineares, não lineares e neurais. 
 
 Além disso, foram utilizadas séries históricas de geração, 
 carga e vazões disponibilizados pelo ONS, bem como séries históricas de variáveis climáticas, como temperatura 
-da superfície do mar, obtidas a partir de dados do ERA5, um projeto de reanálise atmosférica que combina resultados de
-modelos computacionais com observações de diferentes fontes, como satélites e estações meteorológicas, resultando em
-um \textit{dataset} global de alta resolução espacial e temporal. \citeonline{Hersbach2020}
+da superfície do mar, obtidas a partir de dados do ERA5, um projeto de reanálise atmosférica proposto por \citeonline{Hersbach2020}, 
+que combina resultados de modelos computacionais com observações de diferentes fontes, como satélites e estações 
+meteorológicas, resultando em um \textit{dataset} global de alta resolução espacial e temporal.
 
 A partir dessa investigação, espera-se poder avaliar o impacto dessas variáveis na geração de energia elétrica,
 o que pode contribuir para o planejamento energético do país, especialmente em cenários de eventos climáticos extremos e
