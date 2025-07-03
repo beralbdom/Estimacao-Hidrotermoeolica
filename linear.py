@@ -108,4 +108,4 @@ for col in target_cols:
     
     plt.tight_layout()
     # plt.show()
-    plt.savefig(f'Graficos/Linear/linear_{col}_mensal_CARGA.svg', bbox_inches = 'tight')
+    plt.savefig(f'LateX/figuras/linear/linear_{col}_mensal.svg', bbox_inches = 'tight')

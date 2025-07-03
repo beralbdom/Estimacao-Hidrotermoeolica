@@ -11,7 +11,7 @@
 % LaTeX: abnTeX2
 % ----------------------------------------------------------------------------------------------------------------------
 \usepackage{cmap}                																						% Mapear caracteres especiais no PDF
-\usepackage[scaled = .85]{zi4}
+\usepackage[scaled = .82]{zi4}
 \usepackage[scaled = .82]{DejaVuSerif}
 \usepackage[T1]{fontenc}         																						% Selecao de codigos de fonte
 \usepackage[utf8]{inputenc}      																						% Codificacao do documento (conversão automática dos acentos)
@@ -94,6 +94,18 @@ abnt-etal-list=3                 																						% abreviar com mais de 3 
   boxrule=0pt,
   tcbox raise base,
   fontupper=\ttfamily
+}
+
+\usemintedstyle{custommanni}
+\setminted{
+  frame=lines,
+  framesep=1mm,
+  baselinestretch=1,
+  linenos,
+  breaklines,
+  style=colorful,
+  tabsize=4,
+  numbersep=5pt
 }
 
 \renewcommand{\backref}{}																								% Não gera texto de referência nas citações

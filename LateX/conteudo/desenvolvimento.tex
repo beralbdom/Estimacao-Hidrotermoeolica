@@ -18,8 +18,8 @@ O sistema utilizado possui um processador AMD Ryzen 5900X, 32 GB de memória RAM
     \label{tab:bibliotecas}
     }{
     \begin{tabular}{llll}
-  		  \hline
-    	  \textbf{Biblioteca} & \textbf{Descrição} & \textbf{Versão} \\ \hline
+  		  \toprule
+    	  \textbf{Biblioteca} & \textbf{Descrição} & \textbf{Versão} \\ \midrule
         numpy & Cálculos numéricos e manipulação de arrays & 1.26.4 \\
         pandas & Manipulação e análise de dados (DataFrames) & 2.2.3 \\
         requests & Requisições HTTP & 2.32.3 \\
@@ -27,13 +27,16 @@ O sistema utilizado possui um processador AMD Ryzen 5900X, 32 GB de memória RAM
         alive\_progress & Barra de progresso para loops & 3.2.0 \\
         netCDF4 & Leitura de arquivos NetCDF & 1.7.2 \\
         cdsapi & API para download de dados do ECMWF & 0.7.5 \\
+        granite-tsfm & Funções auxiliares do modelo neural & 0.2.23 \\
         geopandas & Manipulação de dados geoespaciais & 1.0.1 \\
         matplotlib & Visualização de dados & 3.9.2 \\
         scikit-learn & Aplicação de modelos iniciais & 1.5.2 \\
         scipy & Ferramentas e algoritmos matemáticos & 1.14.1 \\
+        statsmodels & Decomposição de séries temporais & 0.14.4 \\
+        safetensors & Armazenamento de tensores & 0.5.3 \\
         transformers & Modelos Neurais Pré-treinadis & 4.52.3 \\
         torch & Processamento de Redes Neurais & 2.7.0 \\
-        \hline
+        \bottomrule
     \end{tabular}
     }{
       \fonte{o autor.}}
@@ -59,8 +62,8 @@ informações sobre a carga em cada subsistema do SIN.
     \label{tab:hidrologicos}
     }{
       \begin{tabular}{llll}
-          \hline
-          \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \hline
+          \toprule
+          \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \midrule
           din\_instante & Instante de aferição & Datetime\\
           nom\_subsistema & Subsistema & String\\
           tip\_reservatorio & Tipo de reservatório & String\\
@@ -73,7 +76,7 @@ informações sobre a carga em cada subsistema do SIN.
           val\_vazaoturbinada & Vazão turbinada (m³/s) & Float\\
           val\_vazaovertida & Vazão vertida (m³/s) & Float\\
           val\_vazaodefluente & Vazão defluente (m³/s) & Float\\
-          val\_vazaoevaporacaoliquida & Vazão de evaporação líquida (m³/s) & Float\\ \hline
+          val\_vazaoevaporacaoliquida & Vazão de evaporação líquida (m³/s) & Float\\ \bottomrule
       \end{tabular}
     } {
       \fonte{\citeonline{pen2024}}
@@ -93,11 +96,11 @@ necessário uma outra abordagem, a fim de evitar o \textit{download} manual dos 
     \label{tab:carga}
     }{
     \begin{tabular}{llll}
-  		  \hline
-    	  \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \hline
+  		  \toprule
+    	  \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \midrule
         din\_instante & Instante de aferição & Datetime\\
         nom\_subsistema & Subsistema da usina & String\\
-        val\_cargaenergiahomwmed & Carga de energia (MWmed) & Float\\ \hline
+        val\_cargaenergiahomwmed & Carga de energia (MWmed) & Float\\ \bottomrule
     \end{tabular}
     }{
       \fonte{\citeonline{pen2024}}}
@@ -114,15 +117,15 @@ todas as threads disponíveis do sistema. Ao todo, cerca de 10 GB de dados em ar
     \label{tab:geracao}
     }{
       \begin{tabular}{llll}
-          \hline
-          \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \hline
+          \toprule
+          \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \midrule
           id\_subsistema & Instante de aferição & Datetime\\
           nom\_subsistema & Subsistema da usina & String\\
           id\_estado & Estado onde a usina está localizada & String\\ 
           nom\_tipousina & Tipo de usina & String\\
           nom\_tipocombustivel & Tipo de combustível & String\\
           nom\_usina & Nome da usina & String\\
-          val\_geracao & Geração de energia (MWmed) & Float\\ \hline
+          val\_geracao & Geração de energia (MWmed) & Float\\ \bottomrule
       \end{tabular}
     } {
       \fonte{\citeonline{pen2024}}
@@ -192,12 +195,12 @@ regiões do ENSO e suas coordenadas geográficas são mostradas na Tabela \ref{t
     \label{tab:regioes_enso}
     }{
     \begin{tabular}{lll}
-  		  \hline
-    	  \textbf{Região} & \textbf{Latitude} & \textbf{Longitude} \\ \hline
+  		  \toprule
+    	  \textbf{Região} & \textbf{Latitude} & \textbf{Longitude} \\ \midrule
         Niño 1+2 & -10° a 0° & -90° a -80° \\
         Niño 3 & -5° a 5° & -150° a -90° \\
         Niño 3.4 & -5° a 5° & -170° a -120° \\
-        Niño 4 & -5° a 5° & -160° a -150° \\ \hline
+        Niño 4 & -5° a 5° & -160° a -150° \\ \bottomrule
     \end{tabular}
     }{
       \fonte{\citeonline{TheDefinitionofElNio}}}
@@ -317,8 +320,8 @@ possui uma volatilidade relativamente baixa.
 
 
 \section{Implementação dos Modelos de Regressão} % =================================================================== %
-Para todos os casos, os códigos referentes às implementações dos modelos estão disponíveis no Apêncice A. A seguir, será
-apresentada uma visão geral das etapas de implementação, métricas de avaliação e os modelos computacionais utilizados.
+A seguir, será apresentada uma visão geral das etapas de implementação, métricas de avaliação e os modelos computacionais 
+utilizados.
 
 \subsection{Métricas de Avaliação} % ================================================================================= %
 Para todos os casos, duas métricas de avaliação foram utilizadas: o erro quadrático médio (MSE) e o coeficiente de determinação (R²).

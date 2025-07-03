@@ -1,123 +1,305 @@
 \begin{apendicesenv}
+\chapter*{Apêndice A: Resultados por Subsistema}
+\section*{Modelo Linear}
 
-\chapter*{Apêndice A: Códigos}
-\begin{minted}{python}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte hidráulica -- subsistema Sul}
+       \label{fig:linear_hidraulica_s}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Hidráulica_S_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte hidráulica -- subsistema Sudeste}
+       \label{fig:linear_hidraulica_se}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Hidráulica_SE_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte hidráulica -- subsistema Nordeste}
+       \label{fig:linear_hidraulica_ne}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Hidráulica_NE_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte hidráulica -- subsistema Norte}
+       \label{fig:linear_hidraulica_n}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Hidráulica_N_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
 
-import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-from sklearn.metrics import mean_squared_error as mse_error
-from sklearn.preprocessing import StandardScaler
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte térmica -- subsistema Sul}
+       \label{fig:linear_termica_s}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Térmica_S_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte térmica -- subsistema Sudeste}
+       \label{fig:linear_termica_se}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Térmica_SE_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte térmica -- subsistema Nordeste}
+       \label{fig:linear_termica_ne}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Térmica_NE_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte térmica -- subsistema Norte}
+       \label{fig:linear_termica_n}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Térmica_N_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte eólica -- subsistema Sul}
+       \label{fig:linear_eolica_s}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Eólica_S_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte eólica -- subsistema Sudeste}
+       \label{fig:linear_eolica_se}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Eólica_SE_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte eólica -- subsistema Nordeste}
+       \label{fig:linear_eolica_ne}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Eólica_NE_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Regressão linear para fonte eólica -- subsistema Norte}
+       \label{fig:linear_eolica_n}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Eólica_N_mensal}}
+  {\fonte{o autor.}}
+\end{figure}
 
-import matplotlib_config
+\section*{Modelo Random Forest}
 
-# Entrada das séries
-geracao = (
-    pd.read_csv(
-        'Exportado/geracao_fontes_diario_MWmed.csv', 
-        parse_dates = ['Data'])
-    .set_index('Data')
-)
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte hidráulica -- subsistema Sul}
+       \label{fig:rf_hidraulica_s}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Hidráulica_S}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte hidráulica -- subsistema Sudeste}
+       \label{fig:rf_hidraulica_se}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Hidráulica_SE}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte hidráulica -- subsistema Nordeste}
+       \label{fig:rf_hidraulica_ne}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Hidráulica_NE}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte hidráulica -- subsistema Norte}
+       \label{fig:rf_hidraulica_n}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Hidráulica_N}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte térmica -- subsistema Sul}
+       \label{fig:rf_termica_s}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Térmica_S}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte térmica -- subsistema Sudeste}
+       \label{fig:rf_termica_se}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Térmica_SE}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte térmica -- subsistema Nordeste}
+       \label{fig:rf_termica_ne}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Térmica_NE}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte térmica -- subsistema Norte}
+       \label{fig:rf_termica_n}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Térmica_N}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte eólica -- subsistema Sul}
+       \label{fig:rf_eolica_s}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Eólica_S}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte eólica -- subsistema Sudeste}
+       \label{fig:rf_eolica_se}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Eólica_SE}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte eólica -- subsistema Nordeste}
+       \label{fig:rf_eolica_ne}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Eólica_NE}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{Random Forest para fonte eólica -- subsistema Norte}
+       \label{fig:rf_eolica_n}}
+  {\includesvg[scale=.9]{figuras/nlinear/rf_Eólica_N}}
+  {\fonte{o autor.}}
+\end{figure}
 
-carga = (
-    pd.read_csv(
-        'Exportado/carga_subsist_diario_MWmed.csv', 
-        parse_dates = ['Data'])
-    .set_index('Data')
-)
+\section*{Modelo Neural TTM - Oneshot}
 
-enso = (
-    pd.read_csv(
-        'Exportado/ECMWF/derived-era5-single-levels-daily-statistics_sea_surface_temperature_reanalysis.csv', 
-        parse_dates = ['Data'])
-        .set_index('Data')
-)
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte hidráulica -- subsistema Sul}
+       \label{fig:ttm_hidraulica_s}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Hidráulica_S_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte hidráulica -- subsistema Sudeste}
+       \label{fig:ttm_hidraulica_se}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Hidráulica_SE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte hidráulica -- subsistema Nordeste}
+       \label{fig:ttm_hidraulica_ne}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Hidráulica_NE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte hidráulica -- subsistema Norte}
+       \label{fig:ttm_hidraulica_n}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Hidráulica_N_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte térmica -- subsistema Sul}
+       \label{fig:ttm_termica_s}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Térmica_S_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte térmica -- subsistema Sudeste}
+       \label{fig:ttm_termica_se}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Térmica_SE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte térmica -- subsistema Nordeste}
+       \label{fig:ttm_termica_ne}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Térmica_NE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte térmica -- subsistema Norte}
+       \label{fig:ttm_termica_n}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Térmica_N_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte eólica -- subsistema Sul}
+       \label{fig:ttm_eolica_s}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Eólica_S_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte eólica -- subsistema Sudeste}
+       \label{fig:ttm_eolica_se}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Eólica_SE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]   
+  \IBGEtab{\caption*{TTM para fonte eólica -- subsistema Nordeste}
+       \label{fig:ttm_eolica_ne}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Eólica_NE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte eólica -- subsistema Norte}
+       \label{fig:ttm_eolica_n}}
+  {\includesvg[scale=.9]{figuras/oneshot/os_Eólica_N_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
 
-geracao = geracao.fillna(0) # sem geração eólica e fotovoltaica no início dos anos 2000
-geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols]) 
+\section*{Modelo Neural TTM - Finetune}
 
-# Feature engineering
-carga['ano'] = carga.index.year
-carga['mes'] = carga.index.month
-carga['dia_mes'] = carga.index.day
-carga['dia_semana'] = carga.index.dayofweek
-carga['dia_ano'] = carga.index.dayofyear
-carga['quadrimestre'] = carga.index.quarter
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte hidráulica -- subsistema Sul}
+       \label{fig:ttm_hidraulica_s_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Hidráulica_S_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte hidráulica -- subsistema Sudeste}
+       \label{fig:ttm_hidraulica_se_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Hidráulica_SE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte hidráulica -- subsistema Nordeste}
+       \label{fig:ttm_hidraulica_ne_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Hidráulica_NE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte hidráulica -- subsistema Norte}
+       \label{fig:ttm_hidraulica_n_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Hidráulica_N_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte térmica -- subsistema Sul}
+       \label{fig:ttm_termica_s_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Térmica_S_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte térmica -- subsistema Sudeste}
+       \label{fig:ttm_termica_se_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Térmica_SE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte térmica -- subsistema Nordeste}
+       \label{fig:ttm_termica_ne_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Térmica_NE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte térmica -- subsistema Norte}
+       \label{fig:ttm_termica_n_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Térmica_N_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte eólica -- subsistema Sul}
+       \label{fig:ttm_eolica_s_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Eólica_S_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte eólica -- subsistema Sudeste}
+       \label{fig:ttm_eolica_se_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Eólica_SE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]
+  \IBGEtab{\caption*{TTM para fonte eólica -- subsistema Nordeste}
+       \label{fig:ttm_eolica_ne_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Eólica_NE_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
+\begin{figure}[H]   
+  \IBGEtab{\caption*{TTM para fonte eólica -- subsistema Norte}
+       \label{fig:ttm_eolica_n_finetune}}
+  {\includesvg[scale=.9]{figuras/finetune/fn_Eólica_N_D512-96}}
+  {\fonte{o autor.}}
+\end{figure}
 
-dataset = pd.concat([geracao, carga, enso], axis = 1).dropna()
-dataset = dataset[dataset.index.year > 2009]
-dataset = dataset[dataset.index.year < 2025]
-
-target_cols = geracao.columns.to_list()
-exog_cols = carga.columns.append(enso.columns).to_list()
-print(f'Colunas objetivo:\n {target_cols}')
-print(f'\nColunas exógenas:\n {exog_cols}')
-print(dataset.head())
-
-# Normalização e separação das séries de treino/teste
-scaler = StandardScaler()
-dataset[exog_cols] = scaler.fit_transform(dataset[exog_cols])
-
-X_train, X_test, y_train, y_test = train_test_split(
-    dataset[exog_cols], dataset[target_cols], 
-    test_size = .3, shuffle = False
-)
-
-# Aplicação do modelo
-modelo = LinearRegression(n_jobs = -1)
-reg = modelo.fit(X_train, y_train)
-print(f'Coeficientes do modelo: {reg.coef_}')
-print(f'Intercepto do modelo: {reg.intercept_}')
-y_pred = reg.predict(X_test)
-y_pred = pd.DataFrame(y_pred, columns = target_cols, index = y_test.index) 
-y_pred[y_pred < 0] = 0
-
-# Resample mensal para visualização
-y_pred = y_pred.resample('ME').mean()
-y_test = y_test.resample('ME').mean()
-y_train = y_train.resample('ME').mean()
-
-layout = [['a', 'b']]
-for col in target_cols:
-    r2 = r2_score(y_test[col], y_pred[col])
-    mse = mse_error(y_test[col], y_pred[col])
-
-    fig, ax = plt.subplot_mosaic(layout, figsize = (7, 2.5), width_ratios = [1, 2])
-
-    ax['a'].scatter(y_test[col], y_pred[col], s = 2, color = "#E24C4C", alpha = .5, label = 'Previsto')
-    ax['a'].plot([y_test[col].min(), y_test[col].max()], [y_test[col].min(), y_test[col].max()], 
-               color = "#202020", linewidth = .66, ls = '--', label = 'Ideal')
-    
-    ax['a'].set_xticks(np.linspace(y_test[col].min(), y_test[col].max(), num = 5))
-    ax['a'].set_yticks(np.linspace(y_test[col].min(), y_test[col].max(), num = 5))
-    ax['a'].legend(loc = 'upper center', bbox_to_anchor = (.5, 1.15), ncol = 2, frameon = False, fancybox = False)
-    ax['a'].ticklabel_format(axis = 'both', style = 'sci', scilimits = (3, 3))
-    ax['a'].set_xlabel('Real')
-    ax['a'].set_ylabel('Previsto')
-    
-    ax['b'].plot(y_train.index, y_train[col], label = 'Treino', color = "#43AAFF", linewidth = .66)
-    ax['b'].plot(y_test.index, y_test[col], label = 'Real', color = "#969696", linewidth = .66, ls = '--')
-    ax['b'].plot(y_pred.index, y_pred[col], label = 'Previsão', color = "#E24C4C", linewidth = .66)
-    
-    ax['b'].legend(loc = 'upper center', bbox_to_anchor = (.5, 1.15), ncol = 3, frameon = False, fancybox = False)
-    ax['b'].set_xlabel('Série histórica')
-    ax['b'].set_ylabel(f'Geração {col.replace('_', ' ')} (MWMed)')
-    ax['b'].ticklabel_format(axis = 'y', style = 'sci', scilimits = (3, 3))
-
-    ax['b'].text(.02, .95, (f'R² = {r2:.3f}\nMSE = {mse:.2E}'), 
-                            transform = ax['b'].transAxes, verticalalignment = 'top', fontsize = 7,
-                            bbox = dict(boxstyle = 'square', facecolor = 'white', edgecolor = 'none'))
-    
-    plt.tight_layout()
-    # plt.show()
-    plt.savefig(f'Graficos/Linear/linear_{col}_mensal_CARGA.svg', bbox_inches = 'tight')
-
-\end{minted}
-
-\chapter*{Apêndice B: Resultados por Subsistema}
-\lipsum[1-1]
 
 \end{apendicesenv}

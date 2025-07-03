@@ -260,9 +260,7 @@ Para o caso de 512/96 dias, o ajuste fino não apresentou melhoria significativa
 \subsection{Análise Geral}
 Os resultados demonstram uma clara hierarquia de performance entre os modelos testados. Foi evidenciado que modelos 
 lineares e não-lineares tradicionais são insuficientes para capturar a complexa dinâmica das gerações eólica e térmica, sendo 
-amplamente superados pelo modelo TTM. As Tabelas \ref{tab:performance_modelos}, \ref{tab:matriz_mse_hidraulica_correta}, 
-\ref{tab:matriz_mse_eolica_corrigida} e \ref{tab:matriz_mse_termica_corrigida} resumem as métricas de performance dos modelos 
-testados, incluindo os valores de R² e MSE para cada fonte de geração.
+amplamente superados pelo modelo TTM. A Tabela \ref{tab:performance_modelos} resume as métricas de performance dos modelos.
 
 \begin{table}[htb]
   \centering
@@ -286,20 +284,25 @@ testados, incluindo os valores de R² e MSE para cada fonte de geração.
       }{
         \fonte{o autor.}}
 \end{table}
+
+Para as Tabelas \ref{tab:matriz_mse_hidraulica_correta}, \ref{tab:matriz_mse_eolica_corrigida} e \ref{tab:matriz_mse_termica_corrigida},
+são apresentadas as diferenças percentuais de MSE entre os modelos. As tabelas indicam a diferença percentual do valor de
+MSE do modelo na coluna para o modelo na linha.
+
 \begin{table}[htb]
   \centering
   \IBGEtab{
-    \caption{Comparação percentual de MSE para a fonte hidráulica}
+    \caption{Variação de MSE para a fonte hidráulica}
     \label{tab:matriz_mse_hidraulica_correta}
   }{
     \begin{tabular}{lcccc}
       \toprule
       \textbf{Modelo} & \textbf{Linear} & \textbf{Não Linear} & \textbf{Neural Oneshot} & \textbf{Neural Finetune} \\
       \midrule
-      Linear & -- & -1,37\% & -18,72\% & -51,02\% \\
-      Não Linear & +1,35\% & -- & -17,11\% & -48,98\% \\
-      Neural Oneshot & +15,77\% & +14,61\% & -- & -27,21\% \\
-      Neural Finetune & +33,78\% & +32,88\% & +21,39\%  -- \\
+      Linear & - & +1,37\% & +18,72\% & +51,02\% \\
+      Não Linear & --1,35\% & - & +17,11\% & +48,98\% \\
+      Neural Oneshot & --15,77\% & --14,61\% & - & +27,21\% \\
+      Neural Finetune & --33,78\% & --32,88\% & --21,39\% & - \\
       \bottomrule
     \end{tabular}
   }{\fonte{o autor.}}
@@ -307,17 +310,17 @@ testados, incluindo os valores de R² e MSE para cada fonte de geração.
 \begin{table}[htb]
   \centering
   \IBGEtab{
-    \caption{Comparação percentual de MSE para a fonte eólica}
+    \caption{Variação de MSE para a fonte eólica}
     \label{tab:matriz_mse_eolica_corrigida}
   }{
     \begin{tabular}{lcccc}
       \toprule
       \textbf{Modelo} & \textbf{Linear} & \textbf{Não Linear} & \textbf{Neural Oneshot} & \textbf{Neural Finetune} \\
       \midrule
-      Linear & -- & +232,91\% & -360,36\% & -383,23\% \\
-      Não Linear & -232,91\% & -- & +93,47\% & +93,78\% \\
-      Neural Oneshot & +78,28\% & -93,47\% & -- & +4,73\% \\
-      Neural Finetune & +79,31\% & -93,78\% & -4,97\% & -- \\
+      Linear & - & --69,96\% & +360,36\% & +383,23\% \\
+      Não Linear & +232,91\% & - & +1432,54\% & +1508,7\% \\
+      Neural Oneshot & --78,28\% & --93,47\% & - & +4,97\% \\
+      Neural Finetune & --79,31\% & --93,78\% & --4,73\% & - \\
       \bottomrule
     \end{tabular}
   }{\fonte{o autor.}}
@@ -325,17 +328,17 @@ testados, incluindo os valores de R² e MSE para cada fonte de geração.
 \begin{table}[htb]
   \centering
   \IBGEtab{
-    \caption{Comparação percentual de MSE para a fonte térmica}
+    \caption{Variação de MSE para a fonte térmica}
     \label{tab:matriz_mse_termica_corrigida}
   }{
     \begin{tabular}{lcccc}
       \toprule
       \textbf{Modelo} & \textbf{Linear} & \textbf{Não Linear} & \textbf{Neural Oneshot} & \textbf{Neural Finetune} \\
       \midrule
-      Linear & -- & -210,26\% & -630,02\% & -662,20\% \\
-      Não Linear & +67,77\% & -- & +57,50\% & +59,29\% \\
-      Neural Oneshot & +86,30\% & -135,29\% & -- & +4,22\% \\
-      Neural Finetune & +86,88\% & -145,67\% & -4,41\% & -- \\
+      Linear & - & +210,26\% & +630,02\% & +662,2\% \\
+      Não Linear & --67,77\% & - & +135,29\% & +145,67\% \\
+      Neural Oneshot & --86,3\% & --57,5\% & - & +4,41\% \\
+      Neural Finetune & --86,88\% & --59,29\% & --4,22\% & - \\
       \bottomrule
     \end{tabular}
   }{\fonte{o autor.}}

@@ -1,0 +1,60 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{pandas}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{pd}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{matplotlib}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{pyplot} \PYG{k}{as} \PYG{n}{plt}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{sklearn.model\PYGZus{}selection}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{train\PYGZus{}test\PYGZus{}split}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{sklearn.linear\PYGZus{}model}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{LinearRegression}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{sklearn.metrics}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{r2\PYGZus{}score}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{sklearn.metrics}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{mean\PYGZus{}squared\PYGZus{}error} \PYG{k}{as} \PYG{n}{mse\PYGZus{}error}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{sklearn.preprocessing}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{StandardScaler}
+
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{matplotlib\PYGZus{}config}
+
+\PYG{c+c1}{\PYGZsh{} Entrada das séries}
+\PYG{n}{geracao} \PYG{o}{=} \PYG{p}{(}\PYG{n}{pd}\PYG{o}{.}\PYG{n}{read\PYGZus{}csv}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}geracao\PYGZus{}diario\PYGZus{}MWmed.csv\PYGZsq{}}\PYG{p}{,} \PYG{n}{parse\PYGZus{}dates} \PYG{o}{=} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}Data\PYGZsq{}}\PYG{p}{])}\PYG{o}{.}\PYG{n}{set\PYGZus{}index}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Data\PYGZsq{}}\PYG{p}{))}
+\PYG{n}{carga} \PYG{o}{=} \PYG{p}{(}\PYG{n}{pd}\PYG{o}{.}\PYG{n}{read\PYGZus{}csv}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Exportado/carga\PYGZus{}diario\PYGZus{}MWmed.csv\PYGZsq{}}\PYG{p}{,} \PYG{n}{parse\PYGZus{}dates} \PYG{o}{=} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}Data\PYGZsq{}}\PYG{p}{])}\PYG{o}{.}\PYG{n}{set\PYGZus{}index}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Data\PYGZsq{}}\PYG{p}{))}
+\PYG{n}{enso} \PYG{o}{=} \PYG{p}{(}\PYG{n}{pd}\PYG{o}{.}\PYG{n}{read\PYGZus{}csv}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}enso.csv\PYGZsq{}}\PYG{p}{,} \PYG{n}{parse\PYGZus{}dates} \PYG{o}{=} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}Data\PYGZsq{}}\PYG{p}{])}\PYG{o}{.}\PYG{n}{set\PYGZus{}index}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Data\PYGZsq{}}\PYG{p}{))}
+
+\PYG{n}{geracao} \PYG{o}{=} \PYG{n}{geracao}\PYG{o}{.}\PYG{n}{fillna}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} sem geração eólica e fotovoltaica no início dos anos 2000}
+\PYG{n}{geracao} \PYG{o}{=} \PYG{n}{geracao}\PYG{o}{.}\PYG{n}{drop}\PYG{p}{(}\PYG{n}{columns} \PYG{o}{=} \PYG{p}{[}\PYG{n}{cols} \PYG{k}{for} \PYG{n}{cols} \PYG{o+ow}{in} \PYG{n}{geracao}\PYG{o}{.}\PYG{n}{columns} \PYG{k}{if} \PYG{l+s+s1}{\PYGZsq{}Fotovoltaica\PYGZsq{}} \PYG{o+ow}{in} \PYG{n}{cols} \PYG{o+ow}{or} \PYG{l+s+s1}{\PYGZsq{}Outras\PYGZsq{}} \PYG{o+ow}{in} \PYG{n}{cols}\PYG{p}{])}
+
+\PYG{c+c1}{\PYGZsh{} Feature engineering}
+\PYG{n}{carga}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}ano\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{carga}\PYG{o}{.}\PYG{n}{index}\PYG{o}{.}\PYG{n}{year}
+\PYG{n}{carga}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}mes\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{carga}\PYG{o}{.}\PYG{n}{index}\PYG{o}{.}\PYG{n}{month}
+\PYG{n}{carga}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}dia\PYGZus{}mes\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{carga}\PYG{o}{.}\PYG{n}{index}\PYG{o}{.}\PYG{n}{day}
+\PYG{n}{carga}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}dia\PYGZus{}semana\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{carga}\PYG{o}{.}\PYG{n}{index}\PYG{o}{.}\PYG{n}{dayofweek}
+\PYG{n}{carga}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}dia\PYGZus{}ano\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{carga}\PYG{o}{.}\PYG{n}{index}\PYG{o}{.}\PYG{n}{dayofyear}
+\PYG{n}{carga}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}quadrimestre\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{carga}\PYG{o}{.}\PYG{n}{index}\PYG{o}{.}\PYG{n}{quarter}
+
+\PYG{n}{dataset} \PYG{o}{=} \PYG{n}{pd}\PYG{o}{.}\PYG{n}{concat}\PYG{p}{([}\PYG{n}{geracao}\PYG{p}{,} \PYG{n}{carga}\PYG{p}{,} \PYG{n}{enso}\PYG{p}{],} \PYG{n}{axis} \PYG{o}{=} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{.}\PYG{n}{dropna}\PYG{p}{()}
+\PYG{n}{dataset} \PYG{o}{=} \PYG{n}{dataset}\PYG{p}{[}\PYG{n}{dataset}\PYG{o}{.}\PYG{n}{index}\PYG{o}{.}\PYG{n}{year} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{2009}\PYG{p}{]}
+\PYG{n}{dataset} \PYG{o}{=} \PYG{n}{dataset}\PYG{p}{[}\PYG{n}{dataset}\PYG{o}{.}\PYG{n}{index}\PYG{o}{.}\PYG{n}{year} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{2025}\PYG{p}{]}
+
+\PYG{n}{target\PYGZus{}cols} \PYG{o}{=} \PYG{n}{geracao}\PYG{o}{.}\PYG{n}{columns}\PYG{o}{.}\PYG{n}{to\PYGZus{}list}\PYG{p}{()}
+\PYG{n}{exog\PYGZus{}cols} \PYG{o}{=} \PYG{n}{carga}\PYG{o}{.}\PYG{n}{columns}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{enso}\PYG{o}{.}\PYG{n}{columns}\PYG{p}{)}\PYG{o}{.}\PYG{n}{to\PYGZus{}list}\PYG{p}{()}
+
+\PYG{c+c1}{\PYGZsh{} Normalização e separação das séries de treino/teste}
+\PYG{n}{scaler} \PYG{o}{=} \PYG{n}{StandardScaler}\PYG{p}{()}
+\PYG{n}{dataset}\PYG{p}{[}\PYG{n}{exog\PYGZus{}cols}\PYG{p}{]} \PYG{o}{=} \PYG{n}{scaler}\PYG{o}{.}\PYG{n}{fit\PYGZus{}transform}\PYG{p}{(}\PYG{n}{dataset}\PYG{p}{[}\PYG{n}{exog\PYGZus{}cols}\PYG{p}{])}
+
+\PYG{n}{X\PYGZus{}train}\PYG{p}{,} \PYG{n}{X\PYGZus{}test}\PYG{p}{,} \PYG{n}{y\PYGZus{}train}\PYG{p}{,} \PYG{n}{y\PYGZus{}test} \PYG{o}{=} \PYG{n}{train\PYGZus{}test\PYGZus{}split}\PYG{p}{(}
+    \PYG{n}{dataset}\PYG{p}{[}\PYG{n}{exog\PYGZus{}cols}\PYG{p}{],} \PYG{n}{dataset}\PYG{p}{[}\PYG{n}{target\PYGZus{}cols}\PYG{p}{],}
+    \PYG{n}{test\PYGZus{}size} \PYG{o}{=} \PYG{l+m+mf}{.3}\PYG{p}{,} \PYG{n}{shuffle} \PYG{o}{=} \PYG{k+kc}{False}
+\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Aplicação do modelo}
+\PYG{n}{modelo} \PYG{o}{=} \PYG{n}{LinearRegression}\PYG{p}{(}\PYG{n}{n\PYGZus{}jobs} \PYG{o}{=} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{n}{reg} \PYG{o}{=} \PYG{n}{modelo}\PYG{o}{.}\PYG{n}{fit}\PYG{p}{(}\PYG{n}{X\PYGZus{}train}\PYG{p}{,} \PYG{n}{y\PYGZus{}train}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s1}{\PYGZsq{}Coeficientes do modelo: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{reg}\PYG{o}{.}\PYG{n}{coef\PYGZus{}}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s1}{\PYGZsq{}Intercepto do modelo: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{reg}\PYG{o}{.}\PYG{n}{intercept\PYGZus{}}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{y\PYGZus{}pred} \PYG{o}{=} \PYG{n}{reg}\PYG{o}{.}\PYG{n}{predict}\PYG{p}{(}\PYG{n}{X\PYGZus{}test}\PYG{p}{)}
+\PYG{n}{y\PYGZus{}pred} \PYG{o}{=} \PYG{n}{pd}\PYG{o}{.}\PYG{n}{DataFrame}\PYG{p}{(}\PYG{n}{y\PYGZus{}pred}\PYG{p}{,} \PYG{n}{columns} \PYG{o}{=} \PYG{n}{target\PYGZus{}cols}\PYG{p}{,} \PYG{n}{index} \PYG{o}{=} \PYG{n}{y\PYGZus{}test}\PYG{o}{.}\PYG{n}{index}\PYG{p}{)}
+\PYG{n}{y\PYGZus{}pred}\PYG{p}{[}\PYG{n}{y\PYGZus{}pred} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{l+m+mi}{0} \PYG{c+c1}{\PYGZsh{} modelo linear pode resultar em valores negativos}
+
+\PYG{c+c1}{\PYGZsh{} Resample mensal para visualização}
+\PYG{n}{y\PYGZus{}pred} \PYG{o}{=} \PYG{n}{y\PYGZus{}pred}\PYG{o}{.}\PYG{n}{resample}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}ME\PYGZsq{}}\PYG{p}{)}\PYG{o}{.}\PYG{n}{mean}\PYG{p}{()}
+\PYG{n}{y\PYGZus{}test} \PYG{o}{=} \PYG{n}{y\PYGZus{}test}\PYG{o}{.}\PYG{n}{resample}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}ME\PYGZsq{}}\PYG{p}{)}\PYG{o}{.}\PYG{n}{mean}\PYG{p}{()}
+\PYG{n}{y\PYGZus{}train} \PYG{o}{=} \PYG{n}{y\PYGZus{}train}\PYG{o}{.}\PYG{n}{resample}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}ME\PYGZsq{}}\PYG{p}{)}\PYG{o}{.}\PYG{n}{mean}\PYG{p}{()}
+
+\PYG{c+c1}{\PYGZsh{} Plotagem...}
+\end{MintedVerbatim}
