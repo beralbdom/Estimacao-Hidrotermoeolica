@@ -26,9 +26,9 @@ from tsfm_public import (
 
 import matplotlib_config
 
-TTM_MODEL  = '90-30-ft-r2.1'
-CONTEXT    = 90
-PREDICTION = 30
+TTM_MODEL  = '512-96-ft-r2.1'
+CONTEXT    = 512
+PREDICTION = 96
 OUT_DIR    = 'Exportado/TTM'
 DEVICE     = 'cuda'
 SEED       = 1337
@@ -38,7 +38,7 @@ np.random.seed(SEED)
 torch.manual_seed(SEED)
 set_seed(SEED)
 
-freq = 'W'
+freq = 'D'
 tempo = 'Data'
 
 if freq == 'D': cor = "#FF9046" 
@@ -50,7 +50,7 @@ geracao = (
         parse_dates = ['Data'])
     .set_index('Data')
     .fillna(0)
-    .resample(freq).mean()
+    # .resample(freq).mean()
 )
 
 enso = (
@@ -58,7 +58,7 @@ enso = (
         'Exportado/ECMWF/derived-era5-single-levels-daily-statistics_sea_surface_temperature_reanalysis.csv', 
         parse_dates = ['Data'])
     .set_index('Data')
-    .resample(freq).mean()
+    # .resample(freq).mean()
 )
 
 carga = (
@@ -66,14 +66,23 @@ carga = (
         'Exportado/carga_subsist_diario_MWmed.csv', 
         parse_dates = ['Data'])
     .set_index('Data')
-    .resample(freq).mean()
+    # .resample(freq).mean()
 )
+
+# vazoes = (
+#     pd.read_csv(
+#         'Exportado/dados_hidrologicos_diarios.csv', 
+#         parse_dates = ['Data'])
+#     .set_index('Data')
+#     .fillna(0)
+#     # .resample(freq).mean()
+# )
 
 geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols])
 
 target_cols = geracao.columns.tolist()
 exog_cols = enso.columns.append(carga.columns).tolist()
-dataset = pd.concat([geracao, enso, carga], axis = 1)
+dataset = pd.concat([geracao, enso, carga], axis = 1).dropna()
 dataset = dataset[dataset.index.year < 2025]
 dataset = dataset.reset_index()
 

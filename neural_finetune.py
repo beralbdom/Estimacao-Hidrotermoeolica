@@ -62,11 +62,20 @@ carga = (
     # .resample(freq).mean()
 )
 
+vazoes = (
+    pd.read_csv(
+        'Exportado/dados_hidrologicos_diarios.csv', 
+        parse_dates = ['Data'])
+    .set_index('Data')
+    .fillna(0)
+    # .resample(freq).mean()
+)
+
 geracao = geracao.drop(columns = [cols for cols in geracao.columns if 'Fotovoltaica' in cols or 'Outras' in cols])
 target_cols = geracao.columns.tolist()
-exog_cols = enso.columns.append(carga.columns).tolist()
+exog_cols = enso.columns.append(carga.columns).append(vazoes.columns).tolist()
 
-dataset = pd.concat([geracao, enso, carga], axis = 1).dropna()
+dataset = pd.concat([geracao, enso, carga, vazoes], axis = 1).dropna()
 dataset = dataset[dataset.index.year < 2025]
 dataset = dataset.reset_index()
 
@@ -111,15 +120,15 @@ train_dataset, valid_dataset, test_dataset = get_datasets(
 )
 
 num_epochs = 500
-batch_size = 64
-learning_rate = 5e-5
+batch_size = 164
+# learning_rate = 5e-5
 
-# learning_rate, finetune_model = optimal_lr_finder(
-#     finetune_model,
-#     train_dataset,
-#     batch_size = batch_size,
-#     enable_prefix_tuning = True,
-# )
+learning_rate, finetune_model = optimal_lr_finder(
+    finetune_model,
+    train_dataset,
+    batch_size = batch_size,
+    enable_prefix_tuning = True,
+)
 
 tracking_callback = TrackingCallback()
 optimizer = AdamW(finetune_model.parameters(), lr = learning_rate)
@@ -157,7 +166,7 @@ finetune_forecast_args = TrainingArguments(
 )
 
 early_stopping_callback = EarlyStoppingCallback(
-    early_stopping_patience = 30,
+    early_stopping_patience = 10,
     early_stopping_threshold = 1e-6,
 )
 
@@ -178,4 +187,4 @@ finetune_forecast_trainer = Trainer(
 )
 
 finetune_forecast_trainer.train()
-finetune_model.save_pretrained(f'{OUT_DIR}/finetune_{freq}{CONTEXT}-{PREDICTION}')
+finetune_model.save_pretrained(f'{OUT_DIR}/finetune_{freq}{CONTEXT}-{PREDICTION}_vazoes')

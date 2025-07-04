@@ -43,46 +43,15 @@ O sistema utilizado possui um processador AMD Ryzen 5900X, 32 GB de memória RAM
 \end{table}
 
 \section{Obtenção e Pré Processamento dos Dados} % =================================================================== %
-\subsection{Obtenção dos Dados Energéticos e Hidrológicos} % ========================================================= %
+\subsection{Obtenção dos Dados Energéticos} % ========================================================= %
 
-A primeira etapa do projeto consiste na consolidação das séries históricas de geração, carga e variáveis hidrológicas,
-que são disponibilizadas publicamente no portal Dados Abertos do ONS, a partir do ano 2000. As séries referentes 
-às variáveis hidrológicas são disponibilizadas em base diária, e os dados de geração e carga são disponibilizados em 
-base horária. As Tabelas \ref{tab:hidrologicos}, \ref{tab:carga} e \ref{tab:geracao} mostram os parâmetros dos dados hidrológicos, 
-carga e geração, respectivamente.
+A primeira etapa do projeto consiste na consolidação das séries históricas de geração e carga,
+que são disponibilizadas publicamente no portal Dados Abertos do ONS, a partir do ano 2000, em 
+base horária. As Tabelas \ref{tab:carga} e \ref{tab:geracao} mostram os parâmetros dos dados de carga e geração, respectivamente.
 
 Os dados de geração são disponibilizados em Mega Watt médio (MWmed) por fonte de energia, subsistema, estado, 
 modalidade de operação, entre outras variáveis. Os dados de carga também são disponibilizados em MWmed e contêm 
 informações sobre a carga em cada subsistema do SIN.
-
-\begin{table}[htb]
-  \centering
-   \IBGEtab{
-    \caption{Parâmetros dos dados hidrológicos}
-    \label{tab:hidrologicos}
-    }{
-      \begin{tabular}{llll}
-          \toprule
-          \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \midrule
-          din\_instante & Instante de aferição & Datetime\\
-          nom\_subsistema & Subsistema & String\\
-          tip\_reservatorio & Tipo de reservatório & String\\
-          nom\_bacia  & Bacia hidrográfica & String\\
-          nom\_ree & Nome do REE & String\\
-          val\_nivelmontante & Valor do nível montante (m) & Float\\
-          val\_niveljusante & Valor do nível jusante (m) & Float\\
-          val\_volumeutilcon & Volume útil consistido (\%) & Float\\
-          val\_vazaoafluente & Vazão afluente (m³/s) & Float\\
-          val\_vazaoturbinada & Vazão turbinada (m³/s) & Float\\
-          val\_vazaovertida & Vazão vertida (m³/s) & Float\\
-          val\_vazaodefluente & Vazão defluente (m³/s) & Float\\
-          val\_vazaoevaporacaoliquida & Vazão de evaporação líquida (m³/s) & Float\\ \bottomrule
-      \end{tabular}
-    } {
-      \fonte{\citeonline{pen2024}}
-      \nota{Variáveis não utilizadas foram omitidas.}
-    }
-\end{table}
 
 Para as séries de geração, os dados de 2000 a 2021 são agrupados pelos respectivos anos, e a partir de 2022,
 as informações estão agrupadas em arquivos por mês e ano. Para as séries de carga, os dados são disponibilizados por
@@ -165,18 +134,6 @@ Diferentes arquivos CSV foram gerados, considerando a geração média (MWmed) e
 Os dados de geração contém o histórico de geração por subsistema e fonte, enquanto que os dados de carga contém o histórico de carga
 por subsistema. Considerando o período de 2000 a 2024, foram consolidados ao todo 9132 amostras diárias e 300 amostras mensais.
 
-\subsection{Pré Processamento dos Dados Hidrológicos} % ============================================================== %
-Os dados hidrológicos contém informações sobre o nível dos reservatórios e vazões. Para o contexto do projeto, espera-se que
-essas informações sejam altamente correlacionados com a geração hidrelétrica, o que será verificado a seguir na seção de análise 
-exploratória.
-
-Sendo assim, os dados hidrológicos foram utilizados para verificar a performance dos modelos quando as variáveis de entrada
-possuem alta correlação com a variável de saída. Dessa forma, é estabelecida uma referência para comparação entre os
-resultados dos modelos.
-
-As séries históricas foram consolidadas em um único \code{DataFrame}, contendo as vazões totais em cada subsistema do SIN,
-considerando a soma das vazões de todos os reservatórios em cada subsistema, em base diária.
-
 \subsection{Obtenção dos Dados do ENSO} % ============================================================================ %
 Os dados do ENSO foram obtidos a partir do \textit{Climate Data Store} (CDS) do ECMWF. O CDS é um banco de dados com diversos
 \textit{datasets} de variáveis climáticas de diferentes regiões do mundo. Para esse projeto, o dataset utilizado foi o 
@@ -184,7 +141,7 @@ Os dados do ENSO foram obtidos a partir do \textit{Climate Data Store} (CDS) do 
 variáveis, incluindo a temperatura da superfície do mar (SST).
 
 Considerando que ENSO é um fenômeno definido pela temperatura da superfície do mar em regiões 
-específicas do Oceano Pacífico, e que os dados de geração, carga e hidrológicos são disponibilizados em base diária,
+específicas do Oceano Pacífico, e que os dados de geração e carga são disponibilizados em base diária,
 optou-se por utilizar a temperatura absoluta da superfície do mar em base diária para cada uma das regiões do ENSO. As
 regiões do ENSO e suas coordenadas geográficas são mostradas na Tabela \ref{tab:regioes_enso}.
 

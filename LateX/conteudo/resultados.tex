@@ -287,7 +287,13 @@ amplamente superados pelo modelo TTM. A Tabela \ref{tab:performance_modelos} res
 
 Para as Tabelas \ref{tab:matriz_mse_hidraulica_correta}, \ref{tab:matriz_mse_eolica_corrigida} e \ref{tab:matriz_mse_termica_corrigida},
 são apresentadas as diferenças percentuais de MSE entre os modelos. As tabelas indicam a diferença percentual do valor de
-MSE do modelo na coluna para o modelo na linha.
+MSE do modelo na coluna para o modelo na linha, de acordo com a equação:
+
+\begin{equation}
+\Delta_\% = \frac{\text{MSE}_{linha} - \text{MSE}_{coluna}}{\text{MSE}_{coluna}}
+\end{equation}
+em que $\Delta_\%$ é a diferença percentual, $\text{MSE}_{linha}$ é o valor de MSE do modelo na linha e $\text{MSE}_{coluna}$ 
+é o valor de MSE do modelo na coluna.
 
 \begin{table}[htb]
   \centering
@@ -307,6 +313,11 @@ MSE do modelo na coluna para o modelo na linha.
     \end{tabular}
   }{\fonte{o autor.}}
 \end{table}
+
+Evidencia-se que as menores diferenças percentuais observadas entre os modelos foram para a fonte hidráulica. Naturalmente,
+isso é expllicado pela natureza da fonte e pela relação entre as variáveis do ENSO com a geração hidráulica, que é diretamente
+influenciada pelo fenômeno, conforme discutido no Capítulo 3.
+
 \begin{table}[htb]
   \centering
   \IBGEtab{
@@ -325,6 +336,16 @@ MSE do modelo na coluna para o modelo na linha.
     \end{tabular}
   }{\fonte{o autor.}}
 \end{table}
+
+A fonte eólica apresenta a maior variação percentual de MSE entre os modelos. O modelo não linear, por exemplo, apresenta
+um valor de MSE 1508,7\% maior que o modelo neural ajustado. A fonte térmica apresenta um meio termo entre as demais fontes.
+Em tese, caso fossem consideradas variáveis como velocidade do vento, temperatura e PLD, essas fontes poderiam apresentar resultados
+mais satisfatórios. 
+
+A velocidade do vento está diretamente associada à geração eólica, enquanto que a temperatura e o PLD poderiam atuar como
+uma \textit{proxy} para a demanda de geração térmica, uma vez que a temperatura influencia o consumo de energia e o PLD poderia
+representar in diretamente a disponibilidade de recursos hídricos.
+
 \begin{table}[htb]
   \centering
   \IBGEtab{
