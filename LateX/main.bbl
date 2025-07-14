@@ -1,0 +1,136 @@
+\providecommand{\abntreprintinfo}[1]{%
+ \citeonline{#1}}
+\begin{thebibliography}{}
+\providecommand{\abntrefinfo}[3]{}
+\providecommand{\abntbstabout}[1]{}
+\abntbstabout{v-1.9.7 }
+
+\bibitem{EPE2024}
+\abntrefinfo{EPE}{EPE}{2024}
+{EPE. \textbf{Balanço Energético Nacional 2024}.
+[S.l.], 2024.}
+
+\bibitem{Soares2023}
+\abntrefinfo{Soares e Costa}{SOARES; COSTA}{2023}
+{SOARES, Marcos de~Abreu; COSTA, Hirdan Katarina de~Medeiros. \textbf{A Crise
+  Hídrica Enfrentada em 2021: Uma Avaliação das Principais Medidas Adotadas
+  pelo Governo}. [S.l.]: South Florida Publishing LLC, 2023. 489--503~p.}
+
+\bibitem{pen2024}
+\abntrefinfo{ONS}{ONS}{2024}
+{ONS. \textbf{Plano da Operação Energética (PEN) 2024}.
+[S.l.], 2024.}
+
+\bibitem{de2012influencia}
+\abntrefinfo{Gurj{\~a}o et al.}{GURJ{\~A}O et al.}{2012}
+{GURJ{\~A}O, Carlos~Diego de Sousa et al. \textbf{Influ{\^e}ncia do Enos (El
+  Ni{\~n}o-Oscila{\c{c}}{\~a}o Sul) no Regime Hidrol{\'o}gico do Rio S{\~a}o
+  Francisco: uma An{\'a}lise em Regi{\~o}es com Fortes Press{\~o}es
+  Antr{\'o}picas (Influence of Enso (El Ni{\~n}o-Southern Oscillation) in the
+  Hydrological Regime S{\~a}o Francisco River: an Analysis...)}. 2012.
+  774--790~p.}
+
+\bibitem{Hersbach2020}
+\abntrefinfo{Hersbach et al.}{HERSBACH et al.}{2020}
+{HERSBACH, Hans et al. \textbf{The ERA5 global reanalysis}. [S.l.]: Wiley,
+  2020. 1999--2049~p.}
+
+\bibitem{Andreoli2016}
+\abntrefinfo{Andreoli et al.}{ANDREOLI et al.}{2016}
+{ANDREOLI, Rita~Valéria et al. \textbf{The influence of different El Niño
+  types on the South American rainfall}. [S.l.]: Wiley, 2016. 1374--1390~p.}
+
+\bibitem{Cirino2015}
+\abntrefinfo{Cirino et al.}{CIRINO et al.}{2015}
+{CIRINO, Paulo~Henrique et al. \textbf{Assessing the Impacts of ENSO-related
+  Weather Effects on the Brazilian Agriculture}. [S.l.]: Elsevier BV, 2015.
+  146--155~p.}
+
+\bibitem{Pirani2024}
+\abntrefinfo{Pirani et al.}{PIRANI et al.}{2024}
+{PIRANI, Monica et al. \textbf{Effects of the El Niño-Southern Oscillation and
+  seasonal weather conditions on Aedes aegypti infestation in the State of São
+  Paulo (Brazil): A Bayesian spatio-temporal study}. [S.l.]: Public Library of
+  Science (PLoS), 2024. e0012397~p.}
+
+\bibitem{Capozzoli2017}
+\abntrefinfo{Capozzoli, Cardoso e Ferraz}{CAPOZZOLI; CARDOSO; FERRAZ}{2017}
+{CAPOZZOLI, Caluan~Rodrigues; CARDOSO, Andrea de~Oliveira; FERRAZ, Simone
+  Erotildes~Teleginski. \textbf{Padrões de Variabilidade de Vazão de Rios nas
+  Principais Bacias Brasileiras e Associação com Índices Climáticos}.
+  [S.l.]: FapUNIFESP (SciELO), 2017. 243--254~p.}
+
+\bibitem{epe2023}
+\abntrefinfo{EPE}{EPE}{2023}
+{EPE. \textbf{Escassez Hídrica em 2021 - Diagnóstico e Oportunidades para o
+  Planejamento da Expansão da Oferta de Eletricidade}.
+[S.l.], 2023.}
+
+\bibitem{Sanchez2006}
+\abntrefinfo{Sánchez}{SáNCHEZ}{2006}
+{SáNCHEZ, Ismael. \textbf{Short-termPrediction of Wind Energy Production}.
+  [S.l.]: Elsevier BV, 2006. 43--56~p.}
+
+\bibitem{cpamp2019}
+\abntrefinfo{CPAMP}{CPAMP}{2019}
+{CPAMP, Comissão Permanente para Análise de Metodologias e Programas
+  Computacionais do Setor~Elétrico. \textbf{Representação
+  Hidrológica:Geração de Cenários}.
+[S.l.], 2019.}
+
+\bibitem{Resende2018}
+\abntrefinfo{Resende, Soares e Ferreira}{RESENDE; SOARES; FERREIRA}{2018}
+{RESENDE, Larissa; SOARES, Murilo; FERREIRA, Pedro. \textbf{Electric Power Load
+  in Brazil: View on the Long-term Forecasting Models}. [S.l.]: FapUNIFESP
+  (SciELO), 2018.}
+
+\bibitem{Zeng2022}
+\abntrefinfo{Zeng et al.}{ZENG et al.}{2022}
+{ZENG, Ailing et al. \textbf{Are Transformers Effective for Time Series
+  Forecasting?} [S.l.]: arXiv, 2022.}
+
+\bibitem{Vaswani2017}
+\abntrefinfo{Vaswani et al.}{VASWANI et al.}{2017}
+{VASWANI, Ashish et al. \textbf{Attention Is All You Need}. [S.l.]: arXiv,
+  2017.}
+
+\bibitem{Chen2023}
+\abntrefinfo{Chen et al.}{CHEN et al.}{2023}
+{CHEN, Si-An et al. \textbf{TSMixer: An All-MLP Architecture for Time Series
+  Forecasting}. [S.l.]: arXiv, 2023.}
+
+\bibitem{Rosenblatt1958}
+\abntrefinfo{Rosenblatt}{ROSENBLATT}{1958}
+{ROSENBLATT, F. \textbf{The Perceptron: A Probabilistic Model for Information
+  Storage and Organization in the Brain.} [S.l.]: American Psychological
+  Association (APA), 1958. 386--408~p.}
+
+\bibitem{Ekambaram2024}
+\abntrefinfo{Ekambaram et al.}{EKAMBARAM et al.}{2024}
+{EKAMBARAM, Vijay et al. \textbf{Tiny Time Mixers (TTMs): Fast Pre-trained
+  Models for Enhanced Zero/Few-Shot Forecasting of Multivariate Time Series}.
+  [S.l.]: arXiv, 2024.}
+
+\bibitem{TheDefinitionofElNio}
+\abntrefinfo{Trenberth}{TRENBERTH}{1997}
+{TRENBERTH, Kevin~E. \textbf{The Definition of El Niño}. Boston MA, USA:
+  American Meteorological Society, 1997. 2771 - 2778~p.}
+
+\bibitem{Silva2016}
+\abntrefinfo{Silva et al.}{SILVA et al.}{2016}
+{SILVA, Allan~Rodrigues et al. \textbf{Complementarity of Brazil's hydro and
+  offshore wind power}. [S.l.]: Elsevier BV, 2016. 413--427~p.}
+
+\bibitem{Wang2025}
+\abntrefinfo{Wang et al.}{WANG et al.}{2025}
+{WANG, Yiwen et al. \textbf{The value of hydropower flexibility for electricity
+  system decarbonization}. [S.l.]: Elsevier BV, 2025. 2711--2721~p.}
+
+\bibitem{Magazzino2021}
+\abntrefinfo{Magazzino, Mele e Morelli}{MAGAZZINO; MELE; MORELLI}{2021}
+{MAGAZZINO, Cosimo; MELE, Marco; MORELLI, Giovanna. \textbf{The Relationship
+  between Renewable Energy and Economic Growth in a Time of Covid-19: A Machine
+  Learning Experiment on the Brazilian Economy}. [S.l.]: MDPI AG, 2021.
+  1285~p.}
+
+\end{thebibliography}

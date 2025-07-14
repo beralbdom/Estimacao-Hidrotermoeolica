@@ -1,0 +1,38 @@
+\babel@toc {brazil}{}\relax 
+\contentsline {figure}{\numberline {1}{\ignorespaces Geração centralizada anual por fonte}}{15}{figure.caption.20}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Curva de carga diária do SIN em base horária}}{16}{figure.caption.21}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Curva de carga do SIN em base mensal}}{17}{figure.caption.22}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Geração hidráulica total em base mensal}}{18}{figure.caption.23}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Índice ONI (Oceanic Niño Index)}}{18}{figure.caption.24}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Regiões do fenômeno El Niño-Oscilação Sul (ENSO)}}{23}{figure.caption.25}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Regressão linear de uma senoide}}{26}{figure.caption.26}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Modelo com 2 árvores de decisão}}{27}{figure.caption.27}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Estrutura do Perceptron}}{28}{figure.caption.28}%
+\contentsline {figure}{\numberline {10}{\ignorespaces MLP de dupla camada}}{29}{figure.caption.29}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Arquitetura do modelo neural usado}}{33}{figure.caption.30}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Subsistemas do SIN segundo o ONS}}{38}{figure.caption.34}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Decomposição da série temporal de geração hidráulica}}{41}{figure.caption.36}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Decomposição da série temporal de geração eólica}}{41}{figure.caption.37}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Decomposição da série temporal de geração térmica}}{43}{figure.caption.38}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Decomposição da série temporal de carga}}{43}{figure.caption.39}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Regressão linear para fonte hidráulica (carga + ENSO) em base diária}}{51}{figure.caption.40}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Regressão linear para fonte hidráulica (apenas carga) em base diária}}{52}{figure.caption.41}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Regressão linear para fonte hidráulica (carga + ENSO) em base mensal}}{53}{figure.caption.42}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Regressão linear para fonte hidráulica (apenas carga) em base mensal}}{53}{figure.caption.43}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Regressão linear para fonte eólica (carga + ENSO) em base mensal}}{54}{figure.caption.44}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Regressão linear para fonte térmica (carga + ENSO) em base mensal}}{54}{figure.caption.45}%
+\contentsline {figure}{\numberline {23}{\ignorespaces Random Forest para fonte hidráulica (carga + ENSO)}}{54}{figure.caption.46}%
+\contentsline {figure}{\numberline {24}{\ignorespaces Random Forest para fonte eólica (carga + ENSO)}}{55}{figure.caption.47}%
+\contentsline {figure}{\numberline {25}{\ignorespaces Random Forest para fonte térmica (carga + ENSO)}}{55}{figure.caption.48}%
+\contentsline {figure}{\numberline {26}{\ignorespaces Oneshot para fonte hidráulica (contexto/previsão: 90/30 semanas)}}{56}{figure.caption.49}%
+\contentsline {figure}{\numberline {27}{\ignorespaces Oneshot para fonte hidráulica (contexto/previsão: 512/96 dias)}}{57}{figure.caption.50}%
+\contentsline {figure}{\numberline {28}{\ignorespaces Oneshot para fonte eólica (contexto/previsão: 90/30 semanas)}}{57}{figure.caption.51}%
+\contentsline {figure}{\numberline {29}{\ignorespaces Oneshot para fonte eólica (contexto/previsão: 512/96 dias)}}{58}{figure.caption.52}%
+\contentsline {figure}{\numberline {30}{\ignorespaces Oneshot para fonte térmica (contexto/previsão: 90/30 semanas)}}{58}{figure.caption.53}%
+\contentsline {figure}{\numberline {31}{\ignorespaces Oneshot para fonte térmica (contexto/previsão: 512/96 dias)}}{59}{figure.caption.54}%
+\contentsline {figure}{\numberline {32}{\ignorespaces Finetune para fonte hidráulica (contexto/previsão: 90/30 semanas)}}{59}{figure.caption.55}%
+\contentsline {figure}{\numberline {33}{\ignorespaces Finetune para fonte hidráulica (contexto/previsão: 512/96 dias)}}{59}{figure.caption.56}%
+\contentsline {figure}{\numberline {34}{\ignorespaces Finetune para fonte eólica (contexto/previsão: 90/30 semanas)}}{60}{figure.caption.57}%
+\contentsline {figure}{\numberline {35}{\ignorespaces Finetune para fonte eólica (contexto/previsão: 512/96 dias)}}{60}{figure.caption.58}%
+\contentsline {figure}{\numberline {36}{\ignorespaces Finetune para fonte térmica (contexto/previsão: 90/30 semanas)}}{61}{figure.caption.59}%
+\contentsline {figure}{\numberline {37}{\ignorespaces Finetune para fonte térmica (contexto/previsão: 512/96 dias)}}{61}{figure.caption.60}%

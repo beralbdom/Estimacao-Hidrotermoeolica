@@ -1,0 +1,60 @@
+\changetocdepth {4}
+\babel@toc {brazil}{}\relax 
+\contentsline {chapter}{\chapternumberline {1}Introdução}{15}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Contexto}{15}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Motivação}{16}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Objetivo}{19}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Estrutura do Trabalho}{20}{section.1.4}%
+\contentsline {chapter}{\chapternumberline {2}Trabalhos Relacionados}{21}{chapter.2}%
+\contentsline {chapter}{\chapternumberline {3}Fundamentação Teórica}{23}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Impacto do ENSO na Geração de Energia Elétrica}{23}{section.3.1}%
+\contentsline {section}{\numberline {3.2}O Modelo NEWAVE}{24}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Representação das Usinas}{24}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Dados de Entrada}{25}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Modelos Linear e Não-linear}{26}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Modelo Linear}{26}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Modelo Não-linear}{27}{subsection.3.3.2}%
+\contentsline {section}{\numberline {3.4}Modelo Neural}{28}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}O Perceptron}{28}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Multi Layer Perceptrons (MLPs)}{29}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Arquitetura TSMixer}{31}{subsection.3.4.3}%
+\contentsline {subsubsection}{\numberline {3.4.3.1}Extensão para Variáveis Exógenas (TSMixer-Ext)}{34}{subsubsection.3.4.3.1}%
+\contentsline {chapter}{\chapternumberline {4}Metodologia}{35}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Abordagem Computacional}{35}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Obtenção e Pré Processamento dos Dados}{36}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Obtenção dos Dados Energéticos}{36}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Pré Processamento dos Dados de Geração e Carga}{37}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Obtenção dos Dados do ENSO}{38}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}Pré Processamento dos Dados do ENSO}{39}{subsection.4.2.4}%
+\contentsline {section}{\numberline {4.3}Análise Exploratória dos Dados}{39}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Dados de Geração e Carga}{40}{subsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.1.1}Dados de Geração}{40}{subsubsection.4.3.1.1}%
+\contentsline {subsubsection}{\numberline {4.3.1.2}Dados de Carga}{42}{subsubsection.4.3.1.2}%
+\contentsline {section}{\numberline {4.4}Implementação dos Modelos de Regressão}{44}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Métricas de Avaliação}{44}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Etapas Comuns}{44}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Modelo Linear}{45}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}Modelo Não Linear}{46}{subsection.4.4.4}%
+\contentsline {section}{\numberline {4.5}Implementação do Modelo Neural}{47}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Modelo Pré-treinado}{48}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Ajuste Fino}{49}{subsection.4.5.2}%
+\contentsline {chapter}{\chapternumberline {5}Resultados}{51}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Modelo Linear}{51}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Fonte Hidráulica}{51}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Fonte Eólica e Térmica}{53}{subsection.5.1.2}%
+\contentsline {section}{\numberline {5.2}Modelo Não Linear (Random Forest Regressor)}{54}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Fonte Hidráulica}{54}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Fonte Eólica e Térmica}{55}{subsection.5.2.2}%
+\contentsline {section}{\numberline {5.3}Modelo Neural TTM}{56}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Modelo Pré-treinado}{56}{subsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.1.1}Fonte Hidráulica}{56}{subsubsection.5.3.1.1}%
+\contentsline {subsubsection}{\numberline {5.3.1.2}Fonte Eólica}{57}{subsubsection.5.3.1.2}%
+\contentsline {subsubsection}{\numberline {5.3.1.3}Fonte Térmica}{58}{subsubsection.5.3.1.3}%
+\contentsline {subsection}{\numberline {5.3.2}Impacto e Análise do Ajuste Fino}{59}{subsection.5.3.2}%
+\contentsline {subsubsection}{\numberline {5.3.2.1}Fonte Hidráulica}{59}{subsubsection.5.3.2.1}%
+\contentsline {subsubsection}{\numberline {5.3.2.2}Fonte Eólica}{60}{subsubsection.5.3.2.2}%
+\contentsline {subsubsection}{\numberline {5.3.2.3}Fonte Térmica}{61}{subsubsection.5.3.2.3}%
+\contentsline {subsection}{\numberline {5.3.3}Análise Geral}{62}{subsection.5.3.3}%
+\contentsline {chapter}{\chapternumberline {6}Conclusão}{64}{chapter.6}%
+\contentsline {chapter}{ {Refer\^encias}}{65}{section*.67}%
+\renewcommand *{\cftappendixname }{AP\^ENDICE \space }
