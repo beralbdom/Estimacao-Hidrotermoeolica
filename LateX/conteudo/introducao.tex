@@ -14,7 +14,7 @@ Nacional do Sistema Elétrico (ONS), sem considerar a geração distribuída.
 	\IBGEtab{\caption{Geração centralizada anual por fonte}
 			 \label{fig:geracao_anual_por_fonte}}
 	{\includesvg[scale=1]{figuras/geracao_anual_percentual}}
-	{\fonte{o autor.}}
+	{\fonte{o autor, a partir de dados do ONS.}}
 \end{figure}
 
 Nota-se, em especial, um crescimento significativo da geração eólica, observado a partir de 2015, e uma diminuição 
@@ -39,7 +39,7 @@ dia 15 de março de 2024, dia em que registrou-se um recorde de demanda máxima 
 	\IBGEtab{\caption{Curva de carga diária do SIN em base horária}
 			 \label{fig:carga_max_dia}}
 	{\includesvg[scale=1]{figuras/carga_max_dia_2024-03-15}}
-	{\fonte{o autor.}}
+	{\fonte{o autor, a partir de dados do ONS.}}
 \end{figure}
 
 \section{Motivação}
@@ -54,7 +54,7 @@ até então. \cite{Soares2023}
 	\IBGEtab{\caption{Curva de carga do SIN em base mensal}
 			 \label{fig:carga_anual}}
 	{\includesvg[scale=1]{figuras/carga_anual}}
-	{\fonte{o autor.}}
+	{\fonte{o autor, a partir de dados do ONS.}}
 \end{figure}
 
 Portanto, o estudo do sistema elétrico brasileiro, no contexto de cenários de eventos
@@ -71,7 +71,7 @@ outro lado, nos meses de verão, a geração atinge seus maiores valores.
 	\IBGEtab{\caption{Geração hidráulica total em base mensal}
 			 \label{fig:geracao_hidraulica_bruta}}
 	{\includesvg[scale=1]{figuras/geracao_hidraulica_bruta}}
-	{\fonte{o autor.}}
+	{\fonte{o autor, a partir de dados do ONS.}}
 \end{figure}
 
 Esse comportamento é esperado, uma vez que a geração hidráulica é diretamente influenciada pelas condições
@@ -82,7 +82,7 @@ favorecer condições que impactam diretamente no potencial de geração hidráu
 	\IBGEtab{\caption{Índice ONI (Oceanic Niño Index)}
 			 \label{fig:oni}}
 	{\includesvg[scale=1]{figuras/oni}}
-	{\fonte{o autor.}}
+	{\fonte{o autor, a partir de dados do ECMWF}}
 \end{figure}
 
 Fenômenos como o ENSO são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que classifica os 
@@ -113,11 +113,10 @@ de energia elétrica no Brasil, com foco nas fontes hidráulica, térmica e eól
 computacionais para relacionar as séries históricas de geração com as séries de variáveis 
 climáticas, através de modelos lineares, não lineares e neurais. 
 
-Além disso, foram utilizadas séries históricas de geração, 
-carga disponibilizados pelo ONS, bem como séries históricas de variáveis climáticas, como temperatura 
-da superfície do mar, obtidas a partir de dados do ERA5, um projeto de reanálise atmosférica proposto por \citeonline{Hersbach2020}, 
-que combina resultados de modelos computacionais com observações de diferentes fontes, como satélites e estações 
-meteorológicas, resultando em um \textit{dataset} global de alta resolução espacial e temporal.
+Além disso, foram utilizadas séries históricas de geração e carga disponibilizados pelo ONS, bem como séries históricas de variáveis 
+climáticas de temperatura da superfície do mar, obtidas a partir de dados do ERA5, um projeto de reanálise atmosférica 
+proposto por \citeonline{Hersbach2020}, que combina resultados de modelos computacionais com observações de diferentes fontes,
+como satélites e estações meteorológicas, resultando em um \textit{dataset} global de alta resolução espacial e temporal.
 
 A partir dessa investigação, espera-se poder avaliar o impacto dessas variáveis na geração de energia elétrica,
 o que pode contribuir para o planejamento energético do país, especialmente em cenários de eventos climáticos extremos e
@@ -137,24 +136,16 @@ são apresentadas as curvas de carga do SIN e de geração hidráulica. Uma brev
 ENSO e a importância do modelo NEWAVE para o planejamento energético do país são apresentadas. Por fim, é apresentado
 o objetivo do trabalho e a estrutura do documento. O capítulo 2 apresenta um panorama acerca de trabalhos relacionados ao tema.
 
-No capítulo 3, a fundamentação teórica necessária para a compreensão do projeto é apresentada. São abordados os fatores
+No capítulo 2, a fundamentação teórica necessária para a compreensão do projeto é apresentada. São abordados os fatores
 que fazem com que os fenômenos do EN e LN impactem o regime de chuvas no Brasil e a sua relação com a geração de 
 energia elétrica. Também será feita uma breve introdução ao modelo NEWAVE,
 que é amplamente utilizado pelo setor elétrico brasileiro para planejamento energético. Por fim, serão apresentados os modelos 
 de previsão de séries temporais implementados, com foco no modelo neural, uma implementação baseada na arquitetura 
 \textit{TSMixer} desenvolvida pela Google.
 
-O capítulo 4 mostra a metodologia utilizada para a realização do projeto. Serão apresentados os conjuntos de dados
+O capítulo 3 mostra a metodologia utilizada para a realização do projeto. Serão apresentados os conjuntos de dados
 considerados e suas respectivas etapas de obtenção, tratamento e análise. Além disso, será apresentada a metodologia
 utilizada para implementação dos modelos de previsão, incluindo seus parâmetros e métricas de avaliação.
 
-O capítulo 5 apresenta os resultados do projeto. Para cada modelo, serão apresentados os resultados de previsão, métricas 
-de avaliação e uma análise crítica dos resultados obtidos. No capítulo 6, serão apresentadas as considerações finais.
-
-% \chapter{Trabalhos Relacionados}
-% Avaliação do Impacto de Secas Severas no Nordeste Brasileiro na Geração de Energia Elétrica Através do Modelo Newave: 
-% Projeção das Energias Afluentes e Armazenadas \cite{Vilar2020}
-
-% {https://files.abrhidro.org.br/Eventos/Trabalhos/60/PAP023274.pdf}
-
-% {https://pantheon.ufrj.br/bitstream/11422/21709/1/887353.pdf}
+O capítulo 4 apresenta os resultados do projeto. Para cada modelo, serão apresentados os resultados de previsão, métricas 
+de avaliação e uma análise crítica dos resultados obtidos. No capítulo 5, serão apresentadas as considerações finais.

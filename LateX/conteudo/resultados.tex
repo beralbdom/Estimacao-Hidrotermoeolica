@@ -5,9 +5,13 @@ avaliar a linearidade das relações (Seções 5.1 e 5.2). Em seguida, na Seçã
 neural \textit{Tiny Time Mixer} (TTM) em sua aplicação direta. Por fim, na Seção 5.3.2, demonstra-se o impacto e a 
 eficácia do ajuste fino (\textit{finetuning}) deste modelo com a inclusão de variáveis do fenômeno ENSO, quantificando o ganho de 
 acurácia obtido com a especialização do modelo. Serão apresentados os gráficos de geração total das fontes. Demais gráficos 
-dos resultados para os subsistemas estão disponíveis no Apêndice B.
+dos resultados para os subsistemas estão disponíveis no Apêndice A.
 
 \section{Modelo Linear}
+Nesta seção, são apresentados e analisados os resultados obtidos com a aplicação do modelo de regressão linear. A avaliação busca 
+estabelecer um desempenho base (baseline) e verificar a capacidade do modelo em capturar as relações entre a geração de energia e 
+as variáveis climáticas do ENSO e de carga. A análise é dividida por fonte, começando pela hidráulica e, em seguida, pelas fontes 
+eólica e térmica.
 \subsection{Fonte Hidráulica}
 A Figura \ref{fig:linear_hidraulica} apresenta os resultados da regressão linear para a fonte hidráulica. Para esse caso,
 foram consdierados os dados de 2010 em diante. O conjunto de treino foi constituído pelos dados de 2010 a 2021, e o 
@@ -16,27 +20,27 @@ conjunto de teste pelos dados restantes.
 \begin{figure}[!ht]
   \IBGEtab{\caption{Regressão linear para fonte hidráulica (carga + ENSO) em base diária}
        \label{fig:linear_hidraulica}}
-  {\includesvg[scale=.9]{figuras/linear_Hidráulica}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Hidráulica}}
   {\fonte{o autor.}}
 \end{figure}
-Fica evidente que, para a geração hidráulcia total, o modelo é capaz de estimar os valores de geração do conjunto de teste
-com um valor de R² de 0,593, o que indica uma correlação moderada entre os valores estimados e os valores reais, considerando
+Fica evidente que, para a geração hidráulica total, o modelo é capaz de estimar os valores de geração do conjunto de teste
+com um valor de R² de 0,589, o que indica uma correlação moderada entre os valores estimados e os valores reais, considerando
 as limitações do modelo linear. 
 
 Para verificar a utilidade dos dados do ENSO, uma nova regressão foi realizada, dessa vez
 considerando apenas a carga como variável independente, conforme a Figura \ref{fig:linear_hidraulica_carga}. Observa-se 
-uma queda no valor de R² de 0,593 para 0,525, uma redução de 11,5\% na capacidade explicativa do modelo, indicando que a 
+uma queda no valor de R² de 0,589 para 0,522, uma redução de 12,06\% na capacidade explicativa do modelo, indicando que a 
 inclusão do ENSO melhora significativamente a predição. Além disso, o resultado é compatível com a fundamentação teórica 
 apresentada no Capítulo 3, na qual a influência do ENSO na geração hidráulica é direta e significativa.
 
 \begin{figure}[!ht]
   \IBGEtab{\caption{Regressão linear para fonte hidráulica (apenas carga) em base diária}
        \label{fig:linear_hidraulica_carga}}
-  {\includesvg[scale=.9]{figuras/linear_Hidráulica_CARGA}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Hidráulica_CARGA}}
   {\fonte{o autor.}}
 \end{figure}
 
-Embora o modelo linear atinja um R² de 0,593, o gráfico de dispersão (à esquerda) mostra que os pontos se 
+Embora o modelo linear atinja um R² de 0,589, o gráfico de dispersão (à esquerda) mostra que os pontos se 
 afastam da linha ideal especialmente nos extremos. Nota-se que o modelo tende a subestimar os picos de geração 
 (pontos acima da linha) e a superestimar os vales (pontos abaixo da linha), uma limitação característica da regressão 
 linear ao tentar capturar a amplitude total de uma série com forte sazonalidade.
@@ -49,19 +53,19 @@ considerando a carga e o ENSO.
 \begin{figure}[!ht]
   \IBGEtab{\caption{Regressão linear para fonte hidráulica (carga + ENSO) em base mensal}
        \label{fig:linear_hidraulica_mensal}}
-  {\includesvg[scale=.9]{figuras/linear_Hidráulica_mensal}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Hidráulica_mensal}}
   {\fonte{o autor.}}
 \end{figure}
 \begin{figure}[!ht]
   \IBGEtab{\caption{Regressão linear para fonte hidráulica (apenas carga) em base mensal}
        \label{fig:linear_hidraulica_mensal_carga}}
-  {\includesvg[scale=.9]{figuras/linear_Hidráulica_mensal_CARGA}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Hidráulica_mensal_CARGA}}
   {\fonte{o autor.}}
 \end{figure}
 
 Novamente, é realizado uma avaliação do modelo considerando apenas a carga, conforme a Figura 
 \ref{fig:linear_hidraulica_mensal_carga}. Observa-se que, para a regressão mensal, a queda na performance do modelo é ainda
-maior: o valor de R² cai de 0,519 para 0,420. Isso pode indicar que a inclusão de variáveis do ENSO é ainda mais significante 
+maior: o valor de R² cai de 0,515 para 0,417. Isso pode indicar que a inclusão de variáveis do ENSO é ainda mais significante 
 para a base temporal mensal.
 
 \subsection{Fonte Eólica e Térmica}
@@ -73,23 +77,26 @@ anteriores.
 \begin{figure}[!ht]
   \IBGEtab{\caption{Regressão linear para fonte eólica (carga + ENSO) em base mensal}
        \label{fig:linear_eolica_mensal}}
-  {\includesvg[scale=.9]{figuras/linear_Eólica_mensal}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Eólica_mensal}}
   {\fonte{o autor.}}
 \end{figure}
 \begin{figure}[!ht]
   \IBGEtab{\caption{Regressão linear para fonte térmica (carga + ENSO) em base mensal}
        \label{fig:linear_termica_mensal}}
-  {\includesvg[scale=.9]{figuras/linear_Térmica_mensal}}
+  {\includesvg[scale=.9]{figuras/linear/linear_Térmica_mensal}}
   {\fonte{o autor.}}
 \end{figure}
 
-A regressão para a fonte eólica resultou em um valor de R² de 0,004, o que indica que o modelo não é capaz de explicar a 
-variabilidade dos dados, enquanto que para a fonte térmica, o valor de R² foi negativo, indicando que o modelo é pior do 
-que uma média simples dos dados. Esses resultados corroboram a hipótese de que a relação entre as variáveis independentes 
-e dependentes é não linear, o que justifica a escolha de modelos mais complexos para essas fontes.
+A regressão para a fonte eólica resultou em um valor de R² de -0,005, o que indica que o modelo não é capaz de explicar a 
+variabilidade dos dados, sendo similar a uma média simples dos dados; enquanto que para a fonte térmica, o valor de R² foi negativo, 
+indicando que o modelo é pior do que uma média simples dos dados. Esses resultados corroboram a hipótese de que a relação entre as 
+variáveis independentes e dependentes é não linear, o que justifica a escolha de modelos mais complexos para essas fontes.
 
 
 \section{Modelo Não Linear (Random Forest Regressor)}
+A seguir, são explorados os resultados do modelo não linear Random Forest. O objetivo desta seção é avaliar se um modelo com maior 
+capacidade de capturar relações complexas e não lineares oferece uma melhoria de performance em relação à abordagem linear. A estrutura 
+da análise permanece a mesma, focando sequencialmente nas fontes hidráulica, eólica e térmica.
 \subsection{Fonte Hidráulica}
 \begin{figure}[!ht]
   \IBGEtab{\caption{Random Forest para fonte hidráulica (carga + ENSO)}
@@ -99,7 +106,7 @@ e dependentes é não linear, o que justifica a escolha de modelos mais complexo
 \end{figure}
 A Figura \ref{fig:rf_hidraulica} apresenta os resultados do modelo não linear para a fonte hidráulica, considerando os dados 
 de carga e ENSO como variáveis independentes. O dataset utilizado contém dados a partir de 2010. Os resultados são
-ligeiramente superiores aos do modelo de regressão linear, com um valor de R² de 0,525.
+ligeiramente superiores aos do modelo de regressão linear, com um valor de R² de 0,521.
 
 \subsection{Fonte Eólica e Térmica}
 \begin{figure}[!ht]
@@ -175,7 +182,7 @@ As Figuras \ref{fig:oneshot_eolica_w90-30} e \ref{fig:oneshot_eolica_d512-96} ap
 Observa-se que, para o caso de 90/30 semanas, o valor de R² foi de 0,683, enquanto que para o caso de 512/96 dias, o valor de R² foi de 0,826.
 
 Esses valores são superiores aos resultados da fonte hidráulica, sugerindo que o modelo consegue capturar melhor a relação
-entre as variáveis. Além disso, as métricas de avaliação foram consideravelmente superiores em comparação com os modelos
+entre as variáveis. Além disso, as métricas de avaliação foram superiores em comparação com os modelos
 linear e não linear, sugerindo que, de fato, a relação entre as variáveis é extremamente não linear.
 
 \subsubsection{Fonte Térmica}
@@ -194,7 +201,7 @@ linear e não linear, sugerindo que, de fato, a relação entre as variáveis é
 As Figuras \ref{fig:oneshot_termica_w90-30} e \ref{fig:oneshot_termica_d512-96} apresentam os resultados da previsão
 \textit{oneshot} para a fonte térmica, considerando as janelas de contexto e previsão de 90/30 semanas e 512/96 dias, respectivamente.
 A geração térmica apresentou o pior resultado entre as fontes, com um valor de R² de 0,183 para o caso de 90/30 semanas
-e 0,531 para o caso de 512/96 dias. Ainda assim, os valores são consideravelmente superiores em comparação com os os
+e 0,531 para o caso de 512/96 dias. Ainda assim, os valores são superiores em comparação com os os
 modelos linear e não linear.
 
 \subsection{Impacto e Análise do Ajuste Fino}
@@ -272,10 +279,10 @@ amplamente superados pelo modelo TTM. A Tabela \ref{tab:performance_modelos} res
           \toprule
           \multirow{2}{*}{\textbf{Modelo}} & \multicolumn{2}{c}{\textbf{Hidráulica}} & \multicolumn{2}{c}{\textbf{Eólica}} & \multicolumn{2}{c}{\textbf{Térmica}} \\
           \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
-           & \textbf{R²} & \textbf{MSE} & \textbf{R²} & \textbf{MSE} & \textbf{R²} & \textbf{MSE} \\ \midrule
-          Linear & 0,519 & 2,22$\times$ 10$^7$ & 0,004 & 7,78$\times$ 10$^6$ & -2,322 & 4,84$\times$ 10$^7$ \\
+           & \textbf{R² Ajust.} & \textbf{MSE} & \textbf{R² Ajust.} & \textbf{MSE} & \textbf{R² Ajust.} & \textbf{MSE} \\ \midrule
+          Linear & 0,515 & 2,22$\times$ 10$^7$ & -0,005 & 7,78$\times$ 10$^6$ & -2,352 & 4,84$\times$ 10$^7$ \\
           % \addlinespace
-          Não Linear & 0,525 & 2,19$\times$ 10$^7$ & -2,318 & 2,59$\times$ 10$^7$ & -0,068 & 1,56$\times$ 10$^7$ \\
+          Não Linear & 0,521 & 2,19$\times$ 10$^7$ & -2,349 & 2,59$\times$ 10$^7$ & -0,078 & 1,56$\times$ 10$^7$ \\
           % \addlinespace
           Neural Oneshot & 0,581 & 1,87$\times$ 10$^7$ & 0,826 & 1,69$\times$ 10$^6$ & 0,531 & 6,63$\times$ 10$^6$ \\
           % \addlinespace
@@ -315,7 +322,7 @@ em que $\Delta_\%$ é a diferença percentual, $\text{MSE}_{linha}$ é o valor d
 \end{table}
 
 Evidencia-se que as menores diferenças percentuais observadas entre os modelos foram para a fonte hidráulica. Naturalmente,
-isso é expllicado pela natureza da fonte e pela relação entre as variáveis do ENSO com a geração hidráulica, que é diretamente
+isso é explicado pela natureza da fonte e pela relação entre as variáveis do ENSO com a geração hidráulica, que é diretamente
 influenciada pelo fenômeno, conforme discutido no Capítulo 3.
 
 \begin{table}[htb]

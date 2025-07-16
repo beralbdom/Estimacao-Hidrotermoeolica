@@ -43,6 +43,11 @@ O sistema utilizado possui um processador AMD Ryzen 5900X, 32 GB de memória RAM
 \end{table}
 
 \section{Obtenção e Pré Processamento dos Dados} % =================================================================== %
+Esta seção detalha as etapas fundamentais de aquisição e preparação dos dados que servem como base para o estudo. Primeiramente, 
+descreve-se o processo de obtenção das séries históricas de dados energéticos (geração e carga) e dos dados climáticos (ENSO) de 
+suas respectivas fontes. Em seguida, são apresentados os procedimentos de pré-processamento aplicados a cada conjunto de dados, 
+incluindo limpeza, transformação e organização, a fim de garantir sua qualidade e adequação para a análise e modelagem subsequentes.
+
 \subsection{Obtenção dos Dados Energéticos} % ========================================================= %
 
 A primeira etapa do projeto consiste na consolidação das séries históricas de geração e carga,
@@ -88,7 +93,7 @@ todas as threads disponíveis do sistema. Ao todo, cerca de 10 GB de dados em ar
       \begin{tabular}{llll}
           \toprule
           \textbf{Parâmetro} & \textbf{Descrição} & \textbf{Tipo} \\ \midrule
-          id\_subsistema & Instante de aferição & Datetime\\
+          din\_instante & Instante de aferição & Datetime\\
           nom\_subsistema & Subsistema da usina & String\\
           id\_estado & Estado onde a usina está localizada & String\\ 
           nom\_tipousina & Tipo de usina & String\\
@@ -204,8 +209,7 @@ de regressão polinomial local (LOESS) para decompor a série, sendo capaz de ca
 não estacionárias, que é o caso das séries de geração e carga do SIN. Para todas as análises a seguir, os dados estão
 em base temporal mensal e foram normalizados utilizando o \code{StandardScaler} da biblioteca \code{scikit-learn}.
 
-\subsection{Dados de Geração e Carga} % ============================================================================== %
-\subsubsection{Dados de Geração} % =================================================================================== %
+\subsection{Dados de Geração} % =================================================================================== %
 A Figura \ref{fig:decomposicao_Hidráulica} mostra a decomposição da série temporal de geração hidráulica, que revela uma 
 tendência de aumento dos anos de 2000 a 2012, seguida por uma período de estabilidade de 2012 a 2024. Ao mesmo tempo,
 o regime de sazonalidade apresenta maior amplitude após o ano de 2012, sugerindo uma maior variabilidade da contribuição
@@ -260,7 +264,7 @@ O resíduo, por sua vez, exibe alta volatilidade e representa o papel da fonte t
 acionada para cobrir a intermitência de outras fontes, atender picos de demanda e responder a indisponibilidades no sistema. 
 
 
-\subsubsection{Dados de Carga} % ===================================================================================== %
+\subsection{Dados de Carga} % ===================================================================================== %
 \begin{figure}[!ht]
   \IBGEtab{\caption{Decomposição da série temporal de carga}
        \label{fig:decomposicao_carga}}
@@ -277,32 +281,14 @@ possui uma volatilidade relativamente baixa.
 
 
 \section{Implementação dos Modelos de Regressão} % =================================================================== %
-A seguir, será apresentada uma visão geral das etapas de implementação, métricas de avaliação e os modelos computacionais 
-utilizados.
-
-\subsection{Métricas de Avaliação} % ================================================================================= %
-Para todos os casos, duas métricas de avaliação foram utilizadas: o erro quadrático médio (MSE) e o coeficiente de determinação (R²).
-O MSE é uma medida que quantifica a média dos erros quadráticos entre os valores reais e as previsões do modelo. O R², por outro lado, 
-é uma medida que indica a proporção da variabilidade dos dados que é explicada pelo modelo, variando de 0 a 1, onde valores mais 
-próximos de 1 indicam um modelo mais preciso. As equações para o cálculo dessas métricas são apresentadas a seguir:
-\begin{equation}
-    \label{eq:mse}
-    MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
-\end{equation}
-\begin{equation}
-    \label{eq:r2}
-    R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2}
-\end{equation}
-em que $ y_i $ são os valores reais, $ \hat{y}_i $ são os valores previstos pelo modelo, $ \bar{y} $ é a média dos valores 
-reais e $ n $ é o número de amostras. Essas métricas estão disponíveis na biblioteca \code{scikit-learn} através das
-funções \code{mean\_squared\_error} e \code{r2\_score}, respectivamente.
+A seguir, será apresentada uma visão geral das etapas de implementação e os modelos computacionais utilizados.
 
 \subsection{Etapas Comuns} % ========================================================================================= %
 As etapas iniciais de implementação são comuns a todos os modelos, consistindo em: 
 \begin{enumerate}
     \item \textbf{Entrada de dados:} leitura dos arquivos CSV contendo os dados de geração, carga e variáveis do ENSO;
     \item \textbf{Consolidação do dataset:} alinhamento temporal dos dados, garantindo que as séries estejam sincronizadas;
-    \item \textbf{Definição das variáveis:} seleção das clunas contendo as variáveis dependentes (geração por fonte e subsistema) e 
+    \item \textbf{Definição das variáveis:} seleção das colunas contendo as variáveis dependentes (geração por fonte e subsistema) e 
 independentes (carga e variáveis do ENSO);
     \item \textbf{Normalização:} normalização das variáveis independentes utilizando o \code{StandardScaler} do \code{scikit-learn};
     \item \textbf{Definição dos conjuntos para treino:} divisão dos dados em conjuntos de treino, teste e validação (para o modelo neural);
