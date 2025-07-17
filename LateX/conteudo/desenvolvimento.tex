@@ -1,4 +1,15 @@
 \chapter{Metodologia} % ============================================================================================== %
+Neste capítulo, será apresentada a metodologia utilizada para o desenvolvimento do trabalho: bibliotecas Python utilizadas, métricas 
+de performance para avaliação dos resultados, processo de obtenção e tratamento dos dados, análise exploratória, implementação
+dos modelos e como os resultados serão analisados. O fluxograma da figura \ref{fig:fluxo_metodologia} ilustra todas as etapas.
+
+\begin{figure}[!ht]
+	\IBGEtab{\caption{Metodologia}
+			 \label{fig:fluxo_metodologia}}
+	{\includesvg[scale=1]{figuras/fluxo_metodologia}}
+	{\fonte{o autor.}}
+\end{figure}
+
 \section{Abordagem Computacional} % ================================================================================== %
 
 O projeto foi desenvolvido em \textit{Python} versão 3.12. Toda as etapas, da obtenção dos dados de entrada à implementação
@@ -34,7 +45,7 @@ O sistema utilizado possui um processador AMD Ryzen 5900X, 32 GB de memória RAM
         scipy & Ferramentas e algoritmos matemáticos & 1.14.1 \\
         statsmodels & Decomposição de séries temporais & 0.14.4 \\
         safetensors & Armazenamento de tensores & 0.5.3 \\
-        transformers & Modelos Neurais Pré-treinadis & 4.52.3 \\
+        transformers & Modelos Neurais Pré-treinados & 4.52.3 \\
         torch & Processamento de Redes Neurais & 2.7.0 \\
         \bottomrule
     \end{tabular}
@@ -42,9 +53,40 @@ O sistema utilizado possui um processador AMD Ryzen 5900X, 32 GB de memória RAM
       \fonte{o autor.}}
 \end{table}
 
+\section{Métricas de Avaliação} % ================================================================================= %
+Para todos os casos, duas métricas de avaliação foram utilizadas: o erro quadrático médio (MSE) e o coeficiente de determinação 
+ajustado ($\bar{R}^2$). O MSE é uma medida que quantifica a média dos erros quadráticos entre os valores reais e as previsões 
+do modelo, permitindo uma análise direta entre os resultados estimados e os reais, e foi escolhida por ser uma métrica amplamente
+utilizada para estudos de séries temporais com modelos neurais.
+
+O $R^2$ é uma medida que indica a proporção da variabilidade dos dados que é explicada pelo modelo, variando de 
+$ - \infty $ a 1, em que valores mais próximos de 1 indicam um modelo mais preciso. As equações para o cálculo dessas métricas
+são apresentadas a seguir:
+\begin{equation}
+    \label{eq:mse}
+    MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+\end{equation}
+\begin{equation}
+    \label{eq:r2}
+    R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2}
+\end{equation}
+em que $ y_i $ são os valores reais, $ \hat{y}_i $ são os valores previstos pelo modelo, $ \bar{y} $ é a média dos valores 
+reais e $ n $ é o número de amostras.
+
+O $\bar{R}^2$ é uma variação do coeficiente de determinação tradicional que ajusta a métrica com base no número de variáveis preditoras 
+no modelo, compensando a inclusão de variáveis independentes que não agregam poder explicativo, tornando-se uma medida mais fidedigna 
+ao comparar modelos com diferentes números de variáveis \cite{Ezekiel1930}. A métrica é calculada conforme a equação a seguir:
+\begin{equation}
+    \label{eq:r2_ajustado}
+    \bar{R}^2 = 1 -  \frac{\left(1 - R^2\right) \left(n - 1\right)}{\left(n - p - 1\right)}
+\end{equation}
+em que $n$ é o número de amostras, $ p $ é o número de variáveis independentes e $R^2$ é o coeficiente de determinação. No contexto do trabalho,
+ainda que o MSE seja utilizado para a comparação final de performance entre os modelos, o uso do $\bar{R}^2$ se faz necessário devido aos
+casos com diferentes números de variáveis independentes: somente carga, carga e ENSO e a aplicação direta e com ajuste fino do modelo neural.
+
 \section{Obtenção e Pré Processamento dos Dados} % =================================================================== %
-Esta seção detalha as etapas fundamentais de aquisição e preparação dos dados que servem como base para o estudo. Primeiramente, 
-descreve-se o processo de obtenção das séries históricas de dados energéticos (geração e carga) e dos dados climáticos (ENSO) de 
+Esta seção detalha as etapas de aquisição e preparação dos dados que servem como base para o estudo. Primeiramente, 
+será descrito o processo de obtenção das séries históricas de dados energéticos (geração e carga) e dos dados climáticos (ENSO) de 
 suas respectivas fontes. Em seguida, são apresentados os procedimentos de pré-processamento aplicados a cada conjunto de dados, 
 incluindo limpeza, transformação e organização, a fim de garantir sua qualidade e adequação para a análise e modelagem subsequentes.
 
@@ -127,7 +169,7 @@ distintos, estrutura de dados tabulares da biblioteca. Com isso, as seguintes op
 	\IBGEtab{\caption{Subsistemas do SIN segundo o ONS}
 			 \label{fig:subsistemas_brasil}}
 	{\includesvg[scale=1]{figuras/subsistemas_brasil}}
-	{\fonte{o autor.}}
+	{\fonte{o autor, a partir de dados do IBGE e ONS.}}
 \end{figure}
 
 Optou-se por fazer o agrupamento dos dados de geração por subsistema e fonte para permitir avaliar os impactos das variáveis
@@ -219,14 +261,14 @@ variáveis, como a eólica e a solar fotovoltaica, na matriz elétrica. \cite{Si
   \IBGEtab{\caption{Decomposição da série temporal de geração hidráulica}
        \label{fig:decomposicao_Hidráulica}}
   {\includesvg[scale=1]{figuras/decomposicao_Hidráulica}}
-  {\fonte{o autor.}}
+  {\fonte{o autor, a partir de dados do ONS.}}
 \end{figure}
 
 \begin{figure}[!ht]
   \IBGEtab{\caption{Decomposição da série temporal de geração eólica}
        \label{fig:decomposicao_Eólica}}
   {\includesvg[scale=1]{figuras/decomposicao_Eólica}}
-  {\fonte{o autor.}}
+  {\fonte{o autor, a partir de dados do ONS.}}
 \end{figure}
 
 Conforme descrito no capítulo 1, a geração dessas fontes é intermitente e não despachável, ou seja, dependente da 
@@ -252,7 +294,7 @@ perfil operacional da geração hidráulica, que ajusta sua produção para comp
   \IBGEtab{\caption{Decomposição da série temporal de geração térmica}
        \label{fig:decomposicao_Térmica}}
   {\includesvg[scale=1]{figuras/decomposicao_Térmica}}
-  {\fonte{o autor.}}
+  {\fonte{o autor, a partir de dados do ONS.}}
 \end{figure}
 
 A Figura \ref{fig:decomposicao_Térmica} apresenta a decomposição da geração térmica. A tendência atua 
@@ -269,7 +311,7 @@ acionada para cobrir a intermitência de outras fontes, atender picos de demanda
   \IBGEtab{\caption{Decomposição da série temporal de carga}
        \label{fig:decomposicao_carga}}
   {\includesvg[scale=1]{figuras/decomposicao_carga}}
-  {\fonte{o autor.}}
+  {\fonte{o autor, a partir de dados do ONS.}}
 \end{figure}
 A Figura \ref{fig:decomposicao_carga} mostra a decomposição da série temporal de carga. A tendência
 reflete diretamente a atividade econômica do país, com um crescimento contínuo até 2014, seguido por uma estagnação durante 
@@ -435,3 +477,12 @@ começando com um valor baixo, aumentando até um máximo e depois diminuindo no
 Uma estratégia de parada antecipada \code{EarlyStoppingCallback} é implementada para monitorar a perda no conjunto de validação 
 e interromper o treinamento caso não haja melhora significativa de ao menos 0,001 por 50 épocas consecutivas, 
 evitando o sobreajuste (\textit{overfitting}). O modelo com o menor erro de validação é salvo ao final do processo.
+
+\subsection{Análise dos Resultados} % ========================================================================== %
+Todos os resultados dos modelos serão aplicados qualitativamente e quantitativamente, com base nas métricas MSE e $\bar{R}^2$
+apresentadas anteriormente. A análise qualitativa será feita visualmente através de gráficos de dispersão e de linha, permitindo uma análise inicial
+dos resultados.
+
+A análise quantitativa será feita por meio das métricas de avaliação. Os resultados de cada modelo serão apresentados e, ao final,
+comparados entre si a partir do MSE. Isso se faz necessário pois o $\bar{R}^2$ pode resultar em valores negativos, o que impossibilitaria
+uma comparação direta.

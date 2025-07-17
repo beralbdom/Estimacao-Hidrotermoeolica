@@ -42,6 +42,8 @@
 
 % ----------------------------------------------------------------------------------------------------------------------
 \chapter{Fundamentação Teórica}
+Neste capítulo, a base teórica do trabalho será apresentada, abordando os principais conceitos neceessários para a compreensão da
+metodologia e dos resultados obtidos.
 \section{Impacto do ENSO na Geração de Energia Elétrica}
 O ENSO é um fenômeno que ocorre no Oceano Pacífico Equatorial, caracterizado por variações na temperatura da superfície
 do mar (SST) em regiões específicas, como ilustrado na Figura \ref{fig:regioes_enso}. O fenômeno é um dos principais fatores 
@@ -52,7 +54,7 @@ todas as regiões do Brasil. \cite{Andreoli2016}
 	\IBGEtab{\caption{Regiões do fenômeno El Niño-Oscilação Sul (ENSO)}
 			 \label{fig:regioes_enso}}
 	{\includesvg[scale=1]{figuras/regioes_enso_global}}
-	{\fonte{o autor.}}
+	{\fonte{o autor, com base em {\citeonline{TheDefinitionofElNio}}}}
 \end{figure}
 
 Os impactos em cada região estão resumidos a seguir, de acordo com \citeonline{Capozzoli2017}:
@@ -83,14 +85,13 @@ hidro-térmico-eólico interligado. O modelo é utilizado para estudos como:
 	\item Elaboração do Plano Decenal de Expansão de Energia (PDE), pela EPE;
 	\item Elaboração do Programa Mensal de Operação (PMO) e Plano de Operação Energética (PEN), pelo ONS;
 	\item Formação de preços, como no cálculo do Preço de Liquidação das Diferenças (PLD) pelo CCEE;
-	\item Cálculo de Garantia Física e da Energia Assegurada para empreendimentos de geração participantes nos leilões 
-    de energia elétrica, pela EPE;
+	\item Cálculo de Garantia Física e da Energia Assegurada de empreendimentos de geração, pela EPE;
 	\item Elaboração de diretrizes para os leilões de energia, pela EPE.
 \end{itemize}
 
 Em resumo, o modelo emprega a Programação Dinâmica Dual Estocástica (PDDE), uma técnica de otimização que permite lidar 
 com as incertezas ligadas às afluências futuras sem que o modelo se torne computacionalmente impraticável, considerando 
-múltiplos reservatórios, interconexões e o horizonte temporal de médio e longo prazos.
+múltiplos reservatórios, interconexões e o horizonte temporal de médio e longo prazos. \cite{Pereira1991}
 
 \subsection{Representação das Usinas}
 Para a fonte hidráulica, o NEWAVE modela o sistema de geração em Reservatórios Equivalentes de Energia (REEs), que são grupos de
@@ -124,41 +125,11 @@ vazões e velocidade de ventos utilizadas como dados de entrada.
 
 % ----------------------------------------------------------------------------------------------------------------------
 \newpage
-\section{Métricas de Avaliação} % ================================================================================= %
-Para todos os casos, duas métricas de avaliação foram utilizadas: o erro quadrático médio (MSE) e o coeficiente de determinação 
-ajustado (R² ajustado). O MSE é uma medida que quantifica a média dos erros quadráticos entre os valores reais e as previsões 
-do modelo. O R² é uma medida que indica a proporção da variabilidade dos dados que é explicada pelo modelo, variando de 
-$ - \infty $ a 1, em que valores mais próximos de 1 indicam um modelo mais preciso. As equações para o cálculo dessas métricas
-são apresentadas a seguir:
-\begin{equation}
-    \label{eq:mse}
-    MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
-\end{equation}
-\begin{equation}
-    \label{eq:r2}
-    R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2}
-\end{equation}
-em que $ y_i $ são os valores reais, $ \hat{y}_i $ são os valores previstos pelo modelo, $ \bar{y} $ é a média dos valores 
-reais e $ n $ é o número de amostras. Essas métricas estão disponíveis na biblioteca \code{scikit-learn} através das
-funções \code{mean\_squared\_error} e \code{r2\_score}, respectivamente.
-
-O R² ajustado é uma variação do coeficiente de determinação tradicional que ajusta a métrica com base no número de variáveis preditoras 
-no modelo. Diferentemente do R² padrão, o R² ajustado penaliza a inclusão de variáveis independentes que não agregam poder explicativo, 
-tornando-se uma medida mais fidedigna para comparar modelos com diferentes números de variáveis. A métrica é calculada conforme a 
-equação a seguir:
-\begin{equation}
-    \label{eq:r2_ajustado}
-    R^2_{ajustado} = 1 -  \frac{\left(1 - R^2\right) \left(n - 1\right)}{\left(n - p - 1\right)}
-\end{equation}
-em que $n$ é o número de amostras, $ p $ é o número de variáveis independentes e $ R^2 $ é o coeficiente de determinação. No contexto do trabalho,
-ainda que o MSE seja utilizado para a comparação final de performance entre os modelos, o uso do R² ajustado se faz necessário devido aos
-casos com diferentes números de variáveis independentes: somente carga, carga e ENSO e a aplicação direta e com ajuste fino do modelo neural.
-
 \section{Modelos Linear e Não-linear}
 Neste trabalho, foram utilizados modelos de regressão linear e não linear a fim de se obter uma \textit{baseline} para
 comparação com o modelo neural.
 
-\subsection{Modelo Linear}
+\subsection{Modelo de Regressão Linear Múltipla}
 O modelo linear consiste na regressão linear múltipla e aplicação do método dos mínimos quadrados ordinários para determinar 
 os coeficientes da equação linear que melhor se ajusta aos dados, conforme ilustrado na Figura \ref{fig:modelo_linear}.
 \begin{figure}[!ht]
@@ -192,10 +163,10 @@ das relações lineares entre as variáveis, além de servir como ponto de parti
 
 
 % ----------------------------------------------------------------------------------------------------------------------
-\subsection{Modelo Não-linear}
-Foi utilizado um modelo de regressão baseado em árvores de decisão. O modelo funciona a partir de árvores de decisão construídas 
-a partir dos dados de entrada. Cada árvore é treinada em um \textit{subset} aleatório dos dados e então a árvore cresce por meio 
-da bifurcação. A estrutura do modelo é ilustrada na Figura \ref{fig:modelo_random_forest}.
+\subsection{Modelo de Regressão por Árvores de Decisão}
+O modelo funciona a partir de árvores de decisão construídas a partir dos dados de entrada. Cada árvore é treinada em um 
+\textit{subset} aleatório dos dados e então a árvore cresce por meio da bifurcação. A estrutura do modelo é ilustrada na 
+Figura \ref{fig:modelo_random_forest}.
 
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Modelo com 2 árvores de decisão}
@@ -205,7 +176,7 @@ da bifurcação. A estrutura do modelo é ilustrada na Figura \ref{fig:modelo_ra
 \end{figure}
 Durante a bifurcação, o modelo estabelece o melhor caminho através da combinação de subconjuntos das variáveis de entrada, 
 de forma a minimizar o erro na previsão da variável de interesse. A previsão final é obtida através da média das previsões 
-de todas as árvores, o que ajuda a reduzir o \textit{overfitting} e melhora a generalização do modelo. A saída do modelo
+de todas as árvores, o que ajuda a reduzir o \textit{overfitting} e melhora a generalização do modelo \cite{Mansour2001}. A saída do modelo
 é dada por:
 \begin{equation}
 \label{eq:regressao_random_forest}
@@ -241,7 +212,7 @@ em que $ \hat{y} $ é a saída do Perceptron e $ f $ a função de ativação qu
 	{\fonte{o autor.}}
 \end{figure}
 
-O Perceptron é limitado a resolver problemas de classificação linearmente separáveis. Ou seja, problemas nos quais é
+O Perceptron é limitado a resolver problemas de classificação linearmente separáveis \cite{Cybenko1989}. Ou seja, problemas nos quais é
 possível traçar uma linha (ou hiperplano) que separe as classes de forma clara. Para essas aplicações, o Perceptron
 atualiza os pesos de modo iterativo durante o treinamento, através da taxa de aprendizado $ r $, conforme a equação 
 \ref{eq:atualizacao_perceptron}, que demonstra a atualização dos pesos no tempo:
@@ -268,13 +239,13 @@ resolução de tarefas complexas. A figura \ref{fig:mlp_1} ilustra a estrutura b
 \end{figure}
 
 Essas estruturas são compostas por neurônios (perceptrons) interconectados e organizados em camadas. Cada neurônio de uma 
-camada está conectado a todos os outros das camadas adjacentes (\textit{fully connected}). A primeira e última camadas são 
+camada está conectado a todos os outros das camadas adjacentes. A primeira e última camadas são 
 chamadas de camada de entrada e camada de saída, respectivamente, enquanto as camadas intermediárias são chamadas de 
 camadas ocultas.
 
 MLPs são treinadas utilizando o algoritmo de \textit{backpropagation}, ou retropropagação, que ajusta iterativamente os 
-pesos e vieses da rede de forma a minimizar o erro entre a saída prevista e a saída real. De acordo com 
-\citeonline{Goodfellow-et-al-2016}, o algoritmo funciona em um ciclo de quatro etapas, descritas abaixo.
+pesos e vieses da rede de forma a minimizar o erro entre a saída prevista e a saída real \cite{Rumelhart1988}. De acordo com 
+\citeonline{Goodfellow-et-al-2016}, o algoritmo funciona em um ciclo de quatro etapas:
 
 \newpage
 \begin{enumerate}
@@ -301,8 +272,8 @@ E = \frac{1}{n} \sum_{i=1}^{n} (y_{i} - \hat{y}_i)^2
 em que $ n $ é o número de neurônios na camada de saída.
 
 \item \textbf{Backward Pass:} o erro $ E $ é propagado de volta pela rede até a primeira camada. Para isso, a regra da cadeia 
-é utilizada para determinar o gradiente da função de perda em relação a cada peso e viés da rede. Para a camada $ L $ de saída, 
-o erro $ \delta_i^{(L)} $ é calculado diretamente para cada neurônio $ i $:
+é utilizada para determinar o gradiente da função de perda em relação a cada peso e viés da rede \cite{KELLEY1960}. Para a camada 
+$ L $ de saída, o erro $ \delta_i^{(L)} $ é calculado diretamente para cada neurônio $ i $:
 \begin{equation}
 \label{eq:erro_saida_v}
 \delta_i^{(L)} = \frac{\partial E}{\partial v_i^{(L)}} \cdot \sigma'(z_i^{(L)})

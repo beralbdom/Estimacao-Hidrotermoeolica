@@ -1,17 +1,18 @@
 % resumo em português
 \begin{resumo}
 \noindent
-A matriz elétrica brasileira, caracterizada pela forte dependência da geração hidráulica, apresenta vulnerabilidade a fenômenos
-climáticos como o El Niño-Oscilação Sul (ENSO), cujos impactos não são diretamente considerados nos modelos de 
-planejamento energético do país. Este trabalho investiga o impacto de variáveis exógenas associadas ao ENSO na estimação da geração 
-das fontes hidráulica, eólica e térmica no Sistema Interligado Nacional (SIN). Para tal, foram desenvolvidos e comparados modelos de 
-regressão linear, não-linear (Random Forest) e uma arquitetura de rede neural pré-treinada (Tiny Time Mixer). O modelo 
-neural foi avaliado em sua aplicação direta, utilizando os pesos pré-treinados, e então foi realizado o processo de 
-ajuste fino (fine-tuning) para especializar o modelo com os dados climáticos. Os resultados indicam que os modelos de regressão 
-tradicionais não são capazes de capturar as dinâmicas não-lineares das fontes eólica e térmica. O modelo neural, por sua vez,
-demonstrou alta capacidade de generalização, e o processo de fine-tuning provou ser a abordagem mais eficaz, resultando em uma diminuição 
-do erro médio quadrático (MSE) de até 21,38\% para a fonte hidráulica. Conclui-se que a incorporação de variáveis climáticas externas 
-em modelos neurais avançados aprimora significativamente a acurácia da estimação de geração, apresentando-se como uma metodologia promissora
+\sloppy
+A matriz elétrica brasileira, caracterizada pela forte dependência da fonte hidráulica, é vulnerável à fenômenos
+climáticos como o El Niño-Oscilação Sul (ENSO), cujos impactos não são considerados diretamente pela maior parte dos modelos 
+computacionais utilizados pelo setor. Este trabalho investiga o impacto de variáveis exógenas associadas 
+ao ENSO na estimação da geração das fontes hidráulica, eólica e térmica no Sistema Interligado Nacional (SIN). Para tal, foram 
+aplicados e comparados modelos de regressão linear, não-linear (Random Forest) e um modelo neural baseado na arquitetura TSMixer. 
+O modelo neural foi avaliado em sua aplicação direta (sem dados do ENSO), e também com o ajuste fino (com dados do ENSO). Os resultados
+indicam que os modelos de regressão tradicionais não são capazes de capturar as dinâmicas não-lineares das fontes eólica e térmica. 
+O modelo neural, por sua vez, demonstrou alta capacidade de generalização, e a inclusão dos dados do ENSO resultou em uma diminuição 
+do erro médio quadrático (MSE) para a fonte hidráulica de 21,38\% para a janela de previsão de 96 dias e 5,8\% para a janela de previsão 
+de 30 semanas. As fontes eólica e térmica também apresentaram melhoria. Sendo assim, a incorporação de variáveis climáticas externas em 
+modelos neurais avançados aprimora significativamente a acurácia da estimação de geração, apresentando-se como uma metodologia promissora 
 para compor as ferramentas de planejamento energético do setor elétrico.
 
 \vspace{0.2cm}
@@ -22,17 +23,19 @@ Palavras-chave: Geração de energia. Clima. Planejamento energético. Machine l
 % resumo em inglês
 \begin{resumo}[Abstract]	
 \begin{otherlanguage*}{english}
-\noindent 
-\textit{The Brazilian electrical matrix, characterized by its strong dependence on hydroelectric generation, is vulnerable to climate 
-phenomena such as the El Niño-Southern Oscillation (ENSO). This work investigates the impact of exogenous variables associated with 
-ENSO on the generation forecasting of hydro, wind, and thermal power sources within the National Interconnected System (SIN). To this end, 
-linear regression, non-linear (Random Forest), and a pre-trained neural network architecture (Tiny Time Mixer) models were developed and compared. 
-The neural network was evaluated both in its direct application and through a fine-tuning process to specialize the model with climate data. The 
-results, evaluated by the Mean Squared Error (MSE), indicated that traditional regression models were inadequate for the wind and thermal sources. 
-The neural approach demonstrated superiority, and the fine-tuning process proved to be the most effective, achieving an MSE reduction of up to 
-21.38\% for the hydraulic source compared to the non-adjusted model. It is concluded that incorporating external climate variables into advanced 
-neural networks significantly improves the accuracy of generation forecasting, validating the methodology as a promising tool to complement the 
-energy planning frameworks of the electrical sector.}
+\noindent
+\sloppy
+\textit{The brazilian electrical matrix, which is historically dependent on the hydroelectric generation, is vulnerable to 
+external climatological phenomena such as El Niño-Southern Oscilation (ENSO). These external effects are not directly considered
+on the main computational models used by the electric sector. This work investigates the impact of these variables on the
+hydro, eolic and thermal electricity generation estimation. Different models were implemented to measure the impact of these variables
+on the accuracy of the results: multivariate linear regression and random forest regressor as baselines, and a neural model based on the 
+TSMixer architecture. The neural model was evaluated on its oneshot (no ENSO data) and finetune (with ENSO data) approaches.
+The results show that the introduction of ENSO data as exogenous variables on the finetuned neural model resulted in a
+21,38\% smaller mean squared error (MSE) compared to the oneshot implementation for the hydro source, considering the prediction
+window of 96 days. For the 30 week prediction window, the observed improvement was 5,8\%. The eolic and thermal sources
+also showed improvement on the MSE. Therefore, the usage of climatological variables of external phenomena, such
+as ENSO, is a valid approach to improve the accuracy of the estimations produced by advanced regression models, contributing to the tools already available to the electric sector. }
 
 \vspace{0.2cm}
 \noindent
