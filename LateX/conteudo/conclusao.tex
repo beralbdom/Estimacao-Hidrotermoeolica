@@ -6,20 +6,20 @@ não-lineares até uma arquitetura de rede neural pré-treinada, avaliando o gan
 os dados do ENSO.
 
 Foi demonstrado que modelos de regressão tradicionais, tanto lineares quanto o Random Forest, são insuficientes para capturar 
-a dinâmica complexa das fontes eólica e térmica, apresentando valores de R² insatisfatórios e até negativos, o que valida 
+a dinâmica complexa das fontes eólica e térmica, apresentando valores de $\bar{R}^2$ insatisfatórios e até negativos, o que valida 
 a hipótese de não-linearidade das relações envolvidas. A introdução do modelo neural pré-treinado TTM 
-representou um salto qualitativo significativo, especialmente para a fonte eólica, que atingiu um R² de 0,826, evidenciando 
+representou um salto qualitativo significativo, especialmente para a fonte eólica, que atingiu um $\bar{R}^2$ de 0,826, evidenciando 
 o poder de generalização dessa arquitetura.
 
 Foram observados ganhos de performance substanciais ao realizar o ajuste fino do modelo neural, o que responde afirmativamente 
-à questão central da pesquisa: a incorporação de variáveis climáticas externas, aliada a uma arquitetura neural adequada, 
-aprimora de forma mensurável e significativa a estimação da geração energética.
+à questão central do trabalho: a incorporação de variáveis climáticas externas, aliada a uma arquitetura neural adequada, 
+aprimora de forma mensurável a estimação da geração hidrotermoeólica.
 
 Reconhece-se, contudo, as limitações deste estudo. A análise se restringiu às variáveis do fenômeno ENSO, enquanto outras 
 variáveis climáticas e indicadores econômicos poderiam ser incorporados para enriquecer os modelos. Adicionalmente, foi 
 utilizada uma arquitetura neural específica (TSMixer), e a exploração de outras arquiteturas, como as baseadas em Transformers 
 ou LSTMs, poderia trazer resultados distintos.
 
-Para trabalhos futuros, sugere-se a expansão do conjunto de variáveis exógenas, incluindo outros índices 
-climáticos relevantes para o território brasileiro e indicadores macroeconômicos. Além disso, a aplicação da metodologia de 
-fine-tuning de modelos pré-treinados a outras tarefas, como a previsão de carga ou de preços de energia (PLD), poderá ser estudada.
+Para trabalhos futuros, sugere-se a inclusão de dados de GD (Geração Distribuída) e a expansão do conjunto de variáveis exógenas, 
+incluindo: outros índices climáticos externos; dados locais de precipitação, temperatura, umidade, readiação solar e 
+velocidade do vento; indicadores econômicos, como PIB (Produto Interno Bruto), inflação e taxa de juros do Banco Central.

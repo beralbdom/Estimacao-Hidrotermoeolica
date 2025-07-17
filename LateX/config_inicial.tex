@@ -29,12 +29,12 @@
 \usepackage{titlesec}            																						% Modificar títulos
 \usepackage{svg}                 																						% Pacote para incluir imagens svg
 \usepackage{amsmath}
+\usepackage{float}
 \usepackage{lipsum}              																						% para geração de dummy text
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage[brazilian, hyperpageref]{backref}  																			% Paginas com as citações na bibliografia
 \usepackage{enumitem}
-\usepackage{minted}
 \setitemize[0]{itemindent=0.4cm, itemsep=0pt}
 \setenumerate[0]{itemindent=0.5cm, itemsep=0pt}
 \usepackage[alf,
@@ -95,18 +95,6 @@ abnt-etal-list=3                 																						% abreviar com mais de 3 
   boxrule=0pt,
   tcbox raise base,
   fontupper=\ttfamily
-}
-
-\usemintedstyle{custommanni}
-\setminted{
-  frame=lines,
-  framesep=1mm,
-  baselinestretch=1,
-  linenos,
-  breaklines,
-  style=colorful,
-  tabsize=4,
-  numbersep=5pt
 }
 
 \renewcommand{\backref}{}																								% Não gera texto de referência nas citações

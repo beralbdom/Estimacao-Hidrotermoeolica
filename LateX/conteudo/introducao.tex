@@ -70,7 +70,7 @@ outro lado, nos meses de verão, a geração atinge seus maiores valores.
 \begin{figure}[!ht]
 	\IBGEtab{\caption{Geração hidráulica total em base mensal}
 			 \label{fig:geracao_hidraulica_bruta}}
-	{\includesvg[scale=1]{figuras/geracao_hidraulica_bruta}}
+	{\includesvg[scale=1.3]{figuras/geracao_hidraulica_bruta}}
 	{\fonte{o autor, a partir de dados do ONS.}}
 \end{figure}
 
@@ -82,7 +82,7 @@ favorecer condições que impactam diretamente no potencial de geração hidráu
 	\IBGEtab{\caption{Índice ONI (Oceanic Niño Index)}
 			 \label{fig:oni}}
 	{\includesvg[scale=1]{figuras/oni}}
-	{\fonte{o autor, a partir de dados do ECMWF}}
+	{\fonte{o autor, a partir de dados do ERA5.}}
 \end{figure}
 
 Fenômenos como o ENSO são monitoradas por meio de índices como o ONI (Oceanic Niño Index), que classifica os 
@@ -133,19 +133,18 @@ incorporação de outras variáveis reservada para trabalhos futuros.
 No capítulo 1, é feita uma breve introdução apresentando o contexto, motivação, objetivo e a estrutura do trabalho. Uma
 breve análise da matriz elétrica é apresentada, com foco no histórico recente e no crescimento da geração eólica. Também
 são apresentadas as curvas de carga do SIN e de geração hidráulica. Uma breve contextualização acerca dos fenômenos do
-ENSO e a importância do modelo NEWAVE para o planejamento energético do país são apresentadas. Por fim, é apresentado
-o objetivo do trabalho e a estrutura do documento. O capítulo 2 apresenta um panorama acerca de trabalhos relacionados ao tema.
+ENSO e a importância de modelos computacionais para o planejamento energético do país são apresentadas. Por fim, é apresentado
+o objetivo do trabalho e a sua estrutura.
 
 No capítulo 2, a fundamentação teórica necessária para a compreensão do projeto é apresentada. São abordados os fatores
 que fazem com que os fenômenos do EN e LN impactem o regime de chuvas no Brasil e a sua relação com a geração de 
-energia elétrica. Também será feita uma breve introdução ao modelo NEWAVE,
-que é amplamente utilizado pelo setor elétrico brasileiro para planejamento energético. Por fim, serão apresentados os modelos 
-de previsão de séries temporais implementados, com foco no modelo neural, uma implementação baseada na arquitetura 
-\textit{TSMixer} desenvolvida pela Google.
+energia elétrica. Também será feita uma breve introdução ao modelo NEWAVE, amplamente utilizado pelo setor elétrico brasileiro 
+para planejamento energético. Por fim, serão apresentados os modelos de previsão de séries temporais implementados, com foco no 
+modelo neural, uma implementação baseada na arquitetura \textit{TSMixer}.
 
 O capítulo 3 mostra a metodologia utilizada para a realização do projeto. Serão apresentados os conjuntos de dados
 considerados e suas respectivas etapas de obtenção, tratamento e análise. Além disso, será apresentada a metodologia
-utilizada para implementação dos modelos de previsão, incluindo seus parâmetros e métricas de avaliação.
+utilizada para avaliar os resultados e a implementação dos modelos de previsão, incluindo seus parâmetros.
 
 O capítulo 4 apresenta os resultados do projeto. Para cada modelo, serão apresentados os resultados de previsão, métricas 
 de avaliação e uma análise crítica dos resultados obtidos. No capítulo 5, serão apresentadas as considerações finais.
