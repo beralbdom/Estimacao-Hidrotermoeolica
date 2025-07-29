@@ -41,14 +41,3 @@
 | | 
 | | 
 | | 
-
-## Blocks of code
-
-```
-let message = 'Hello world';
-alert(message);
-```
-
-## Inline code
-
-This web site is using `markedjs/marked`.
