@@ -38,6 +38,6 @@
 | matplotlib | 3.10.3
 | transformers | 4.53.1
 | torch | 2.7.1
-| netCDF4 | 1.7.2
+| netcdf4 | 1.7.2
 | cdsapi | 0.7.6
 | granite-tsfm | 0.2.22
