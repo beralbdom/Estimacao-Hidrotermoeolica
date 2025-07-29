@@ -9,8 +9,6 @@
 ###### <p style="text-align: justify;"> The brazilian electrical matrix, which is historically dependent on the hydroelectric generation, is vulnerable to external climatological phenomena such as El Niño-Southern  Oscilation (ENSO). These external eﬀects are not directly considered on the main computational models used by the electric sector. This work investigates the impact of these variables on the hydro, eolic and thermal electricity generation estimation. Diﬀerent models were implemented to measure the impact of these variables on the accuracy of the results: multivariate linear regression and random forest regressor as baselines, and a neural model based on the TSMixer architecture. The neural model was evaluated on its oneshot (no ENSO data) and finetune (with ENSO data) approaches. The results show that the introduction of ENSO data as exogenous variables on the finetuned neural model resulted in a 21,38% smaller mean squared error (MSE) compared to the oneshot implementation for the hydro source, considering the prediction window of 96 days. For the 30 week prediction window, the observed improvement was 5,8%. The eolic and thermal sources also showed improvement on the MSE. Therefore, the usage of climatological variables of external phenomena, such as ENSO, is a valid approach to improve the accuracy of the estimations produced by advanced regression models, contributing to the tools already available to the electric sector. </p>
 
 ### Estrutura do código
-⚠️ Execução do modelo neural com aceleração da GPU requer placa da NVIDIA no Windows ou AMD no Linux.
-
 * **`baixar_dados.py` : Funções para download dos dados de geração e carga, tratamento e conversão.**
     * Download dos dados brutos (2000 a 2024) de geração e carga horários do ONS;
     * Conversão para séries de carga diários por subsistema;
@@ -25,6 +23,7 @@
 * **`neural_oneshot.py` : Aplicação oneshot do modelo neural (sem dados do ENSO).**
 * **`neural_finetune.py` : Treinamento do modelo com dados do ENSO.**
 * **`neural_finetune_exog.py` : Execução do modelo treinado com dados do ENSO.**
+##### ⚠️ Execução do modelo neural com aceleração da GPU requer placa da NVIDIA no Windows ou AMD no Linux.
 
 ### Bibliotecas utilizadas (Python 3.12)
 
