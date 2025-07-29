@@ -30,14 +30,14 @@
 
 | Biblioteca  | Versão |
 | ------------- |:-------------:|
-| numpy | 
-| pandas |
-| scikit-learn| 
-| geopandas |
-| matplotlib| 
-| transformners| 
-| torch| 
-| netCDF4| 
-| | 
-| | 
-| | 
+| numpy | 1.26.4
+| pandas | 2.3.1
+| scikit-learn | 1.7.0
+| geopandas | 1.1.1
+| statsmodels | 0.14.5
+| matplotlib | 3.10.3
+| transformers | 4.53.1
+| torch | 2.7.1
+| netCDF4 | 1.7.2
+| cdsapi | 0.7.6
+| granite-tsfm | 0.2.22
