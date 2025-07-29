@@ -1,4 +1,4 @@
-## Estimação da Geração Hidrotermoeólica Utilizando Redes Neurais e Variáveis do El Niño
+### Estimação da Geração Hidrotermoeólica Utilizando Redes Neurais e Variáveis do El Niño
 ###### <p style="text-align: center;"> Este repositório contém o código e os dados (sem dados energéticos e climáticos brutos) do meu projeto de conclusão de curso "Estimação da Geração Hidrotermoeólica Utilizando Redes Neurais e Variáveis do Fenômeno El Niño", apresentado à Universidade Federal Fluminense (UFF) em julho de 2025. </p>
 
 ###### <center> 📄 [Publicação](https://app.uff.br/riuff/handle/1/39428) &nbsp; | &nbsp; 📄 [Artigo TSMixer](https://arxiv.org/abs/2303.06053) &nbsp; | &nbsp; 🌐 [Modelo no Hugging Face](https://huggingface.co/ibm-granite/granite-timeseries-ttm-r2) &nbsp; | &nbsp; ⚡[Dados energéticos](https://dados.ons.org.br/dataset/?tags=Hist%C3%B3rico+da+Opera%C3%A7%C3%A3o&tags=Hor%C3%A1rio) &nbsp; | &nbsp; ⛅ [Dados climáticos](https://cds.climate.copernicus.eu/datasets/derived-era5-single-levels-daily-statistics?tab=overview) </center>
